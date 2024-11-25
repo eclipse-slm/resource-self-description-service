@@ -1,9 +1,12 @@
 package org.eclipse.slm.self_description_service.templating;
 
+import freemarker.core.Environment;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
 import freemarker.template.TemplateExceptionHandler;
+import org.eclipse.slm.self_description_service.templating.method.CapitalizeMethod;
+import org.eclipse.slm.self_description_service.templating.method.IndexOfMethod;
 import org.springframework.stereotype.Component;
 
 
@@ -48,6 +51,9 @@ public class TemplateRenderer {
         try {
             var combinedRenderContext = new HashMap<>(globalRenderContext);
             combinedRenderContext.putAll(renderContext);
+
+            combinedRenderContext.put("capitalize", new CapitalizeMethod());
+            combinedRenderContext.put("indexOf", new IndexOfMethod());
 
             var t = new Template("", new StringReader(template), cfg);
 

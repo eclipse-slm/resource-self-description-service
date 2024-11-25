@@ -1,7 +1,11 @@
 package org.eclipse.slm.self_description_service.templating;
 
+import freemarker.core.Environment;
+import freemarker.template.TemplateException;
+import freemarker.template.TemplateExceptionHandler;
 import org.junit.jupiter.api.Test;
 
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
@@ -9,6 +13,9 @@ import java.util.List;
 import java.util.TimeZone;
 
 import static org.junit.jupiter.api.Assertions.*;
+
+
+
 
 interface GetResult{
     String getExpectedResult();
@@ -41,11 +48,23 @@ public class TemplateRendererTests {
 
         var tests = List.of(
                 new TemplateTest(
-                        "${.now?iso_utc}",
+                        "${.now?date?iso_utc}",
                         () -> {
-                            var formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+                            var formatter = new SimpleDateFormat("yyyy-MM-dd");
                             formatter.setTimeZone(TimeZone.getTimeZone("UTC"));
                             return formatter.format(new Date());
+                        }
+                ),
+                new TemplateTest(
+                        "<#assign x = \"something\">${x?indexOf(\"met\")}" ,
+                        () -> {
+                            return "2";
+                        }
+                ),
+                new TemplateTest(
+                        "${capitalize(\"hello\")}" ,
+                        () -> {
+                            return "Hello";
                         }
                 )
         );
@@ -54,7 +73,7 @@ public class TemplateRendererTests {
         for (var test : tests) {
             var result = templateRenderer.render(test.testTemplate, test.data);
             var expectedResult = test.getResult.getExpectedResult();
-            assertEquals(result, expectedResult);
+            assertEquals(expectedResult, result);
         }
 
 
