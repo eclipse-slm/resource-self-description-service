@@ -62,11 +62,6 @@
             <scope>test</scope>
         </dependency>
 
-        <dependency>
-            <groupId>org.eclipse.basyx</groupId>
-            <artifactId>basyx.sdk</artifactId>
-            <version>1.5.1</version>
-        </dependency>
 
         <dependency>
             <groupId>org.springdoc</groupId>
@@ -76,65 +71,9 @@
 
 
         <dependency>
-            <groupId>org.eclipse.digitaltwin.aas4j</groupId>
-            <artifactId>aas4j-model</artifactId>
-            <version>${aas.aas4j.version}</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.slf4j</groupId>
-                    <artifactId>slf4j-simple</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>org.eclipse.digitaltwin.aas4j</groupId>
-            <artifactId>aas4j-dataformat-json</artifactId>
-            <version>${aas.aas4j.version}</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.slf4j</groupId>
-                    <artifactId>slf4j-simple</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>org.eclipse.digitaltwin.aas4j</groupId>
-            <artifactId>aas4j-dataformat-xml</artifactId>
-            <version>${aas.aas4j.version}</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.slf4j</groupId>
-                    <artifactId>slf4j-simple</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>org.eclipse.digitaltwin.aas4j</groupId>
-            <artifactId>aas4j-dataformat-core</artifactId>
-            <version>${aas.aas4j.version}</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.slf4j</groupId>
-                    <artifactId>slf4j-simple</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>org.eclipse.digitaltwin.aas4j</groupId>
-            <artifactId>aas4j-dataformat-aasx</artifactId>
-            <version>${aas.aas4j.version}</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.slf4j</groupId>
-                    <artifactId>slf4j-simple</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-
-        <dependency>
-            <groupId>com.hubspot.jinjava</groupId>
-            <artifactId>jinjava</artifactId>
-            <version>${jinjava-version}</version>
+            <groupId>org.freemarker</groupId>
+            <artifactId>freemarker</artifactId>
+            <version>${freemarker.version}</version>
         </dependency>
 
     </dependencies>

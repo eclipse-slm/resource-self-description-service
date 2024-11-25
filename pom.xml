@@ -45,7 +45,7 @@
         <assertj.version>3.26.3</assertj.version>
 
         <aas.aas4j.version>1.0.2</aas.aas4j.version>
-        <jinjava-version>2.7.3</jinjava-version>
+        <freemarker.version>2.3.33</freemarker.version>
     </properties>
 
     <build>

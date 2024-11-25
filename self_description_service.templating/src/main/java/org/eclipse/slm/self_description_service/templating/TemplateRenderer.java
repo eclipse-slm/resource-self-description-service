@@ -1,42 +1,43 @@
 package org.eclipse.slm.self_description_service.templating;
 
-import com.hubspot.jinjava.Jinjava;
-import com.hubspot.jinjava.interpret.FatalTemplateErrorsException;
-import com.hubspot.jinjava.lib.tag.Tag;
-import org.eclipse.slm.self_description_service.templating.functions.AppTemplateFunction;
-import org.eclipse.slm.self_description_service.templating.functions.NowFunction;
-import org.eclipse.slm.self_description_service.templating.functions.UUIDTemplateFunction;
-import org.eclipse.slm.self_description_service.templating.tags.TimestampTag;
+import freemarker.template.Configuration;
+import freemarker.template.Template;
+import freemarker.template.TemplateException;
+import freemarker.template.TemplateExceptionHandler;
 import org.springframework.stereotype.Component;
 
 
+import java.io.IOException;
+import java.io.StringReader;
+import java.io.StringWriter;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
+import java.util.TimeZone;
 
 @Component
 public class TemplateRenderer {
 
-    private Jinjava jinjava = new Jinjava();
 
+    private Configuration cfg;
     private Map<String, Object> globalRenderContext = new HashMap<>();
 
-    private List<Tag> tags = List.of(new TimestampTag());
 
+    public TemplateRenderer() {
+        /* ------------------------------------------------------------------------ */
+        /* You should do this ONLY ONCE in the whole application life-cycle:        */
 
-    public TemplateRenderer(AppTemplateFunction appTemplateFunctions, UUIDTemplateFunction uuidTemplateFunctions) {
-        for (var templateFunctionsClass : List.of(
-                appTemplateFunctions,
-                uuidTemplateFunctions, new NowFunction())
-        ) {
-            for (var templateFunction : templateFunctionsClass.getTemplateFunctions()) {
-                this.jinjava.getGlobalContext().registerFunction(templateFunction);
-            }
-        }
+        /* Create and adjust the configuration singleton */
+        cfg = new Configuration(Configuration.VERSION_2_3_33);
+        // Recommended settings for new projects:
+        cfg.setDefaultEncoding("UTF-8");
+        cfg.setTemplateExceptionHandler(TemplateExceptionHandler.RETHROW_HANDLER);
+        cfg.setLogTemplateExceptions(false);
+        cfg.setWrapUncheckedExceptions(true);
+        cfg.setFallbackOnNullLoopVariable(false);
+        cfg.setSQLDateAndTimeTimeZone(TimeZone.getDefault());
 
-        for (var tag : tags) {
-            this.jinjava.getGlobalContext().registerTag(tag);
-        }
+        /* ------------------------------------------------------------------------ */
+        /* You usually do these for MULTIPLE TIMES in the application life-cycle:   */
     }
 
     public String render(String template) {
@@ -48,15 +49,13 @@ public class TemplateRenderer {
             var combinedRenderContext = new HashMap<>(globalRenderContext);
             combinedRenderContext.putAll(renderContext);
 
-            var result = this.jinjava.render(template, combinedRenderContext);
-            return result;
-        } catch (FatalTemplateErrorsException e) {
+            var t = new Template("", new StringReader(template), cfg);
 
-            e.getErrors().forEach(subError -> {
-                subError.getException().printStackTrace();
-            });
-
-            throw e;
+            StringWriter writer = new StringWriter();
+            t.process(combinedRenderContext, writer);
+            return writer.toString();
+        } catch (IOException | TemplateException e) {
+            throw new RuntimeException(e);
         }
     }
 
