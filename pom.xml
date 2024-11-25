@@ -12,6 +12,7 @@
 
     <modules>
         <module>self_description_service.service</module>
+        <module>self_description_service.templating</module>
     </modules>
 
     <profiles>
@@ -27,9 +28,12 @@
         <revision>0.0.1-SNAPSHOT</revision>
 
         <java.version>18</java.version>
+        <maven.compiler.source>${java.version}</maven.compiler.source>
+        <maven.compiler.target>${java.version}</maven.compiler.target>
 
-        <spring.boot.version>3.3.3</spring.boot.version>
+        <spring.boot.version>3.4.0</spring.boot.version>
 
+        <maven.plugin.apache.compiler.version>3.13.0</maven.plugin.apache.compiler.version>
         <maven.plugin.jacoco.version>0.8.12</maven.plugin.jacoco.version>
 
         <keycloak.version>19.0.3</keycloak.version>
@@ -49,6 +53,43 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
+                <version>3.4.0</version>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>${maven.plugin.apache.compiler.version}</version>
+                <configuration>
+                    <source>${java.version}</source>
+                    <target>${java.version}</target>
+                    <compilerArgument>-Xlint:unchecked</compilerArgument>
+                </configuration>
+                <executions>
+                    <!-- Replacing default-compile as it is treated specially by maven -->
+                    <execution>
+                        <id>default-compile</id>
+                        <phase>none</phase>
+                    </execution>
+                    <!-- Replacing default-testCompile as it is treated specially by maven -->
+                    <execution>
+                        <id>default-testCompile</id>
+                        <phase>none</phase>
+                    </execution>
+                    <execution>
+                        <id>java-compile</id>
+                        <phase>compile</phase>
+                        <goals>
+                            <goal>compile</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>java-test-compile</id>
+                        <phase>test-compile</phase>
+                        <goals>
+                            <goal>testCompile</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>
@@ -129,6 +170,9 @@
                 <artifactId>aas4j-dataformat-aasx</artifactId>
                 <version>${aas.aas4j.version}</version>
             </dependency>
+
+
+
         </dependencies>
     </dependencyManagement>
 
