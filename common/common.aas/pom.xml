@@ -16,7 +16,6 @@
 
     <modules>
         <module>common.aas.clients</module>
-        <module>common.aas.repositories</module>
     </modules>
 
 </project>
