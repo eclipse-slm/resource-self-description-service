@@ -13,6 +13,7 @@
     <modules>
         <module>self_description_service.service</module>
         <module>self_description_service.templating</module>
+        <module>common</module>
     </modules>
 
     <profiles>
@@ -41,6 +42,8 @@
 
         <jacoco.version>0.8.12</jacoco.version>
 
+        <swagger.version>2.2.22</swagger.version>
+
         <testcontainers.version>1.20.1</testcontainers.version>
         <assertj.version>3.26.3</assertj.version>
 
@@ -49,6 +52,7 @@
         <snakeyaml.version>2.3</snakeyaml.version>
         <jayway.jsonpath.version>2.9.0</jayway.jsonpath.version>
         <fasterxml.jackson.core.version>2.18.1</fasterxml.jackson.core.version>
+        <basyx.version>2.0.0-milestone-04</basyx.version>
     </properties>
 
     <build>
