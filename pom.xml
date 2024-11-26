@@ -46,6 +46,9 @@
 
         <aas.aas4j.version>1.0.2</aas.aas4j.version>
         <freemarker.version>2.3.33</freemarker.version>
+        <snakeyaml.version>2.3</snakeyaml.version>
+        <jayway.jsonpath.version>2.9.0</jayway.jsonpath.version>
+        <fasterxml.jackson.core.version>2.18.1</fasterxml.jackson.core.version>
     </properties>
 
     <build>

@@ -1,18 +1,19 @@
 package org.eclipse.slm.self_description_service.templating;
 
-import freemarker.core.Environment;
-import freemarker.template.TemplateException;
-import freemarker.template.TemplateExceptionHandler;
+import org.eclipse.slm.self_description_service.templating.utils.PathHelper;
 import org.junit.jupiter.api.Test;
 
-import java.io.IOException;
+import java.io.File;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.TimeZone;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 
 
@@ -42,9 +43,18 @@ class TemplateTest{
 
 public class TemplateRendererTests {
 
+    private String getPathForFile(String fileName) throws URISyntaxException {
+        URL res = getClass().getClassLoader().getResource(fileName);
+        File file = Paths.get(res.toURI()).toFile();
+        String absolutePath = file.getAbsolutePath().replace("\\", "\\\\");
+        return absolutePath;
+    }
+
     @Test
-    public void RenderTest(){
+    public void RenderTest() throws URISyntaxException {
         var templateRenderer = new TemplateRenderer();
+
+        var osIsWindows = System.getProperty("os.name").toLowerCase().contains("windows");
 
         var tests = List.of(
                 new TemplateTest(
@@ -62,9 +72,29 @@ public class TemplateRendererTests {
                         }
                 ),
                 new TemplateTest(
+                        "${indexOf(\"met\", \"something\")}",
+                        () -> {
+                            return "2";
+                        }
+                ),
+                new TemplateTest(
                         "${capitalize(\"hello\")}" ,
                         () -> {
                             return "Hello";
+                        }
+                ),
+                new TemplateTest(
+                        String.format("${JsonFileValue(\"%s\", \"%s\")}", "$.['price range'].cheap",
+                                PathHelper.getPathForFile(this, "json/simple_file.json", osIsWindows)),
+                        () -> {
+                            return "10.0";
+                        }
+                ),
+                new TemplateTest(
+                        String.format("${YamlFileValue(\"%s\", \"%s\")}", "$.['price range'].cheap",
+                                PathHelper.getPathForFile(this, "yaml/simple_file.yaml", osIsWindows)),
+                        () -> {
+                            return "10.0";
                         }
                 )
         );

@@ -1,6 +1,9 @@
 package org.eclipse.slm.self_description_service.templating.method;
 
-import freemarker.template.*;
+import freemarker.template.SimpleNumber;
+import freemarker.template.TemplateMethodModelEx;
+import freemarker.template.TemplateModel;
+import freemarker.template.TemplateModelException;
 
 import java.util.List;
 
@@ -11,8 +14,12 @@ public class IndexOfMethod implements TemplateMethodModelEx {
         if (args.size() != 2) {
             throw new TemplateModelException("Wrong arguments");
         }
+
+        var t = args.get(0).toString();
+        var t2 = args.get(1).toString();
+
         return new SimpleNumber(
-                ((String) args.get(1)).indexOf((String) args.get(0)));
+                t2.indexOf(t));
     }
 
 }

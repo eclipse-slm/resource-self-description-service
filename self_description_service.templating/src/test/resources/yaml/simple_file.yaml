@@ -1,0 +1,17 @@
+---
+book:
+  - title: Beginning JSON
+    author: Ben Smith
+    price: 49.99
+  - title: JSON at Work
+    author: Tom Marrs
+    price: 29.99
+  - title: Learn JSON in a DAY
+    author: Acodemy
+    price: 8.99
+  - title: 'JSON: Questions and Answers'
+    author: George Duckett
+    price: 6
+price range:
+  cheap: 10.0
+  medium: 20.0
