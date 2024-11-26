@@ -7,6 +7,7 @@ import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Objects;
+import java.util.Optional;
 
 public class TestTemplateManager implements ITemplateManager {
     @Override
@@ -19,5 +20,10 @@ public class TestTemplateManager implements ITemplateManager {
         return Arrays.stream(resources)
                 .filter(resource -> Objects.requireNonNull(resource.getFilename()).endsWith(".aasx"))
                 .toArray(Resource[]::new);
+    }
+
+    @Override
+    public Optional<Resource> getTemplate(String name) throws IOException {
+        return Optional.empty();
     }
 }

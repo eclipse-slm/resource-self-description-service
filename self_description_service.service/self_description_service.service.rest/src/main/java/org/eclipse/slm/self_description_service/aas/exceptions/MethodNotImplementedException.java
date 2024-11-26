@@ -1,4 +1,4 @@
-package org.eclipse.slm.common.aas.repositories.exceptions;
+package org.eclipse.slm.self_description_service.aas.exceptions;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 @ResponseStatus(HttpStatus.NOT_IMPLEMENTED)
 public class MethodNotImplementedException extends RuntimeException {
 
-    public MethodNotImplementedException() {
-        super("Method not implemented or supported for this submodel");
-    }
+	public MethodNotImplementedException() {
+		super("Method not implemented or supported for this submodel");
+	}
 }
