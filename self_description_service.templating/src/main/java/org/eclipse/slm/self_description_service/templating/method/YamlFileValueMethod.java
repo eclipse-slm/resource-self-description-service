@@ -32,7 +32,7 @@ public class YamlFileValueMethod implements TemplateMethodModelEx {
             var json = JsonPath.parse(jsonString);
 
             var valuePath = list.get(0).toString();
-            return json.read(valuePath).toString();
+            return json.read(valuePath);
 
         } catch (IOException e) {
             throw new RuntimeException(e);

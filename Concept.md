@@ -13,4 +13,7 @@ Erster Schitt
    -> RestAPI mit GET zur verfügung stellen 
    -> Jinjava als parser
 
+Startup:
+Check for Consul -> Spring implementierung für Consul um Service zu finden
+
 -> Webcam -> schauen ob es einen Virtuelle Kammera gibt.

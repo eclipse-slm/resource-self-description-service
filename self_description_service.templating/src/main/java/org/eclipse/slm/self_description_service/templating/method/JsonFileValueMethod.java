@@ -28,7 +28,7 @@ public class JsonFileValueMethod implements TemplateMethodModelEx {
             var jsonFile = JsonPath.parse(targetFile);
             var valuePath = list.get(0).toString();
 
-            return jsonFile.read(valuePath).toString();
+            return jsonFile.read(valuePath);
 
         } catch (FileNotFoundException e) {
             throw new RuntimeException(e);

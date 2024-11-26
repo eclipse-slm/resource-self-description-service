@@ -84,14 +84,14 @@ public class TemplateRendererTests {
                         }
                 ),
                 new TemplateTest(
-                        String.format("${JsonFileValue(\"%s\", \"%s\")}", "$.['price range'].cheap",
+                        String.format("${JsonFileValue(\"%s\", \"%s\")?string[\"0.###\"]}", "$.['price range'].cheap",
                                 PathHelper.getPathForFile(this, "json/simple_file.json", osIsWindows)),
                         () -> {
-                            return "10.0";
+                            return "10.123";
                         }
                 ),
                 new TemplateTest(
-                        String.format("${YamlFileValue(\"%s\", \"%s\")}", "$.['price range'].cheap",
+                        String.format("${YamlFileValue(\"%s\", \"%s\")?string[\"0.0\"]}", "$.['price range'].cheap",
                                 PathHelper.getPathForFile(this, "yaml/simple_file.yaml", osIsWindows)),
                         () -> {
                             return "10.0";
