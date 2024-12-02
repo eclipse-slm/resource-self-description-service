@@ -32,7 +32,7 @@ public class SubmodelRepository implements org.eclipse.digitaltwin.basyx.submode
     private final static Logger LOG = LoggerFactory.getLogger(SubmodelRepository.class);
 
 
-    private HashMap<String, Datasource> submodelToFactoryMap = new HashMap();
+    private HashMap<String, Datasource> submodelToFactoryMap = new HashMap<>();
     private HashMap<String, Datasource> factories = new HashMap<>();
 
 
@@ -51,7 +51,6 @@ public class SubmodelRepository implements org.eclipse.digitaltwin.basyx.submode
     @Override
     public CursorResult<List<Submodel>> getAllSubmodels(PaginationInfo pInfo) {
         var submodels = new ArrayList<Submodel>();
-
         for (var submodelFactory : factories.values()) {
             submodels.addAll(submodelFactory.getModels());
         }
@@ -74,8 +73,18 @@ public class SubmodelRepository implements org.eclipse.digitaltwin.basyx.submode
                         return submodel.get();
                     }
                 } catch (IOException e) {
-                    throw new RuntimeException(e);
+                    throw new ElementDoesNotExistException();
                 }
+            }
+        } else {
+            var factory = this.submodelToFactoryMap.get(submodelId);
+            try {
+                var submodel = factory.getModelById(submodelId);
+                if (submodel.isPresent()) {
+                    return submodel.get();
+                }
+            } catch (IOException e) {
+                throw new ElementDoesNotExistException();
             }
         }
 

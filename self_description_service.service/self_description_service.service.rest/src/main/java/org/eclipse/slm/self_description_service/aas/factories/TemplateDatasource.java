@@ -11,6 +11,8 @@ import org.eclipse.slm.self_description_service.ITemplateManager;
 import org.eclipse.slm.self_description_service.TemplateManager;
 import org.eclipse.slm.self_description_service.aas.Datasource;
 import org.eclipse.slm.self_description_service.templating.TemplateRenderer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
@@ -24,6 +26,7 @@ import java.util.Optional;
 
 @Component
 public class TemplateDatasource implements Datasource, InitializingBean {
+    private final static Logger LOG = LoggerFactory.getLogger(TemplateDatasource.class);
 
     private ITemplateManager templateManager;
     private TemplateRenderer renderer;
@@ -76,7 +79,8 @@ public class TemplateDatasource implements Datasource, InitializingBean {
                 submodels.addAll(environment.getSubmodels());
             }
         } catch (IOException | InvalidFormatException | DeserializationException e) {
-            throw new RuntimeException(e);
+            LOG.error("Failed to load templates and render with error message: {}", e.getMessage());
+            return List.of();
         }
 
         return submodels;
@@ -103,6 +107,7 @@ public class TemplateDatasource implements Datasource, InitializingBean {
                 }
             }
         } catch (IOException | InvalidFormatException | DeserializationException e) {
+            LOG.error("Failed to get model ids with error message: {}", e.getMessage());
             throw new RuntimeException(e);
         }
 
@@ -110,19 +115,19 @@ public class TemplateDatasource implements Datasource, InitializingBean {
     }
 
     @Override
-    public Optional<Submodel> getModelById(String id) throws IOException {
-
-        if (!this.idToFileMap.containsKey(id)) {
-            return searchModelInTemplates(id);
-        }
-
-        var resource = this.templateManager.getTemplate(this.idToFileMap.get(id));
-
-        if (resource.isEmpty()) {
-            return Optional.empty();
-        }
-
+    public Optional<Submodel> getModelById(String id) {
         try {
+            if (!this.idToFileMap.containsKey(id)) {
+                return searchModelInTemplates(id);
+            }
+
+            var resource = this.templateManager.getTemplate(this.idToFileMap.get(id));
+
+            if (resource.isEmpty()) {
+                return Optional.empty();
+            }
+
+
             var aasxDeserializer = new AASXDeserializer(resource.get().getInputStream());
             var environment = aasxDeserializer.read();
             var submodel = environment.getSubmodels().stream().filter(model -> model.getId().equals(id)).findFirst();
@@ -132,16 +137,19 @@ public class TemplateDatasource implements Datasource, InitializingBean {
             }
             return submodel;
 
-        } catch (InvalidFormatException | DeserializationException e) {
-            throw new RuntimeException(e);
+        } catch (InvalidFormatException | DeserializationException | IOException e) {
+            LOG.error("Failed to get model by id with error message: {}", e.getMessage());
+            return Optional.empty();
         }
     }
 
     private void renderSubmodel(Submodel m) {
-        for (SubmodelElement submodelElement : m.getSubmodelElements()) {
-            if (submodelElement instanceof Property property) {
-                var value = this.renderer.render(property.getValue());
-                property.setValue(value);
+        if (m != null) {
+            for (SubmodelElement submodelElement : m.getSubmodelElements()) {
+                if (submodelElement instanceof Property property) {
+                    var value = this.renderer.render(property.getValue());
+                    property.setValue(value);
+                }
             }
         }
     }
@@ -160,12 +168,9 @@ public class TemplateDatasource implements Datasource, InitializingBean {
                 return environment.getSubmodels().stream().filter(submodel -> submodel.getId().equals(id)).findFirst();
 
             }
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        } catch (InvalidFormatException ex) {
-            throw new RuntimeException(ex);
-        } catch (DeserializationException ex) {
-            throw new RuntimeException(ex);
+        } catch (IOException | InvalidFormatException | DeserializationException e) {
+            LOG.error("Failed to get model by id with error message: {}", e.getMessage());
+            return Optional.empty();
         }
 
         return Optional.empty();
