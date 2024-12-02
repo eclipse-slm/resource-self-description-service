@@ -13,6 +13,7 @@
     <modules>
         <module>self_description_service.service</module>
         <module>self_description_service.templating</module>
+        <module>self_description_service.factories</module>
         <module>common</module>
     </modules>
 

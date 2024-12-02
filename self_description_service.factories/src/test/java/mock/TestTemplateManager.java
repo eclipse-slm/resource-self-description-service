@@ -1,6 +1,6 @@
 package mock;
 
-import org.eclipse.slm.self_description_service.ITemplateManager;
+import org.eclipse.slm.self_description_service.factories.template.ITemplateManager;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 

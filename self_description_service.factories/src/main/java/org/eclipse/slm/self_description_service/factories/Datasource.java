@@ -1,4 +1,4 @@
-package org.eclipse.slm.self_description_service.aas;
+package org.eclipse.slm.self_description_service.factories;
 
 import org.eclipse.digitaltwin.aas4j.v3.model.Submodel;
 

@@ -1,7 +1,5 @@
-package org.eclipse.slm.self_description_service.aas;
-
 import mock.TestTemplateManager;
-import org.eclipse.slm.self_description_service.aas.factories.TemplateDatasource;
+import org.eclipse.slm.self_description_service.factories.TemplateDatasource;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -13,7 +11,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 
-@SpringBootTest
+@SpringBootTest(classes = TemplateDatasource.class)
 @TestPropertySource(locations="classpath:test.properties")
 public class TemplateDatasourceTests {
 
