@@ -100,6 +100,7 @@
         <dependency>
             <groupId>org.eclipse.digitaltwin.aas4j</groupId>
             <artifactId>aas4j-dataformat-aasx</artifactId>
+            <version>${aas4j.dataformat.aasx.version}</version>
         </dependency>
 
     </dependencies>

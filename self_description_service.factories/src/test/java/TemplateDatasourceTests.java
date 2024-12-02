@@ -5,8 +5,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.TestPropertySource;
 
-import java.io.IOException;
-
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
@@ -20,7 +18,7 @@ public class TemplateDatasourceTests {
 
 
     @Test
-    public void getSubmodels_Success() throws IOException {
+    public void getSubmodels_Success() {
         var templateManager = new TestTemplateManager();
 
         datasource.setTemplateManager(templateManager);

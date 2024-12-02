@@ -30,7 +30,7 @@ public class TemplateDatasource implements Datasource, InitializingBean {
     private ITemplateManager templateManager;
     private TemplateRenderer renderer;
 
-    private HashMap<String, String> idToFileMap = new HashMap<>();
+    private final HashMap<String, String> idToFileMap = new HashMap<>();
 
     public TemplateDatasource(ITemplateManager templateManager) {
         this.templateManager = templateManager;
@@ -60,11 +60,11 @@ public class TemplateDatasource implements Datasource, InitializingBean {
 
 
     public List<Submodel> getModels() {
-        ArrayList<Submodel> submodels = new ArrayList<Submodel>();
+        ArrayList<Submodel> submodels = new ArrayList<>();
 
-        Resource[] templates = null;
-        AASXDeserializer aasxDeserializer = null;
-        Environment environment = null;
+        Resource[] templates;
+        AASXDeserializer aasxDeserializer;
+        Environment environment;
         try {
             templates = this.templateManager.getTemplates();
             for (Resource template : templates) {
@@ -87,10 +87,10 @@ public class TemplateDatasource implements Datasource, InitializingBean {
 
     @Override
     public List<String> getModelIds() {
-        ArrayList<String> submodels = new ArrayList<String>();
+        ArrayList<String> submodels = new ArrayList<>();
 
-        Resource[] templates = null;
-        AASXDeserializer aasxDeserializer = null;
+        Resource[] templates;
+        AASXDeserializer aasxDeserializer;
         try {
             templates = this.templateManager.getTemplates();
             for (Resource template : templates) {
@@ -155,8 +155,8 @@ public class TemplateDatasource implements Datasource, InitializingBean {
 
     private Optional<Submodel> searchModelInTemplates(String id) {
 
-        Resource[] templates = null;
-        AASXDeserializer aasxDeserializer = null;
+        Resource[] templates;
+        AASXDeserializer aasxDeserializer;
         try {
             templates = this.templateManager.getTemplates();
             for (Resource template : templates) {

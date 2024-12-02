@@ -33,8 +33,8 @@ public class SubmodelRepository implements org.eclipse.digitaltwin.basyx.submode
     private final static Logger LOG = LoggerFactory.getLogger(SubmodelRepository.class);
 
 
-    private HashMap<String, Datasource> submodelToFactoryMap = new HashMap<>();
-    private HashMap<String, Datasource> factories = new HashMap<>();
+    private final HashMap<String, Datasource> submodelToFactoryMap = new HashMap<>();
+    private final HashMap<String, Datasource> factories = new HashMap<>();
 
 
     @Autowired

@@ -19,8 +19,8 @@ import java.util.TimeZone;
 public class TemplateRenderer {
 
 
-    private Configuration cfg;
-    private Map<String, Object> globalRenderContext = new HashMap<>();
+    private final Configuration cfg;
+    private final Map<String, Object> globalRenderContext = new HashMap<>();
 
 
     public TemplateRenderer() {
@@ -68,10 +68,7 @@ public class TemplateRenderer {
     }
 
     public <T extends Map<String, Object>> T render(T map, Map<String, Object> renderContext) {
-        map.replaceAll((k, v) -> {
-            var renderedValue = this.render(v.toString(), renderContext);
-            return renderedValue;
-        });
+        map.replaceAll((k, v) -> this.render(v.toString(), renderContext));
 
         return map;
     }

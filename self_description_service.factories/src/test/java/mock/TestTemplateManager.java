@@ -23,7 +23,7 @@ public class TestTemplateManager implements ITemplateManager {
     }
 
     @Override
-    public Optional<Resource> getTemplate(String name) throws IOException {
+    public Optional<Resource> getTemplate(String name) {
         return Optional.empty();
     }
 }

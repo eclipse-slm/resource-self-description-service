@@ -49,11 +49,13 @@
         <assertj.version>3.26.3</assertj.version>
 
         <aas.aas4j.version>1.0.2</aas.aas4j.version>
+        <aas4j.dataformat.aasx.version>1.0.2</aas4j.dataformat.aasx.version>
         <freemarker.version>2.3.33</freemarker.version>
         <snakeyaml.version>2.3</snakeyaml.version>
         <jayway.jsonpath.version>2.9.0</jayway.jsonpath.version>
         <fasterxml.jackson.core.version>2.18.1</fasterxml.jackson.core.version>
         <basyx.version>2.0.0-milestone-04</basyx.version>
+        <basyx.sdk.version>1.5.1</basyx.sdk.version>
     </properties>
 
     <build>
