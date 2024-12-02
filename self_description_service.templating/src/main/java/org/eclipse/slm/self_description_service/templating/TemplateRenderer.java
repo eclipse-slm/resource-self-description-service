@@ -4,8 +4,6 @@ import freemarker.template.Configuration;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
 import freemarker.template.TemplateExceptionHandler;
-import org.eclipse.slm.self_description_service.templating.method.CapitalizeMethod;
-import org.eclipse.slm.self_description_service.templating.method.IndexOfMethod;
 import org.eclipse.slm.self_description_service.templating.method.JsonFileValueMethod;
 import org.eclipse.slm.self_description_service.templating.method.YamlFileValueMethod;
 import org.springframework.stereotype.Component;
@@ -52,8 +50,6 @@ public class TemplateRenderer {
             var combinedRenderContext = new HashMap<>(globalRenderContext);
             combinedRenderContext.putAll(renderContext);
 
-            combinedRenderContext.put("capitalize", new CapitalizeMethod());
-            combinedRenderContext.put("indexOf", new IndexOfMethod());
             combinedRenderContext.put("JsonFileValue", new JsonFileValueMethod());
             combinedRenderContext.put("YamlFileValue", new YamlFileValueMethod());
 
