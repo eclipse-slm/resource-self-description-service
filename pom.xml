@@ -13,7 +13,7 @@
     <modules>
         <module>self_description_service.service</module>
         <module>self_description_service.templating</module>
-        <module>self_description_service.factories</module>
+        <module>self_description_service.datasource</module>
         <module>common</module>
     </modules>
 
@@ -56,6 +56,8 @@
         <fasterxml.jackson.core.version>2.18.1</fasterxml.jackson.core.version>
         <basyx.version>2.0.0-milestone-04</basyx.version>
         <basyx.sdk.version>1.5.1</basyx.sdk.version>
+        <docker-java.version>3.4.0</docker-java.version>
+        <docker-java.httpclient5.version>3.2.3</docker-java.httpclient5.version>
     </properties>
 
     <build>
@@ -189,17 +191,7 @@
     <dependencies>
 
         <!-- Testing !-->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-test</artifactId>
-            <scope>test</scope>
-            <exclusions>
-                <exclusion>
-                    <groupId>junit</groupId>
-                    <artifactId>junit</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
+
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-api</artifactId>
