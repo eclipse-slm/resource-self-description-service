@@ -137,7 +137,7 @@
         </dependency>
         <dependency>
             <groupId>org.eclipse.slm</groupId>
-            <artifactId>self_description_service.factories</artifactId>
+            <artifactId>datasource</artifactId>
             <version>0.0.1-SNAPSHOT</version>
             <scope>compile</scope>
         </dependency>

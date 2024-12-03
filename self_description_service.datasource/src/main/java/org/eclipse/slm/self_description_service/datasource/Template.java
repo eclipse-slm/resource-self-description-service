@@ -1,4 +1,4 @@
-package org.eclipse.slm.self_description_service.factories;
+package org.eclipse.slm.self_description_service.datasource;
 
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.eclipse.digitaltwin.aas4j.v3.dataformat.aasx.AASXDeserializer;
@@ -7,8 +7,8 @@ import org.eclipse.digitaltwin.aas4j.v3.model.Environment;
 import org.eclipse.digitaltwin.aas4j.v3.model.Property;
 import org.eclipse.digitaltwin.aas4j.v3.model.Submodel;
 import org.eclipse.digitaltwin.aas4j.v3.model.SubmodelElement;
-import org.eclipse.slm.self_description_service.factories.template.ITemplateManager;
-import org.eclipse.slm.self_description_service.factories.template.TemplateManager;
+import org.eclipse.slm.self_description_service.datasource.template.ITemplateManager;
+import org.eclipse.slm.self_description_service.datasource.template.TemplateManager;
 import org.eclipse.slm.self_description_service.templating.TemplateRenderer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,20 +24,20 @@ import java.util.List;
 import java.util.Optional;
 
 @Component
-public class TemplateDatasource implements Datasource, InitializingBean {
-    private final static Logger LOG = LoggerFactory.getLogger(TemplateDatasource.class);
+public class Template implements Datasource, InitializingBean {
+    private final static Logger LOG = LoggerFactory.getLogger(Template.class);
 
     private ITemplateManager templateManager;
     private TemplateRenderer renderer;
 
     private final HashMap<String, String> idToFileMap = new HashMap<>();
 
-    public TemplateDatasource(ITemplateManager templateManager) {
+    public Template(ITemplateManager templateManager) {
         this.templateManager = templateManager;
     }
 
     @Autowired
-    public TemplateDatasource(TemplateRenderer renderer) {
+    public Template(TemplateRenderer renderer) {
         this.renderer = renderer;
 
         templateManager = new TemplateManager();

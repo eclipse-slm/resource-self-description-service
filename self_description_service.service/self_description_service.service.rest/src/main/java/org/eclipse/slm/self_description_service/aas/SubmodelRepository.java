@@ -12,8 +12,8 @@ import org.eclipse.digitaltwin.basyx.core.pagination.PaginationSupport;
 import org.eclipse.digitaltwin.basyx.submodelservice.value.PropertyValue;
 import org.eclipse.digitaltwin.basyx.submodelservice.value.SubmodelElementValue;
 import org.eclipse.digitaltwin.basyx.submodelservice.value.SubmodelValueOnly;
-import org.eclipse.slm.self_description_service.factories.Datasource;
-import org.eclipse.slm.self_description_service.factories.TemplateDatasource;
+import org.eclipse.slm.self_description_service.datasource.Datasource;
+import org.eclipse.slm.self_description_service.datasource.Template;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,7 +38,7 @@ public class SubmodelRepository implements org.eclipse.digitaltwin.basyx.submode
 
 
     @Autowired
-    public SubmodelRepository(TemplateDatasource templateFactory) {
+    public SubmodelRepository(Template templateFactory) {
 
         var modelIds = templateFactory.getModelIds();
         for (var id : modelIds) {
