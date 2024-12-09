@@ -1292,16 +1292,17 @@ public class Docker implements Datasource {
         return Optional.of(collectionBuilder.build());
     }
 
-    private Optional<SubmodelElementList> createList(String name, Collection<Object> values) {
 
-        if (name == null || values == null) {
+    private <T> Optional<SubmodelElementList> createList(String name, List<T> values) {
+
+        if (name == null || values == null || values.isEmpty()) {
             return Optional.empty();
         }
 
         var listBuilder = new DefaultSubmodelElementList.Builder()
                 .displayName(new DefaultLangStringNameType.Builder().text(name).build());
 
-        for (Object value : values) {
+        for (var value : values) {
             if (value instanceof DockerObject dockerObject) {
                 createCollectionValue(name, dockerObject).ifPresent(listBuilder::value);
             } else if (value instanceof Collection<?> listValue) {
@@ -1323,14 +1324,14 @@ public class Docker implements Datasource {
         return Optional.of(listBuilder.build());
     }
 
-    private Optional<SubmodelElementList> createList(Collection<Object> values) {
+    private <T> Optional<SubmodelElementList> createList(Collection<T> values) {
         if (values == null || values.isEmpty()) {
             return Optional.empty();
         }
         var listBuilder = new DefaultSubmodelElementList.Builder();
 
 
-        for (Object value : values) {
+        for (var value : values) {
             var className = value.getClass().getName();
 
             if (value instanceof DockerObject dockerObject) {
@@ -1354,7 +1355,7 @@ public class Docker implements Datasource {
         return Optional.of(listBuilder.build());
     }
 
-    private Optional<SubmodelElementList> createMap(Map<String, Object> map) {
+    private <T> Optional<SubmodelElementList> createMap(Map<String, T> map) {
         if (map == null || map.isEmpty()) {
             return Optional.empty();
         }
@@ -1368,7 +1369,7 @@ public class Docker implements Datasource {
         return Optional.of(mapBuilder.build());
     }
 
-    private Optional<SubmodelElementCollection> createMapElement(String name, Object value) {
+    private <T> Optional<SubmodelElementCollection> createMapElement(String name, T value) {
         if (name == null || value == null) {
             return Optional.empty();
         }
@@ -1395,7 +1396,7 @@ public class Docker implements Datasource {
         return Optional.of(collectionBuilder.build());
     }
 
-    private Optional<Property> createProperty(Object value) {
+    private <T> Optional<Property> createProperty(T value) {
 
         if (value == null) {
             return Optional.empty();
@@ -1407,7 +1408,7 @@ public class Docker implements Datasource {
         return Optional.of(property.build());
     }
 
-    private Optional<Property> createProperty(String name, Object value) {
+    private <T> Optional<Property> createProperty(String name, T value) {
 
         if (value == null) {
             return Optional.empty();
@@ -1420,7 +1421,7 @@ public class Docker implements Datasource {
         return Optional.of(property.build());
     }
 
-    private void setValueForProperty(Object value, DefaultProperty.Builder property) {
+    private <T> void setValueForProperty(T value, DefaultProperty.Builder property) {
         if (value instanceof String v) {
             property.valueType(DataTypeDefXsd.STRING).value(v);
         } else if (value instanceof Integer v) {
