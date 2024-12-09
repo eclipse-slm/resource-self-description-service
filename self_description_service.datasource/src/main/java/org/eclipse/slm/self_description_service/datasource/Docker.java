@@ -8,26 +8,26 @@ import com.github.dockerjava.core.DockerClientConfig;
 import com.github.dockerjava.core.DockerClientImpl;
 import com.github.dockerjava.httpclient5.ApacheDockerHttpClient;
 import com.github.dockerjava.transport.DockerHttpClient;
-import org.eclipse.digitaltwin.aas4j.v3.model.DataTypeDefXsd;
-import org.eclipse.digitaltwin.aas4j.v3.model.Submodel;
+import org.apache.poi.hpsf.Decimal;
+import org.eclipse.digitaltwin.aas4j.v3.model.*;
 import org.eclipse.digitaltwin.aas4j.v3.model.impl.*;
+import org.springframework.boot.task.SimpleAsyncTaskSchedulerBuilder;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.time.Duration;
+import java.util.*;
 
 @Component
 public class Docker implements Datasource {
 
+    private final SimpleAsyncTaskSchedulerBuilder simpleAsyncTaskSchedulerBuilder;
     DockerClient dockerClient;
     private SimpleDateFormat dateTimeFormat = new SimpleDateFormat("MM/dd/yyyy KK:mm:ss a");
     private SimpleDateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy");
 
-    public Docker() {
+    public Docker(SimpleAsyncTaskSchedulerBuilder simpleAsyncTaskSchedulerBuilder) {
         DockerClientConfig config = DefaultDockerClientConfig.createDefaultConfigBuilder()
                 .withDockerHost("tcp://localhost:2375")
                 .withDockerTlsVerify(false)
@@ -39,6 +39,7 @@ public class Docker implements Datasource {
                 .build();
 
         dockerClient = DockerClientImpl.getInstance(config, httpClient);
+        this.simpleAsyncTaskSchedulerBuilder = simpleAsyncTaskSchedulerBuilder;
     }
 
     @Override
@@ -943,34 +944,301 @@ public class Docker implements Datasource {
                         addListOfStringProperties(containerBuilder, containerSpec.getArgs(), "Args", "Arg");
                         addListOfStringProperties(containerBuilder, containerSpec.getCommand(), "Commands", "Command");
 
+                        var containerSpecSecrets = containerSpec.getSecrets();
+                        if (containerSpecSecrets != null && !containerSpecSecrets.isEmpty()) {
+                            var containerSpecSecretListBuilder = new DefaultSubmodelElementList.Builder()
+                                    .displayName(new DefaultLangStringNameType.Builder().text("Secrets").build());
 
-                        containerSpec.getSecrets();
-                        containerSpec.getLabels();
-                        containerSpec.getDir();
-                        containerSpec.getConfigs();
-                        containerSpec.getDnsConfig();
-                        containerSpec.getDuration();
-                        containerSpec.getEnv();
-                        containerSpec.getGroups();
-                        containerSpec.getHealthCheck();
-                        containerSpec.getHosts();
-                        containerSpec.getImage();
-                        containerSpec.getHostname();
-                        containerSpec.getInit();
-                        containerSpec.getMounts();
-                        containerSpec.getOpenStdin();
-                        containerSpec.getPrivileges();
-                        containerSpec.getReadOnly();
-                        containerSpec.getStopGracePeriod();
-                        containerSpec.getStopSignal();
-                        containerSpec.getTty();
-                        containerSpec.getUser();
+                            for (ContainerSpecSecret containerSpecSecret : containerSpecSecrets) {
+                                var containerSpecSecretBuilder = new DefaultSubmodelElementCollection.Builder()
+                                        .displayName(new DefaultLangStringNameType.Builder().text("Secret").build());
+                                addProperty(containerSpecSecretBuilder, containerSpecSecret.getSecretId(), "Secret ID");
+                                addProperty(containerSpecSecretBuilder, containerSpecSecret.getSecretName(), "Secret");
+
+                                containerSpecSecretListBuilder.value(containerSpecSecretBuilder.build());
+                            }
+
+                            containerBuilder.value(containerSpecSecretListBuilder.build());
+                        }
+
+                        addLabels(containerBuilder, containerSpec.getLabels());
+                        addProperty(containerBuilder, containerSpec.getDir(), "Dir");
+
+                        var containerConfigs = containerSpec.getConfigs();
+                        if (containerConfigs != null && !containerConfigs.isEmpty()) {
+                            var containerConfigListBuilder = new DefaultSubmodelElementList.Builder()
+                                    .displayName(new DefaultLangStringNameType.Builder().text("Configs").build());
+
+                            for (ContainerSpecConfig containerConfig : containerConfigs) {
+                                var containerConfigBuilder = new DefaultSubmodelElementCollection.Builder()
+                                        .displayName(new DefaultLangStringNameType.Builder().text("Config").build());
+                                addProperty(containerConfigBuilder, containerConfig.getConfigID(), "Config ID");
+                                addProperty(containerConfigBuilder, containerConfig.getConfigName(), "Config Name");
+
+                                var configFile = containerConfig.getFile();
+                                if (configFile != null) {
+                                    var configFileBuilder = new DefaultSubmodelElementCollection.Builder();
+                                    addProperty(configFileBuilder, configFile.getGid(), "G ID");
+                                    addProperty(configFileBuilder, configFile.getName(), "Config File");
+                                    addProperty(configFileBuilder, configFile.getMode(), "Mode");
+                                    addProperty(configFileBuilder, configFile.getUid(), "UID");
+
+                                    containerConfigBuilder.value(configFileBuilder.build());
+                                }
+
+                                containerConfigListBuilder.value(containerConfigBuilder.build());
+                            }
+
+                            containerBuilder.value(containerConfigListBuilder.build());
+                        }
+
+                        var dnsConfig = containerSpec.getDnsConfig();
+                        if (dnsConfig != null) {
+                            var dnsConfigBuilder = new DefaultSubmodelElementCollection.Builder()
+                                    .displayName(new DefaultLangStringNameType.Builder().text("DNS Config").build());
+
+                            addListOfStringProperties(dnsConfigBuilder, dnsConfig.getOptions(), "Options", "Option");
+                            addListOfStringProperties(dnsConfigBuilder, dnsConfig.getNameservers(), "Names Servers", "Name Server");
+                            addListOfStringProperties(dnsConfigBuilder, dnsConfig.getSearch(), "Searches", "Search");
+
+                            containerBuilder.value(dnsConfigBuilder.build());
+                        }
+
+                        addProperty(containerBuilder, containerSpec.getDuration(), "Duration");
+                        addListOfStringProperties(containerBuilder, containerSpec.getEnv(), "Environments", "Environment");
+                        addProperty(containerBuilder, containerSpec.getGroups(), "Groups");
+
+                        var healthCheck = containerSpec.getHealthCheck();
+                        if (healthCheck != null) {
+                            var healthCheckBuilder = new DefaultSubmodelElementCollection.Builder()
+                                    .displayName(new DefaultLangStringNameType.Builder().text("Health Check").build());
+
+                            addProperty(healthCheckBuilder, healthCheck.getInterval(), "Interval");
+                            addProperty(healthCheckBuilder, healthCheck.getRetries(), "Retries");
+                            addProperty(healthCheckBuilder, healthCheck.getStartInterval(), "Start Interval");
+                            addProperty(healthCheckBuilder, healthCheck.getTimeout(), "Timeout");
+                            addProperty(healthCheckBuilder, healthCheck.getStartPeriod(), "Start Period");
+                            addListOfStringProperties(healthCheckBuilder, healthCheck.getTest(), "Tests", "Test");
+
+                            containerBuilder.value(healthCheckBuilder.build());
+                        }
+
+                        addListOfStringProperties(containerBuilder, containerSpec.getHosts(), "Hosts", "Host");
+                        addProperty(containerBuilder, containerSpec.getImage(), "Image");
+                        addProperty(containerBuilder, containerSpec.getHostname(), "Hostname");
+
+                        addProperty(containerBuilder, containerSpec.getInit(), "Init");
+
+                        var mounts = containerSpec.getMounts();
+                        if (mounts != null && !mounts.isEmpty()) {
+                            var mountListBuilder = new DefaultSubmodelElementList.Builder()
+                                    .displayName(new DefaultLangStringNameType.Builder().text("Mounts").build());
+
+                            for (Mount mount : mounts) {
+                                var mountBuilder = new DefaultSubmodelElementCollection.Builder()
+                                        .displayName(new DefaultLangStringNameType.Builder().text("Mount").build());
+
+                                addProperty(mountBuilder, mount.getReadOnly(), "ReadOnly");
+                                addProperty(mountBuilder, mount.getTarget(), "Target");
+                                addProperty(mountBuilder, mount.getSource(), "Source");
+
+                                var mountType = mount.getType();
+                                if (mountType != null) {
+                                    addProperty(mountBuilder, mountType.name(), "Mount Type");
+                                }
+
+                                var bindOptions = mount.getBindOptions();
+                                if (bindOptions != null) {
+                                    var bindOptionBuilder = new DefaultSubmodelElementCollection.Builder()
+                                            .displayName(new DefaultLangStringNameType.Builder().text("Bind Options").build());
+
+                                    var propagation = bindOptions.getPropagation();
+                                    if (propagation != null) {
+                                        addProperty(bindOptionBuilder, propagation.name(), "Propagation");
+                                    }
+
+                                    mountBuilder.value(bindOptionBuilder.build());
+                                }
+
+                                var tmpfOptions = mount.getTmpfsOptions();
+                                if (tmpfOptions != null) {
+                                    var tmpfOptionBuilder = new DefaultSubmodelElementCollection.Builder()
+                                            .displayName(new DefaultLangStringNameType.Builder().text("Tmpf Options").build());
+                                    addProperty(tmpfOptionBuilder, tmpfOptions.getMode(), "Mode");
+                                    addProperty(tmpfOptionBuilder, tmpfOptions.getSizeBytes(), "Size Bytes");
+
+                                    mountBuilder.value(tmpfOptionBuilder.build());
+                                }
+
+                                var volumeOptions = mount.getVolumeOptions();
+                                if (volumeOptions != null) {
+                                    var volumeOptionBuilder = new DefaultSubmodelElementCollection.Builder()
+                                            .displayName(new DefaultLangStringNameType.Builder().text("Volume Options").build());
+                                    addLabels(volumeOptionBuilder, volumeOptions.getLabels());
+                                    addProperty(volumeOptionBuilder, volumeOptions.getNoCopy(), "NoCopy");
+                                    var driverConfig = volumeOptions.getDriverConfig();
+                                    if (driverConfig != null) {
+                                        var driverConfigBuilder = new DefaultSubmodelElementCollection.Builder()
+                                                .displayName(new DefaultLangStringNameType.Builder().text("Driver Config").build());
+                                        addProperty(driverConfigBuilder, driverConfig.getName(), "Name");
+                                        addOptions(driverConfigBuilder, driverConfig.getOptions());
+
+                                        volumeOptionBuilder.value(driverConfigBuilder.build());
+                                    }
+                                    mountBuilder.value(volumeOptionBuilder.build());
+                                }
+
+                                mountListBuilder.value(mountBuilder.build());
+                            }
+
+                            containerBuilder.value(mountListBuilder.build());
+                        }
+
+                        addProperty(containerBuilder, containerSpec.getOpenStdin(), "OpenStdin");
+
+                        var privileges = containerSpec.getPrivileges();
+                        if (privileges != null) {
+                            var privilegeBuilder = new DefaultSubmodelElementCollection.Builder()
+                                    .displayName(new DefaultLangStringNameType.Builder().text("Privileges").build());
+
+                            var credentialSpec = privileges.getCredentialSpec();
+                            if (credentialSpec != null) {
+                                var credentialSpecBuilder = new DefaultSubmodelElementCollection.Builder()
+                                        .displayName(new DefaultLangStringNameType.Builder().text("Credential Spec").build());
+
+                                addProperty(credentialSpecBuilder, credentialSpec.getFile(), "File");
+                                addProperty(credentialSpecBuilder, credentialSpec.getRegistry(), "Registry");
+
+                                privilegeBuilder.value(credentialSpecBuilder.build());
+                            }
+
+                            var seLinuxContext = privileges.getSeLinuxContext();
+                            if (seLinuxContext != null) {
+                                var seLinuxContextBuilder = new DefaultSubmodelElementCollection.Builder()
+                                        .displayName(new DefaultLangStringNameType.Builder().text("SeLinux Context").build());
+
+                                addProperty(seLinuxContextBuilder, seLinuxContext.getRole(), "Role");
+                                addProperty(seLinuxContextBuilder, seLinuxContext.getDisable(), "Disable");
+                                addProperty(seLinuxContextBuilder, seLinuxContext.getType(), "Type");
+                                addProperty(seLinuxContextBuilder, seLinuxContext.getUser(), "User");
+                                addProperty(seLinuxContextBuilder, seLinuxContext.getLevel(), "Level");
+
+                                privilegeBuilder.value(seLinuxContextBuilder.build());
+                            }
+
+                            containerBuilder.value(privilegeBuilder.build());
+                        }
+
+                        addProperty(containerBuilder, containerSpec.getReadOnly(), "ReadOnly");
+                        addProperty(containerBuilder, containerSpec.getStopGracePeriod(), "Stop Grace Period");
+                        addProperty(containerBuilder, containerSpec.getStopSignal(), "Stop Signal");
+                        addProperty(containerBuilder, containerSpec.getTty(), "Tty");
+                        addProperty(containerBuilder, containerSpec.getUser(), "User");
 
 
                         taskBuilder.value(containerBuilder.build());
                     }
 
+                    var resources = taskTemplate.getResources();
+                    if (resources != null) {
+                        var resourcesBuilder = new DefaultSubmodelElementCollection.Builder()
+                                .displayName(new DefaultLangStringNameType.Builder().text("Resources").build());
+
+                        var reservations = resources.getReservations();
+                        if (reservations != null) {
+                            var reservationBuilder = new DefaultSubmodelElementCollection.Builder()
+                                    .displayName(new DefaultLangStringNameType.Builder().text("Reservation").build());
+
+                            addProperty(reservationBuilder, reservations.getNanoCPUs(), "Nano CPUs");
+                            addProperty(reservationBuilder, reservations.getMemoryBytes(), "Memory Bytes");
+
+                            resourcesBuilder.value(reservationBuilder.build());
+                        }
+
+                        var limits = resources.getLimits();
+                        if (limits != null) {
+                            var limitBuilder = new DefaultSubmodelElementCollection.Builder()
+                                    .displayName(new DefaultLangStringNameType.Builder().text("Limits").build());
+                            addProperty(limitBuilder, limits.getNanoCPUs(), "Nano CPUs");
+                            addProperty(limitBuilder, limits.getMemoryBytes(), "Memory Bytes");
+
+                            resourcesBuilder.value(limitBuilder.build());
+                        }
+
+                        taskBuilder.value(resourcesBuilder.build());
+                    }
+
+                    var taskNetworks = taskTemplate.getNetworks();
+                    if (taskNetworks != null && !taskNetworks.isEmpty()) {
+                        var taskNetworksListBuilder = new DefaultSubmodelElementList.Builder()
+                                .displayName(new DefaultLangStringNameType.Builder().text("Networks").build());
+
+                        for (NetworkAttachmentConfig taskNetwork : taskNetworks) {
+                            var taskNetworkBuilder = new DefaultSubmodelElementCollection.Builder()
+                                    .displayName(new DefaultLangStringNameType.Builder().text("Network").build());
+
+                            addListOfStringProperties(taskNetworkBuilder, taskNetwork.getAliases(), "Aliases", "Alias");
+                            addProperty(taskNetworkBuilder, taskNetwork.getTarget(), "Target");
+
+                            taskNetworksListBuilder.value(taskNetworkBuilder.build());
+                        }
+
+                        taskBuilder.value(taskNetworksListBuilder.build());
+                    }
+
+                    var placement = taskTemplate.getPlacement();
+                    if (placement != null) {
+                        var placementBuilder = new DefaultSubmodelElementCollection.Builder()
+                                .displayName(new DefaultLangStringNameType.Builder().text("Placement").build());
+
+                        addProperty(placementBuilder, placement.getMaxReplicas(), "Max Replicas");
+                        addListOfStringProperties(placementBuilder, placement.getConstraints(), "Constraints", "Constraint");
+
+                        var platforms = placement.getPlatforms();
+                        if (platforms != null && !platforms.isEmpty()) {
+                            var platformsListBuilder = new DefaultSubmodelElementList.Builder()
+                                    .displayName(new DefaultLangStringNameType.Builder().text("Platforms").build());
+
+                            for (SwarmNodePlatform platform : platforms) {
+                                var platformBuilder = new DefaultSubmodelElementCollection.Builder()
+                                        .displayName(new DefaultLangStringNameType.Builder().text("Platform").build());
+                                addProperty(platformBuilder, platform.getOs(), "Os");
+                                addProperty(platformBuilder, platform.getArchitecture(), "Architecture");
+
+                                platformsListBuilder.value(platformBuilder.build());
+                            }
+
+                            placementBuilder.value(platformsListBuilder.build());
+                        }
+
+                        taskBuilder.value(placementBuilder.build());
+                    }
+
                     specBuilder.value(taskBuilder.build());
+                }
+
+                var updateConfig = spec.getUpdateConfig();
+                if (updateConfig != null) {
+                    var updateConfigBuilder = new DefaultSubmodelElementCollection.Builder()
+                            .displayName(new DefaultLangStringNameType.Builder().text("Update Config").build());
+
+                    addProperty(updateConfigBuilder, updateConfig.getMaxFailureRatio(), "Max Failure Ratio");
+                    addProperty(updateConfigBuilder, updateConfig.getMonitor(), "Monitor");
+                    addProperty(updateConfigBuilder, updateConfig.getParallelism(), "Parallelism");
+                    addProperty(updateConfigBuilder, updateConfig.getDelay(), "Delay");
+
+                    var order = updateConfig.getOrder();
+                    if (order != null) {
+                        addProperty(updateConfigBuilder, order.name(), "Order");
+                    }
+
+                    var failureAction = updateConfig.getFailureAction();
+                    if (failureAction != null) {
+                        addProperty(updateConfigBuilder, failureAction.name(), "Failure Action");
+                    }
+
+
+                    specBuilder.value(updateConfigBuilder.build());
                 }
 
                 secBuilder.value(specBuilder.build());
