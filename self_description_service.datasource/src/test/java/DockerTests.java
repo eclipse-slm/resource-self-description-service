@@ -4,10 +4,10 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 
 public class DockerTests {
-    private final Docker dockerDatasource;
+    private final Docker dockerDatasource = new Docker();
 
     public DockerTests() {
-        this.dockerDatasource = new Docker();
+//        this.dockerDatasource = new Docker();
     }
 
     @Test
@@ -16,4 +16,6 @@ public class DockerTests {
 
         assertFalse(models.isEmpty());
     }
+
+
 }
