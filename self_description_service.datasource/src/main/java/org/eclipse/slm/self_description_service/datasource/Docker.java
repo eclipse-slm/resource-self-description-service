@@ -1250,6 +1250,203 @@ public class Docker implements Datasource {
         return Optional.of(secretsListBuilder);
     }
 
+
+    private Optional<SubmodelElementCollection> createCollectionValue(String name, DockerObject dockerObject) {
+
+        if (name == null || dockerObject == null) {
+            return Optional.empty();
+        }
+
+        var collectionBuilder = new DefaultSubmodelElementCollection.Builder()
+                .displayName(new DefaultLangStringNameType.Builder().text(name).build());
+
+        var values = dockerObject.getRawValues();
+        values.forEach((key, value) -> {
+
+            if (value == null) {
+                return;
+            }
+
+            if (value instanceof DockerObject v) {
+                createCollectionValue(key, v).ifPresent(collectionBuilder::value);
+            } else if (value instanceof Collection<?> v) {
+                var listValues = v.stream().map(o -> (Object) o).toList();
+                if (!listValues.isEmpty()) {
+                    createList(key, listValues).ifPresent(collectionBuilder::value);
+                }
+            } else if (value instanceof Map<?, ?> map) {
+                var m = new HashMap<String, Object>();
+                map.forEach((k, v) -> {
+                    if (k instanceof String keyName) {
+                        m.put(keyName, v);
+                    }
+                });
+                createMap(m).ifPresent(collectionBuilder::value);
+            } else {
+                createProperty(key, value).ifPresent(collectionBuilder::value);
+            }
+
+        });
+
+
+        return Optional.of(collectionBuilder.build());
+    }
+
+    private Optional<SubmodelElementList> createList(String name, Collection<Object> values) {
+
+        if (name == null || values == null) {
+            return Optional.empty();
+        }
+
+        var listBuilder = new DefaultSubmodelElementList.Builder()
+                .displayName(new DefaultLangStringNameType.Builder().text(name).build());
+
+        for (Object value : values) {
+            if (value instanceof DockerObject dockerObject) {
+                createCollectionValue(name, dockerObject).ifPresent(listBuilder::value);
+            } else if (value instanceof Collection<?> listValue) {
+                var listValues = listValue.stream().map(o -> (Object) o).toList();
+                createList(listValues).ifPresent(listBuilder::value);
+            } else if (value instanceof Map<?, ?> map) {
+                var m = new HashMap<String, Object>();
+                map.forEach((k, v) -> {
+                    if (k instanceof String keyName) {
+                        m.put(keyName, v);
+                    }
+                });
+                createMap(m).ifPresent(listBuilder::value);
+            } else {
+                createProperty(name, value).ifPresent(listBuilder::value);
+            }
+        }
+
+        return Optional.of(listBuilder.build());
+    }
+
+    private Optional<SubmodelElementList> createList(Collection<Object> values) {
+        if (values == null || values.isEmpty()) {
+            return Optional.empty();
+        }
+        var listBuilder = new DefaultSubmodelElementList.Builder();
+
+
+        for (Object value : values) {
+            var className = value.getClass().getName();
+
+            if (value instanceof DockerObject dockerObject) {
+                createCollectionValue(className, dockerObject).ifPresent(listBuilder::value);
+            } else if (value instanceof Collection<?> listValue) {
+                var listValues = listValue.stream().map(o -> (Object) o).toList();
+                createList(listValues).ifPresent(listBuilder::value);
+            } else if (value instanceof Map<?, ?> map) {
+                var m = new HashMap<String, Object>();
+                map.forEach((k, v) -> {
+                    if (k instanceof String keyName) {
+                        m.put(keyName, v);
+                    }
+                });
+                createMap(m).ifPresent(listBuilder::value);
+            } else {
+                createProperty(value).ifPresent(listBuilder::value);
+            }
+        }
+
+        return Optional.of(listBuilder.build());
+    }
+
+    private Optional<SubmodelElementList> createMap(Map<String, Object> map) {
+        if (map == null || map.isEmpty()) {
+            return Optional.empty();
+        }
+
+        var mapBuilder = new DefaultSubmodelElementList.Builder();
+
+        map.forEach((mapKey, mapValue) -> {
+            createMapElement(mapKey, mapValue).ifPresent(mapBuilder::value);
+        });
+
+        return Optional.of(mapBuilder.build());
+    }
+
+    private Optional<SubmodelElementCollection> createMapElement(String name, Object value) {
+        if (name == null || value == null) {
+            return Optional.empty();
+        }
+        var collectionBuilder = new DefaultSubmodelElementCollection.Builder();
+        createProperty(name).ifPresent(collectionBuilder::value);
+
+        if (value instanceof DockerObject dockerObject) {
+            createCollectionValue(name, dockerObject).ifPresent(collectionBuilder::value);
+        } else if (value instanceof Collection<?> listValue) {
+            var listValues = listValue.stream().map(o -> (Object) o).toList();
+            createList(listValues).ifPresent(collectionBuilder::value);
+        } else if (value instanceof Map<?, ?> map) {
+            var m = new HashMap<String, Object>();
+            map.forEach((k, v) -> {
+                if (k instanceof String keyName) {
+                    m.put(keyName, v);
+                }
+            });
+            createMap(m).ifPresent(collectionBuilder::value);
+        } else {
+            createProperty(value).ifPresent(collectionBuilder::value);
+        }
+
+        return Optional.of(collectionBuilder.build());
+    }
+
+    private Optional<Property> createProperty(Object value) {
+
+        if (value == null) {
+            return Optional.empty();
+        }
+
+        var property = new DefaultProperty.Builder();
+        setValueForProperty(value, property);
+
+        return Optional.of(property.build());
+    }
+
+    private Optional<Property> createProperty(String name, Object value) {
+
+        if (value == null) {
+            return Optional.empty();
+        }
+
+        var property = new DefaultProperty.Builder()
+                .displayName(new DefaultLangStringNameType.Builder().text(name).build());
+        setValueForProperty(value, property);
+
+        return Optional.of(property.build());
+    }
+
+    private void setValueForProperty(Object value, DefaultProperty.Builder property) {
+        if (value instanceof String v) {
+            property.valueType(DataTypeDefXsd.STRING).value(v);
+        } else if (value instanceof Integer v) {
+            property.valueType(DataTypeDefXsd.INTEGER).value(v.toString());
+        } else if (value instanceof Long v) {
+            property.valueType(DataTypeDefXsd.LONG).value(v.toString());
+        } else if (value instanceof Double v) {
+            property.valueType(DataTypeDefXsd.DOUBLE).value(v.toString());
+        } else if (value instanceof Float v) {
+            property.valueType(DataTypeDefXsd.FLOAT).value(v.toString());
+        } else if (value instanceof Decimal v) {
+            property.valueType(DataTypeDefXsd.DECIMAL).value(v.toString());
+        } else if (value instanceof Boolean v) {
+            property.valueType(DataTypeDefXsd.BOOLEAN).value(v.toString());
+        } else if (value instanceof Date v) {
+            property.valueType(DataTypeDefXsd.DATE).value(this.dateFormat.format(v));
+        } else if (value instanceof Byte v) {
+            property.valueType(DataTypeDefXsd.BYTE).value(v.toString());
+        } else if (value instanceof Duration v) {
+            property.valueType(DataTypeDefXsd.DURATION).value(v.toString());
+        } else if (value instanceof Enum<?> v) {
+            property.valueType(DataTypeDefXsd.STRING).value(v.name());
+        }
+    }
+
+
     private void addProperty(DefaultSubmodelElementCollection.Builder collectionBuilder, String value, String name) {
         if (value != null) {
             collectionBuilder.value(new DefaultProperty.Builder()
