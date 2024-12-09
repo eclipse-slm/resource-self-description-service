@@ -11,7 +11,6 @@ import com.github.dockerjava.transport.DockerHttpClient;
 import org.apache.poi.hpsf.Decimal;
 import org.eclipse.digitaltwin.aas4j.v3.model.*;
 import org.eclipse.digitaltwin.aas4j.v3.model.impl.*;
-import org.springframework.boot.task.SimpleAsyncTaskSchedulerBuilder;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
@@ -22,12 +21,11 @@ import java.util.*;
 @Component
 public class Docker implements Datasource {
 
-    private final SimpleAsyncTaskSchedulerBuilder simpleAsyncTaskSchedulerBuilder;
     DockerClient dockerClient;
     private SimpleDateFormat dateTimeFormat = new SimpleDateFormat("MM/dd/yyyy KK:mm:ss a");
     private SimpleDateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy");
 
-    public Docker(SimpleAsyncTaskSchedulerBuilder simpleAsyncTaskSchedulerBuilder) {
+    public Docker() {
         DockerClientConfig config = DefaultDockerClientConfig.createDefaultConfigBuilder()
                 .withDockerHost("tcp://localhost:2375")
                 .withDockerTlsVerify(false)
@@ -39,12 +37,15 @@ public class Docker implements Datasource {
                 .build();
 
         dockerClient = DockerClientImpl.getInstance(config, httpClient);
-        this.simpleAsyncTaskSchedulerBuilder = simpleAsyncTaskSchedulerBuilder;
     }
 
     @Override
     public List<Submodel> getModels() {
 
+        return this.getModelsByGenericCode();
+    }
+
+    private List<Submodel> getModelsHandCoded() {
         var submodelBuilder = new DefaultSubmodel.Builder();
 
         var builders = List.of(
@@ -64,7 +65,41 @@ public class Docker implements Datasource {
             builder.ifPresent(b -> submodelBuilder.submodelElements(b.build()));
         });
 
-        return List.of();
+        return List.of(submodelBuilder.build());
+    }
+
+
+    public List<Submodel> getModelsByGenericCode() {
+        var submodelBuilder = new DefaultSubmodel.Builder();
+
+        var containers = this.dockerClient.listContainersCmd().exec();
+        createList("Containers", containers).ifPresent(submodelBuilder::submodelElements);
+
+        var images = this.dockerClient.listImagesCmd().exec();
+        createList("Images", images).ifPresent(submodelBuilder::submodelElements);
+
+        var networks = this.dockerClient.listNetworksCmd().exec();
+        createList("Networks", networks).ifPresent(submodelBuilder::submodelElements);
+
+        var volumes = this.dockerClient.listVolumesCmd().exec().getVolumes();
+        createList("Volumes", volumes).ifPresent(submodelBuilder::submodelElements);
+
+        var services = this.dockerClient.listServicesCmd().exec();
+        createList("Services", services).ifPresent(submodelBuilder::submodelElements);
+
+        var tasks = this.dockerClient.listTasksCmd().exec();
+        createList("Tasks", tasks).ifPresent(submodelBuilder::submodelElements);
+
+        var swarmNodes = this.dockerClient.listSwarmNodesCmd().exec();
+        createList("Swarm Nodes", swarmNodes).ifPresent(submodelBuilder::submodelElements);
+
+        var configs = this.dockerClient.listConfigsCmd().exec();
+        createList("Configs", configs).ifPresent(submodelBuilder::submodelElements);
+
+        var secrets = this.dockerClient.listSecretsCmd().exec();
+        createList("Secrets", secrets).ifPresent(submodelBuilder::submodelElements);
+
+        return List.of(submodelBuilder.build());
     }
 
     @Override
@@ -1438,6 +1473,8 @@ public class Docker implements Datasource {
             property.valueType(DataTypeDefXsd.BOOLEAN).value(v.toString());
         } else if (value instanceof Date v) {
             property.valueType(DataTypeDefXsd.DATE).value(this.dateFormat.format(v));
+        } else if (value instanceof Date v) {
+            property.valueType(DataTypeDefXsd.DATE).value(this.dateTimeFormat.format(v));
         } else if (value instanceof Byte v) {
             property.valueType(DataTypeDefXsd.BYTE).value(v.toString());
         } else if (value instanceof Duration v) {
