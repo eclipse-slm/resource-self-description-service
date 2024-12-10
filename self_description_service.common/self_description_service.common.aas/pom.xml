@@ -4,18 +4,18 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>common.aas</artifactId>
+    <artifactId>self_description_service.common.aas</artifactId>
     <version>${revision}</version>
     <packaging>pom</packaging>
 
     <parent>
         <groupId>org.eclipse.slm</groupId>
-        <artifactId>common</artifactId>
+        <artifactId>self_description_service.common</artifactId>
         <version>${revision}</version>
     </parent>
 
     <modules>
-        <module>common.aas.clients</module>
+        <module>self_description_service.common.aas.clients</module>
     </modules>
 
 </project>
