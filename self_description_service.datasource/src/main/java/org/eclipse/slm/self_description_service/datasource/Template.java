@@ -60,6 +60,9 @@ public class Template implements Datasource, InitializingBean {
 
 
     public List<Submodel> getModels() {
+
+        // TODO: Get ResourceID and use it in the ID to be global unique
+
         ArrayList<Submodel> submodels = new ArrayList<>();
 
         Resource[] templates;
@@ -100,6 +103,9 @@ public class Template implements Datasource, InitializingBean {
 
                 for (Submodel submodel : environment.getSubmodels()) {
                     submodels.add(submodel.getId());
+
+                    // TODO: combine resource id + template submodel short_id -> ID
+
                     if (!idToFileMap.containsKey(submodel.getId())) {
                         idToFileMap.put(submodel.getId(), template.getFilename());
                     }
@@ -129,6 +135,9 @@ public class Template implements Datasource, InitializingBean {
 
             var aasxDeserializer = new AASXDeserializer(resource.get().getInputStream());
             var environment = aasxDeserializer.read();
+
+            // TODO: combine resource id + template submodel short_id -> ID == id
+
             var submodel = environment.getSubmodels().stream().filter(model -> model.getId().equals(id)).findFirst();
             if (submodel.isPresent()) {
                 renderSubmodel(submodel.get());

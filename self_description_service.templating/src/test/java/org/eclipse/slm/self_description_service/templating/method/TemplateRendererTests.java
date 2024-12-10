@@ -1,6 +1,7 @@
-package org.eclipse.slm.self_description_service.templating;
+package org.eclipse.slm.self_description_service.templating.method;
 
-import org.eclipse.slm.self_description_service.templating.utils.PathHelper;
+import org.eclipse.slm.self_description_service.templating.TemplateRenderer;
+import org.eclipse.slm.self_description_service.templating.method.utils.PathHelper;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;

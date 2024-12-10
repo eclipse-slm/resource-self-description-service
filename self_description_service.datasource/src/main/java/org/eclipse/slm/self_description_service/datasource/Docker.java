@@ -70,7 +70,10 @@ public class Docker implements Datasource {
 
 
     public List<Submodel> getModelsByGenericCode() {
-        var submodelBuilder = new DefaultSubmodel.Builder();
+
+        // TODO: Get ResourceID and use it in the ID to be global unique
+
+        var submodelBuilder = new DefaultSubmodel.Builder().id("Docker").idShort("Docker");
 
         var containers = this.dockerClient.listContainersCmd().exec();
         createList("Containers", containers).ifPresent(submodelBuilder::submodelElements);
@@ -1472,9 +1475,7 @@ public class Docker implements Datasource {
         } else if (value instanceof Boolean v) {
             property.valueType(DataTypeDefXsd.BOOLEAN).value(v.toString());
         } else if (value instanceof Date v) {
-            property.valueType(DataTypeDefXsd.DATE).value(this.dateFormat.format(v));
-        } else if (value instanceof Date v) {
-            property.valueType(DataTypeDefXsd.DATE).value(this.dateTimeFormat.format(v));
+            property.valueType(DataTypeDefXsd.DATE_TIME).value(this.dateTimeFormat.format(v));
         } else if (value instanceof Byte v) {
             property.valueType(DataTypeDefXsd.BYTE).value(v.toString());
         } else if (value instanceof Duration v) {

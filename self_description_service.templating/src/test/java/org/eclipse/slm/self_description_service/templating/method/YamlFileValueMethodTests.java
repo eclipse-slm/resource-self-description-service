@@ -1,7 +1,7 @@
 package org.eclipse.slm.self_description_service.templating.method;
 
 import freemarker.template.TemplateModelException;
-import org.eclipse.slm.self_description_service.templating.utils.PathHelper;
+import org.eclipse.slm.self_description_service.templating.method.utils.PathHelper;
 import org.junit.jupiter.api.Test;
 
 import java.net.URISyntaxException;
