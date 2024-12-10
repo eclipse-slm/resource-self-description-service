@@ -1,4 +1,4 @@
-package org.eclipse.slm.self_description_service.aas;
+package org.eclipse.slm.self_description_service.service.rest.aas;
 
 
 import org.eclipse.digitaltwin.aas4j.v3.model.OperationVariable;
@@ -33,26 +33,26 @@ public class SubmodelRepository implements org.eclipse.digitaltwin.basyx.submode
     private final static Logger LOG = LoggerFactory.getLogger(SubmodelRepository.class);
 
 
-    private final HashMap<String, Datasource> submodelToFactoryMap = new HashMap<>();
-    private final HashMap<String, Datasource> factories = new HashMap<>();
+    private final HashMap<String, Datasource> submodelToDatasourceMap = new HashMap<>();
+    private final HashMap<String, Datasource> datasource = new HashMap<>();
 
 
     @Autowired
-    public SubmodelRepository(Template templateFactory) {
+    public SubmodelRepository(Template templateDatasource) {
 
-        var modelIds = templateFactory.getModelIds();
+        var modelIds = templateDatasource.getModelIds();
         for (var id : modelIds) {
-            this.submodelToFactoryMap.put(id, templateFactory);
+            this.submodelToDatasourceMap.put(id, templateDatasource);
         }
 
-        this.factories.put("Template", templateFactory);
+        this.datasource.put("Template", templateDatasource);
 
     }
 
     @Override
     public CursorResult<List<Submodel>> getAllSubmodels(PaginationInfo pInfo) {
         var submodels = new ArrayList<Submodel>();
-        for (var submodelFactory : factories.values()) {
+        for (var submodelFactory : datasource.values()) {
             submodels.addAll(submodelFactory.getModels());
         }
 
@@ -65,12 +65,12 @@ public class SubmodelRepository implements org.eclipse.digitaltwin.basyx.submode
     @Override
     public Submodel getSubmodel(String submodelId) throws ElementDoesNotExistException {
 
-        if (!this.submodelToFactoryMap.containsKey(submodelId)) {
-            for (Datasource factory : factories.values()) {
+        if (!this.submodelToDatasourceMap.containsKey(submodelId)) {
+            for (Datasource datasource : datasource.values()) {
                 try {
-                    var submodel = factory.getModelById(submodelId);
+                    var submodel = datasource.getModelById(submodelId);
                     if (submodel.isPresent()) {
-                        this.submodelToFactoryMap.put(submodelId, factory);
+                        this.submodelToDatasourceMap.put(submodelId, datasource);
                         return submodel.get();
                     }
                 } catch (IOException e) {
@@ -78,9 +78,9 @@ public class SubmodelRepository implements org.eclipse.digitaltwin.basyx.submode
                 }
             }
         } else {
-            var factory = this.submodelToFactoryMap.get(submodelId);
+            var datasource = this.submodelToDatasourceMap.get(submodelId);
             try {
-                var submodel = factory.getModelById(submodelId);
+                var submodel = datasource.getModelById(submodelId);
                 if (submodel.isPresent()) {
                     return submodel.get();
                 }

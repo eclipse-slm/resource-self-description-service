@@ -1,4 +1,4 @@
-package org.eclipse.slm.self_description_service.aas.exceptions;
+package org.eclipse.slm.self_description_service.service.rest.aas.exceptions;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;

@@ -1,4 +1,4 @@
-package org.eclipse.slm.self_description_service;
+package org.eclipse.slm.self_description_service.service.rest;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

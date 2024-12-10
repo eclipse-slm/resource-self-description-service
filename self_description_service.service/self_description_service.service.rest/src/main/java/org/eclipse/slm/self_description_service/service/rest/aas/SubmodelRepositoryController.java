@@ -1,4 +1,4 @@
-package org.eclipse.slm.self_description_service.aas;
+package org.eclipse.slm.self_description_service.service.rest.aas;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
@@ -17,7 +17,7 @@ import org.eclipse.digitaltwin.basyx.submodelrepository.http.SubmodelRepositoryH
 import org.eclipse.digitaltwin.basyx.submodelrepository.http.pagination.GetSubmodelsResult;
 import org.eclipse.digitaltwin.basyx.submodelservice.value.SubmodelElementValue;
 import org.eclipse.digitaltwin.basyx.submodelservice.value.SubmodelValueOnly;
-import org.eclipse.slm.self_description_service.aas.exceptions.MethodNotImplementedException;
+import org.eclipse.slm.self_description_service.service.rest.aas.exceptions.MethodNotImplementedException;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -31,7 +31,7 @@ import java.util.List;
 public class SubmodelRepositoryController implements SubmodelRepositoryHTTPApi {
 
 
-    private final org.eclipse.slm.self_description_service.aas.SubmodelRepository repository;
+    private final SubmodelRepository repository;
 
     public SubmodelRepositoryController(SubmodelRepository repository) {
         this.repository = repository;
