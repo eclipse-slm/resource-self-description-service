@@ -11,10 +11,10 @@
 
 
     <modules>
-        <module>self_description_service.service</module>
-        <module>self_description_service.templating</module>
-        <module>self_description_service.datasource</module>
-        <module>self_description_service.common</module>
+        <module>service</module>
+        <module>templating</module>
+        <module>datasource</module>
+        <module>common</module>
     </modules>
 
     <profiles>
