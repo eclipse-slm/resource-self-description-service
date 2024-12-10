@@ -14,7 +14,7 @@
         <module>self_description_service.service</module>
         <module>self_description_service.templating</module>
         <module>self_description_service.datasource</module>
-        <module>common</module>
+        <module>self_description_service.common</module>
     </modules>
 
     <profiles>

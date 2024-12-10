@@ -4,13 +4,13 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>common.aas.clients</artifactId>
+    <artifactId>clients</artifactId>
     <version>${revision}</version>
     <packaging>jar</packaging>
 
     <parent>
         <groupId>org.eclipse.slm</groupId>
-        <artifactId>common.aas</artifactId>
+        <artifactId>aas</artifactId>
         <version>${revision}</version>
     </parent>
 
