@@ -17,3 +17,23 @@ Startup:
 Check for Consul -> Spring implementierung für Consul um Service zu finden
 
 -> Webcam -> schauen ob es einen Virtuelle Kammera gibt.
+
+10.12.2024
+
+- ResourceID over environment variable (1)
+    - Configuration for the datasource (...)
+
+- Rest API Exception Handling  (2)
+    - Datasource throw exception
+    - Server handle and throw an 500 Internal Error with the exception content
+
+- Integration Test (3)
+    - HTTP Request for Template and Docker
+
+- Registration at the AAS Submodel Registry and AAS Model Registry (4)
+
+
+- Prometheus Templating: (...)
+    - ID/Type for an exporter -> lookup in config file for exporter -> collect data -> return data 
+
+
