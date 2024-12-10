@@ -1,0 +1,32 @@
+### Application
+application:
+  name: "^project.artifactId^"
+  version: "^project.version^"
+  timestamp: "^timestamp^"
+
+
+### Deployment
+deployment:
+  scheme: "http"
+  hostname: "localhost"
+  port: ${server.port}
+
+### Server / API
+server:
+  port: 8081
+  error:
+    include-message: always
+
+spring:
+  application:
+    name: SelfDescriptionService
+
+
+basyx:
+  smrepo:
+    name: sm-repo
+  backend: InMemory
+
+
+template:
+  path: ""
