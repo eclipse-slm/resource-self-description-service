@@ -12,18 +12,15 @@ import org.eclipse.digitaltwin.basyx.core.pagination.PaginationSupport;
 import org.eclipse.digitaltwin.basyx.submodelservice.value.PropertyValue;
 import org.eclipse.digitaltwin.basyx.submodelservice.value.SubmodelElementValue;
 import org.eclipse.digitaltwin.basyx.submodelservice.value.SubmodelValueOnly;
-import org.eclipse.slm.self_description_service.datasource.Datasource;
-import org.eclipse.slm.self_description_service.datasource.Template;
+import org.eclipse.slm.self_description_service.datasource.DatasourceService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
@@ -33,26 +30,17 @@ public class SubmodelRepository implements org.eclipse.digitaltwin.basyx.submode
     private final static Logger LOG = LoggerFactory.getLogger(SubmodelRepository.class);
 
 
-    private final HashMap<String, Datasource> submodelToDatasourceMap = new HashMap<>();
-    private final HashMap<String, Datasource> datasource = new HashMap<>();
+    final DatasourceService datasourceService;
 
 
-    @Autowired
-    public SubmodelRepository(Template templateDatasource) {
-
-        var modelIds = templateDatasource.getModelIds();
-        for (var id : modelIds) {
-            this.submodelToDatasourceMap.put(id, templateDatasource);
-        }
-
-        this.datasource.put("Template", templateDatasource);
-
+    public SubmodelRepository(DatasourceService datasourceService) {
+        this.datasourceService = datasourceService;
     }
 
     @Override
     public CursorResult<List<Submodel>> getAllSubmodels(PaginationInfo pInfo) {
         var submodels = new ArrayList<Submodel>();
-        for (var submodelFactory : datasource.values()) {
+        for (var submodelFactory : datasourceService.getDatasources()) {
             submodels.addAll(submodelFactory.getModels());
         }
 
@@ -64,33 +52,16 @@ public class SubmodelRepository implements org.eclipse.digitaltwin.basyx.submode
 
     @Override
     public Submodel getSubmodel(String submodelId) throws ElementDoesNotExistException {
-
-        if (!this.submodelToDatasourceMap.containsKey(submodelId)) {
-            for (Datasource datasource : datasource.values()) {
-                try {
-                    var submodel = datasource.getModelById(submodelId);
-                    if (submodel.isPresent()) {
-                        this.submodelToDatasourceMap.put(submodelId, datasource);
-                        return submodel.get();
-                    }
-                } catch (IOException e) {
-                    throw new ElementDoesNotExistException();
-                }
-            }
-        } else {
-            var datasource = this.submodelToDatasourceMap.get(submodelId);
-            try {
-                var submodel = datasource.getModelById(submodelId);
-                if (submodel.isPresent()) {
-                    return submodel.get();
-                }
-            } catch (IOException e) {
-                throw new ElementDoesNotExistException();
-            }
+        var datasource = this.datasourceService.getDatasourceForSubmodelId(submodelId);
+        if (datasource.isEmpty()) {
+            throw new ElementDoesNotExistException();
         }
-
-
-        return null;
+        try {
+            var source = datasource.get().getModelById(submodelId);
+            return source.orElse(null);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override

@@ -30,3 +30,6 @@ basyx:
 
 template:
   path: ""
+
+resource:
+  id: "asdf"

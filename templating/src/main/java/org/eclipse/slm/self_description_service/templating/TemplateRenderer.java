@@ -45,7 +45,7 @@ public class TemplateRenderer {
         return this.render(template, this.globalRenderContext);
     }
 
-    public String render(String template, Map<String, Object> renderContext) {
+    public String render(String templateContent, Map<String, Object> renderContext) {
         try {
             var combinedRenderContext = new HashMap<>(globalRenderContext);
             combinedRenderContext.putAll(renderContext);
@@ -53,10 +53,10 @@ public class TemplateRenderer {
             combinedRenderContext.put("JsonFileValue", new JsonFileValueMethod());
             combinedRenderContext.put("YamlFileValue", new YamlFileValueMethod());
 
-            var t = new Template("", new StringReader(template), cfg);
+            var template = new Template("", new StringReader(templateContent), cfg);
 
             StringWriter writer = new StringWriter();
-            t.process(combinedRenderContext, writer);
+            template.process(combinedRenderContext, writer);
             return writer.toString();
         } catch (IOException | TemplateException e) {
             throw new RuntimeException(e);
