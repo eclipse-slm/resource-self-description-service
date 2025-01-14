@@ -4,20 +4,19 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>common</artifactId>
+    <artifactId>common.consul</artifactId>
     <version>${revision}</version>
     <packaging>pom</packaging>
 
     <parent>
         <groupId>org.eclipse.slm</groupId>
-        <artifactId>self_description_service</artifactId>
+        <artifactId>common</artifactId>
         <version>${revision}</version>
     </parent>
 
     <modules>
-        <module>common.aas</module>
-        <module>common.consul</module>
-
+        <module>common.consul.client</module>
+        <module>common.consul.model</module>
     </modules>
 
 </project>

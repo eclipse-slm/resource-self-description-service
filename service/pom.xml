@@ -16,8 +16,6 @@
 
     <modules>
         <module>service.rest</module>
-<!--        <module>resource_management.service.client</module>-->
-<!--        <module>resource_management.service.initializer</module>-->
     </modules>
 
 </project>
