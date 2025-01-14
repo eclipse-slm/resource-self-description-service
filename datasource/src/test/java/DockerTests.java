@@ -7,7 +7,6 @@ public class DockerTests {
     private final Docker dockerDatasource = new Docker();
 
     public DockerTests() {
-//        this.dockerDatasource = new Docker();
     }
 
     @Test

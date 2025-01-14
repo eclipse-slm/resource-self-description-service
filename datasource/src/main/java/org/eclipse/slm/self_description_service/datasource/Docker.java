@@ -2,6 +2,7 @@ package org.eclipse.slm.self_description_service.datasource;
 
 import com.github.dockerjava.api.DockerClient;
 import com.github.dockerjava.api.command.InspectVolumeResponse;
+import com.github.dockerjava.api.exception.DockerException;
 import com.github.dockerjava.api.model.*;
 import com.github.dockerjava.core.DefaultDockerClientConfig;
 import com.github.dockerjava.core.DockerClientConfig;
@@ -11,6 +12,8 @@ import com.github.dockerjava.transport.DockerHttpClient;
 import org.apache.poi.hpsf.Decimal;
 import org.eclipse.digitaltwin.aas4j.v3.model.*;
 import org.eclipse.digitaltwin.aas4j.v3.model.impl.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
@@ -20,6 +23,7 @@ import java.util.*;
 
 @Component
 public class Docker implements Datasource {
+    private final static Logger LOG = LoggerFactory.getLogger(Docker.class);
 
     DockerClient dockerClient;
     private SimpleDateFormat dateTimeFormat = new SimpleDateFormat("MM/dd/yyyy KK:mm:ss a");
@@ -87,20 +91,24 @@ public class Docker implements Datasource {
         var volumes = this.dockerClient.listVolumesCmd().exec().getVolumes();
         createList("Volumes", volumes).ifPresent(submodelBuilder::submodelElements);
 
-        var services = this.dockerClient.listServicesCmd().exec();
-        createList("Services", services).ifPresent(submodelBuilder::submodelElements);
+        try {
+            var services = this.dockerClient.listServicesCmd().exec();
+            createList("Services", services).ifPresent(submodelBuilder::submodelElements);
 
-        var tasks = this.dockerClient.listTasksCmd().exec();
-        createList("Tasks", tasks).ifPresent(submodelBuilder::submodelElements);
+            var tasks = this.dockerClient.listTasksCmd().exec();
+            createList("Tasks", tasks).ifPresent(submodelBuilder::submodelElements);
 
-        var swarmNodes = this.dockerClient.listSwarmNodesCmd().exec();
-        createList("Swarm Nodes", swarmNodes).ifPresent(submodelBuilder::submodelElements);
+            var swarmNodes = this.dockerClient.listSwarmNodesCmd().exec();
+            createList("Swarm Nodes", swarmNodes).ifPresent(submodelBuilder::submodelElements);
 
-        var configs = this.dockerClient.listConfigsCmd().exec();
-        createList("Configs", configs).ifPresent(submodelBuilder::submodelElements);
+            var configs = this.dockerClient.listConfigsCmd().exec();
+            createList("Configs", configs).ifPresent(submodelBuilder::submodelElements);
 
-        var secrets = this.dockerClient.listSecretsCmd().exec();
-        createList("Secrets", secrets).ifPresent(submodelBuilder::submodelElements);
+            var secrets = this.dockerClient.listSecretsCmd().exec();
+            createList("Secrets", secrets).ifPresent(submodelBuilder::submodelElements);
+        } catch (DockerException exception) {
+            LOG.info("Docker runs not in Swarm mode ");
+        }
 
         return List.of(submodelBuilder.build());
     }

@@ -5,12 +5,10 @@ import org.eclipse.digitaltwin.aas4j.v3.dataformat.aasx.AASXDeserializer;
 import org.eclipse.digitaltwin.aas4j.v3.dataformat.core.DeserializationException;
 import org.eclipse.digitaltwin.aas4j.v3.model.*;
 import org.eclipse.slm.self_description_service.datasource.template.ITemplateManager;
-import org.eclipse.slm.self_description_service.datasource.template.TemplateManager;
 import org.eclipse.slm.self_description_service.templating.TemplateRenderer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Component;
@@ -32,18 +30,24 @@ public class Template implements Datasource, InitializingBean {
 
     private final HashMap<String, String> idToFileMap = new HashMap<>();
 
-    public Template(ITemplateManager templateManager, @Value("${resource.id}") String resourceId) {
-        this.resourceId = resourceId;
-        this.templateManager = templateManager;
-    }
-
-    @Autowired
-    public Template(TemplateRenderer renderer, @Value("${resource.id}") String resourceId) {
+    public Template(ITemplateManager templateManager, TemplateRenderer renderer, @Value("${resource.id}") String resourceId) {
         this.renderer = renderer;
+        this.templateManager = templateManager;
         this.resourceId = resourceId;
-
-        templateManager = new TemplateManager();
     }
+
+//    public Template(ITemplateManager templateManager, @Value("${resource.id}") String resourceId) {
+//        this.resourceId = resourceId;
+//        this.templateManager = templateManager;
+//    }
+//
+//    @Autowired
+//    public Template(TemplateRenderer renderer, @Value("${resource.id}") String resourceId) {
+//        this.renderer = renderer;
+//        this.resourceId = resourceId;
+//
+//        templateManager = new TemplateManager();
+//    }
 
     @Override
     public void afterPropertiesSet() throws Exception {
@@ -215,9 +219,5 @@ public class Template implements Datasource, InitializingBean {
 
     private String createSubmodelId(String id) {
         return this.resourceId + "_" + id;
-    }
-
-    public void setTemplateManager(ITemplateManager templateManager) {
-        this.templateManager = templateManager;
     }
 }

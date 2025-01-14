@@ -8,7 +8,13 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.scheduling.annotation.EnableAsync;
 
 @SpringBootApplication(exclude = {DataSourceAutoConfiguration.class})
-@ComponentScan(basePackages = "org.eclipse.slm.self_description_service")
+@ComponentScan(basePackages = {
+        "org.eclipse.slm.self_description_service.datasource",
+        "org.eclipse.slm.self_description_service.templating",
+        "org.eclipse.slm.self_description_service.service",
+        "org.eclipse.slm.self_description_service.common"
+}
+)
 @EnableAsync
 @EnableConfigurationProperties
 public class SelfDescriptionServiceApplication {
@@ -16,5 +22,6 @@ public class SelfDescriptionServiceApplication {
     public static void main(String[] args) {
         SpringApplication.run(SelfDescriptionServiceApplication.class, args);
     }
+
 
 }
