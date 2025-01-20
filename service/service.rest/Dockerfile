@@ -1,12 +1,12 @@
 FROM openjdk:18.0.2.1-jdk-slim-buster
 #MAINTAINER Matthias Schneider (matthias.schneider@ipa.fraunhofer.de)
 
-#ENV CONSUL_SCHEME="http" \
-#    CONSUL_HOST="consul" \
-#    CONSUL_PORT=8500 \
-#    CONSUL_DATACENTER="fabos" \
-#    CONSUL_ACLTOKEN="password" \
-#    AAS_BROKER="aas-broker"
+ENV CONSUL_SCHEME="http" \
+    CONSUL_HOST="consul" \
+    CONSUL_PORT=8500 \
+    CONSUL_DATACENTER="fabos" \
+    CONSUL_ACLTOKEN="password" \
+    AAS_BROKER="aas-broker"
 
 RUN apt update && \
     apt install -y curl jq

@@ -1,13 +1,11 @@
 package org.eclipse.slm.self_description_service.datasource;
 
+import org.eclipse.digitaltwin.aas4j.v3.model.Submodel;
 import org.eclipse.digitaltwin.basyx.core.exceptions.ElementDoesNotExistException;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Component
 public class DatasourceService {
@@ -54,4 +52,20 @@ public class DatasourceService {
     }
 
 
+    public Set<String> getSubmodelIds() {
+        return this.submodelToDatasourceMap.keySet();
+    }
+
+    public Optional<Submodel> getSubmodelById(String submodelId) {
+        var optionalDatasource = this.getDatasourceForSubmodelId(submodelId);
+        if (optionalDatasource.isEmpty()) {
+            return Optional.empty();
+        }
+        try {
+            var datasource = optionalDatasource.get();
+            return datasource.getModelById(submodelId);
+        } catch (Exception e) {
+            return Optional.empty();
+        }
+    }
 }

@@ -1,0 +1,5 @@
+services:
+
+  self-description-service:
+    build: .
+    image: ghcr.io/eclipse-slm/slm/self-description-service:${SLM_VERSION}
