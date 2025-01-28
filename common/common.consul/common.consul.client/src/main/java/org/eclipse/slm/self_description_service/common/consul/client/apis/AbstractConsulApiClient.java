@@ -4,9 +4,9 @@ import com.google.common.net.HostAndPort;
 import com.orbitz.consul.Consul;
 import com.orbitz.consul.ConsulException;
 import com.orbitz.consul.model.acl.ImmutableLogin;
+import okhttp3.ConnectionPool;
 import org.eclipse.slm.self_description_service.common.consul.client.ConsulCredential;
 import org.eclipse.slm.self_description_service.common.consul.model.exceptions.ConsulLoginFailedException;
-import okhttp3.ConnectionPool;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,8 +31,6 @@ class AbstractConsulApiClient {
     protected String consulToken;
     protected String consulScheme;
     protected String consulDatacenter;
-    private Map<ClientsKey, Consul> consulClients = new HashMap<>();
-    private Map<ClientsKey, Consul> keycloakTokenClients = new HashMap<>();
 
     public AbstractConsulApiClient(
             String consulScheme,
@@ -46,6 +44,24 @@ class AbstractConsulApiClient {
         this.consulPort = consulPort;
         this.consulToken = consulToken;
         this.consulDatacenter = consulDatacenter;
+    }
+
+    private Map<ClientsKey, Consul> consulClients = new HashMap<>();
+    private Map<ClientsKey, Consul> keycloakTokenClients = new HashMap<>();
+
+    protected boolean isJwtToken(String token) {
+        String[] chunks = token.split("\\.");
+        if (chunks.length > 1) {
+            Base64.Decoder decoder = Base64.getUrlDecoder();
+            String header = new String(decoder.decode(chunks[0]));
+            String payload = new String(decoder.decode(chunks[1]));
+
+            if (header.contains("JWT")) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     public Consul getConsulClient(ConsulCredential consulCredential, String consulHost, int consulPort) throws ConsulLoginFailedException {
@@ -176,21 +192,6 @@ class AbstractConsulApiClient {
         }
     }
 
-    protected boolean isJwtToken(String token) {
-        String[] chunks = token.split("\\.");
-        if (chunks.length > 1) {
-            Base64.Decoder decoder = Base64.getUrlDecoder();
-            String header = new String(decoder.decode(chunks[0]));
-            String payload = new String(decoder.decode(chunks[1]));
-
-            if (header.contains("JWT")) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
 //   protected void logoutConsulToken(String consulToken) {
 //        try {
 //            this.bearerAuthInterceptor.setBearerToken(consulToken);
@@ -204,6 +205,29 @@ class AbstractConsulApiClient {
 //                LOG.error(e.toString());
 //        }
 //    }
+
+    private class ClientsKey {
+        String credentialIdentifier;
+        String consulHost;
+
+        public ClientsKey(String credentialType, String consulHost) {
+            this.credentialIdentifier = credentialType;
+            this.consulHost = consulHost;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (!(o instanceof ClientsKey that)) return false;
+            return Objects.equals(credentialIdentifier, that.credentialIdentifier) && Objects.equals(consulHost, that.consulHost);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(credentialIdentifier, consulHost);
+        }
+    }
+
 
     public String getConsulUrl() {
         return this.consulScheme + "://" + this.consulHost + ":" + this.consulPort + "/v1";
@@ -231,28 +255,6 @@ class AbstractConsulApiClient {
 
     public void setConsulScheme(String consulScheme) {
         this.consulScheme = consulScheme;
-    }
-
-    private class ClientsKey {
-        String credentialIdentifier;
-        String consulHost;
-
-        public ClientsKey(String credentialType, String consulHost) {
-            this.credentialIdentifier = credentialType;
-            this.consulHost = consulHost;
-        }
-
-        @Override
-        public boolean equals(Object o) {
-            if (this == o) return true;
-            if (!(o instanceof ClientsKey that)) return false;
-            return Objects.equals(credentialIdentifier, that.credentialIdentifier) && Objects.equals(consulHost, that.consulHost);
-        }
-
-        @Override
-        public int hashCode() {
-            return Objects.hash(credentialIdentifier, consulHost);
-        }
     }
 
 }

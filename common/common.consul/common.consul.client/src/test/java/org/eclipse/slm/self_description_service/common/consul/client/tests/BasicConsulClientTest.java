@@ -11,7 +11,6 @@ import org.eclipse.slm.self_description_service.common.consul.model.acl.PolicyLi
 import org.eclipse.slm.self_description_service.common.consul.model.acl.Role;
 import org.eclipse.slm.self_description_service.common.consul.model.catalog.*;
 import org.eclipse.slm.self_description_service.common.consul.model.exceptions.ConsulLoginFailedException;
-import org.eclipse.slm.self_description_service.common.consul.client.apis.*;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.slf4j.Logger;

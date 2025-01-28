@@ -2,138 +2,167 @@ package org.eclipse.slm.self_description_service.service.rest.registration;
 
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.eclipse.digitaltwin.aas4j.v3.model.Endpoint;
 import org.eclipse.digitaltwin.aas4j.v3.model.Key;
 import org.eclipse.digitaltwin.aas4j.v3.model.Reference;
 import org.eclipse.digitaltwin.aas4j.v3.model.SubmodelDescriptor;
-import org.eclipse.digitaltwin.basyx.core.exceptions.ElementDoesNotExistException;
-import org.eclipse.slm.common.aas.clients.AasRegistryClient;
-import org.eclipse.slm.common.aas.clients.AasRepositoryClient;
-import org.eclipse.slm.common.aas.clients.SubmodelRegistryClient;
+import org.eclipse.digitaltwin.basyx.aasregistry.client.ApiException;
+import org.eclipse.digitaltwin.basyx.http.Base64UrlEncodedIdentifier;
+import org.eclipse.slm.self_description_service.common.aas.clients.aas.AasRegistryClient;
+import org.eclipse.slm.self_description_service.common.aas.clients.aas.AasRepositoryClient;
+import org.eclipse.slm.self_description_service.common.aas.clients.aas.SubmodelRegistryClient;
 import org.eclipse.slm.self_description_service.common.consul.client.ConsulCredential;
 import org.eclipse.slm.self_description_service.common.consul.client.apis.ConsulServicesApiClient;
 import org.eclipse.slm.self_description_service.common.consul.model.catalog.CatalogService;
 import org.eclipse.slm.self_description_service.datasource.DatasourceService;
+import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Component
 public class AssRegistration implements InitializingBean {
 
+    private final Environment env;
+    
     private final ConsulCredential consulCredential;
     private final ConsulServicesApiClient client;
     private final ObjectMapper objectMapper;
     private final DatasourceService datasourceService;
-
-    @Value("resource.aas-id")
-    private final String aasId = "";
-    @Value("aas.submodel-repository.url")
-    private final String submodelRepositoryUrl = "";
-
-    public AssRegistration(ConsulServicesApiClient client, ObjectMapper objectMapper, DatasourceService datasourceService) {
+    private final String resourceId;
+    private final String submodelRepositoryUrl;
+    public AssRegistration(ConsulServicesApiClient client, ObjectMapper objectMapper, DatasourceService datasourceService, @Value("${resource.aas.id}") String resourceId, @Value("${aas.submodel-repository.url}") String submodelRepositoryUrl, Environment env) {
         this.client = client;
         this.datasourceService = datasourceService;
+        this.resourceId = resourceId;
+        this.submodelRepositoryUrl = submodelRepositoryUrl;
         this.consulCredential = new ConsulCredential();
         this.objectMapper = objectMapper;
+        this.env = env;
     }
 
     @Override
     public void afterPropertiesSet() throws Exception {
 
+        arePropertiesSet();
+        AASClients clients = getAasClients();
+
         // Get AAS and Submodel Registry
+        isAASAvailable(clients.aasRegistryClient());
+        registerSubmodelReferencesToResourceAAS(clients.aasRepositoryClient());
+
+        // Check if Submodels are registered
+        // Register/Unregister Submodels
+        registerSubmodelsToSubmodelRegistry(clients.aasRepositoryClient(), clients.submodelRegistryClient());
+    }
+
+    @NotNull
+    private AASClients getAasClients() {
         var names = List.of("aas-registry", "aas-repository", "submodel-registry");
-        var services = this.client.getServicesByName(consulCredential, names);
+        var services = getServices(names);
 
+        var aasRegistryUrl = this.getServiceUrl(services, "aas-registry", "http");
+        var aasRepositoryUrl = this.getServiceUrl(services, "aas-repository", "http");
+        var submodelRegistryUrl = this.getServiceUrl(services, "submodel-registry", "http");
 
-        // Get AAS Repository
-        if (services.containsKey("aas-registry") && services.containsKey("aas-repository") && services.containsKey("submodel-registry")) {
-            var optionalAasRegistry = services.get("aas-registry").stream().findFirst();
-            var optionalAasRepository = services.get("aas-repository").stream().findFirst();
-            var optionalSubmodelRegistry = services.get("submodel-registry").stream().findFirst();
+        var aasRegistryClient = new AasRegistryClient(aasRegistryUrl, aasRepositoryUrl, this.objectMapper);
+        var aasRepositoryClient = new AasRepositoryClient(aasRepositoryUrl);
+        var submodelRegistryClient = new SubmodelRegistryClient(submodelRegistryUrl, this.submodelRepositoryUrl);
+        return new AASClients(aasRegistryClient, aasRepositoryClient, submodelRegistryClient);
+    }
 
-            // Check if Resource AAS available
-            if (optionalAasRegistry.isEmpty() || optionalAasRepository.isEmpty() || optionalSubmodelRegistry.isEmpty()) {
-                throw new RuntimeException("No AAS registry or AAS repository found");
+    private void registerSubmodelsToSubmodelRegistry(@NotNull AasRepositoryClient aasRepositoryClient, @NotNull SubmodelRegistryClient submodelRegistryClient) throws org.eclipse.digitaltwin.basyx.submodelregistry.client.ApiException {
+        var registeredSubmodels = submodelRegistryClient.getAllSubmodelDescriptors().stream().collect(Collectors.toMap(SubmodelDescriptor::getId, submodelDescriptor -> submodelDescriptor));
+        var submodelIds = new HashSet<>(this.datasourceService.getSubmodelIds());
+        for (String submodelId : submodelIds) {
+            if (registeredSubmodels.containsKey(submodelId)) {
+                submodelRegistryClient.unregisterSubmodel(submodelId);
             }
 
-            var aasRegistry = optionalAasRegistry.get();
-            var aasRepository = optionalAasRepository.get();
-            var submodelRegistry = optionalSubmodelRegistry.get();
-
-            var aasRegistryUrl = this.createUrl("http", aasRegistry);
-            var aasRepositoryUrl = this.createUrl("http", aasRepository);
-            var submodelRegistryUrl = this.createUrl("http", submodelRegistry);
-
-            var aasRegistryClient = new AasRegistryClient(aasRegistryUrl, aasRepositoryUrl, this.objectMapper);
-            var aasRepositoryClient = new AasRepositoryClient(aasRepositoryUrl);
-            var submodelRegistryClient = new SubmodelRegistryClient(submodelRegistryUrl, "");
-
-            var optionalAasDescriptor = aasRegistryClient.getAasDescriptor(this.aasId);
-            if (optionalAasDescriptor.isEmpty()) {
-                throw new RuntimeException("No AAS descriptor found");
+            var model = this.datasourceService.getSubmodelById(submodelId);
+            if (model.isPresent()) {
+                var submodel = model.get();
+                var modelIdEncoded = new Base64UrlEncodedIdentifier(submodel.getId());
+                var url = this.submodelRepositoryUrl + "/" + modelIdEncoded.getEncodedIdentifier();
+                submodelRegistryClient.registerSubmodel(url, submodel.getId(), submodel.getId(), submodel.getSemanticId().toString());
             }
+        }
 
-
-//            var aasDescriptor = optionalAasDescriptor.get();
-//            var submodelIds = this.datasourceService.getSubmodelIds();
-//            for (SubmodelDescriptor submodelDescriptor : aasDescriptor.getSubmodelDescriptors()) {
-//                submodelIds.remove(submodelDescriptor.getId());
-//            }
-//
-//            for (String submodelId : submodelIds) {
-//                var model = this.datasourceService.getSubmodelById(submodelId);
-//                if (model.isEmpty()) {
-//                    continue;
-//                }
-//
-//                var builder = new SubmodelDescriptorFactory(null, List.of(""),null);
-//                aasRegistryClient.addSubmodelDescriptorToAas(submodelId, builder.create(model.get()));
-//            }
-
-
-            try {
-                var aas = aasRepositoryClient.getAas(this.aasId);
-                var submodelIds = this.datasourceService.getSubmodelIds();
-                for (Reference submodel : aas.getSubmodels()) {
-                    for (Key key : submodel.getKeys()) {
-                        var value = key.getValue();
-                        submodelIds.remove(value);
-                    }
-                }
-
-                for (String submodelId : submodelIds) {
-                    aasRepositoryClient.addSubmodelReferenceToAas(this.aasId, submodelId);
-                }
-
-
-            } catch (ElementDoesNotExistException e) {
-                // Log
-
-            }
-
-            // Check if Submodels are registered
-            // Register/Unregister Submodels
-            var registeredSubmodels = submodelRegistryClient.getAllSubmodelDescriptors();
-            var submodelIds = this.datasourceService.getSubmodelIds();
-            for (SubmodelDescriptor registeredSubmodel : registeredSubmodels) {
-                if (!submodelIds.contains(registeredSubmodel.getId())) {
-                    var model = this.datasourceService.getSubmodelById(registeredSubmodel.getId());
-                    if (model.isPresent()) {
-                        submodelRegistryClient.registerSubmodel(this.submodelRepositoryUrl, model.get());
-                    }
+        for (SubmodelDescriptor submodel : registeredSubmodels.values()) {
+            var endpoints = submodel.getEndpoints();
+            for (Endpoint endpoint : endpoints) {
+                if (endpoint.getProtocolInformation().getHref().contains(this.submodelRepositoryUrl) &&
+                        !submodelIds.contains(submodel.getId())) {
+                    aasRepositoryClient.removeSubmodelReferenceFromAas(this.resourceId, submodel.getId());
+                    submodelRegistryClient.unregisterSubmodel(submodel.getId());
                 }
             }
         }
     }
 
+    private void registerSubmodelReferencesToResourceAAS(@NotNull AasRepositoryClient client) {
+        var aasSubmodelIDs = client.getAas(this.resourceId)
+                .getSubmodels().stream().map(Reference::getKeys).flatMap(Collection::stream)
+                .map(Key::getValue).collect(Collectors.toSet());
+        var submodelIds = new HashSet<>(this.datasourceService.getSubmodelIds());
+        for (var submodelID : submodelIds) {
+            if (aasSubmodelIDs.contains(submodelID)) {
+                client.removeSubmodelReferenceFromAas(this.resourceId, submodelID);
+            }
 
-    private String createUrl(String schema, CatalogService service) {
-        return createUrl(schema, service.getAddress(), service.getServicePort());
+            client.addSubmodelReferenceToAas(this.resourceId, submodelID);
+        }
     }
 
+    private void arePropertiesSet() {
+        if (this.resourceId.isEmpty()) {
+            throw new RuntimeException("AAS ID not set");
+        }
+
+        if (this.submodelRepositoryUrl.isEmpty()) {
+            throw new RuntimeException("Submodel repository URL not set");
+        }
+    }
+
+    private void isAASAvailable(@NotNull AasRegistryClient aasRegistryClient) throws ApiException {
+        var optionalAasDescriptor = aasRegistryClient.getAasDescriptor(this.resourceId);
+        if (optionalAasDescriptor.isEmpty()) {
+            // TODO: LOG
+            throw new RuntimeException("No AAS descriptor found");
+        }
+    }
+
+    private Map<String, List<CatalogService>> getServices(List<String> names) {
+        try {
+            return this.client.getServicesByName(consulCredential, names);
+        } catch (Exception e) {
+            return new HashMap<>();
+        }
+    }
+
+    private String getServiceUrl(@NotNull Map<String, List<CatalogService>> services, String key, String schema) {
+        var optionalService = services.get(key).stream().findFirst();
+        return optionalService.map(service -> this.createUrl(schema, service))
+                .orElseGet(() -> env.getProperty(String.format("aas.%s.url", key)));
+    }
+
+    @NotNull
+    private String createUrl(String schema, @NotNull CatalogService service) {
+        return createUrl(schema, service.getServiceAddress(), service.getServicePort());
+    }
+
+    @NotNull
+    @Contract(pure = true)
     private String createUrl(String schema, String name, Integer port) {
-        return schema + "://" + name + ":" + port + "/";
+        return schema + "://" + name + ":" + port;
+    }
+
+    private record AASClients(AasRegistryClient aasRegistryClient, AasRepositoryClient aasRepositoryClient,
+                              SubmodelRegistryClient submodelRegistryClient) {
     }
 }

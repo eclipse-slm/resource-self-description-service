@@ -9,7 +9,6 @@ import org.eclipse.slm.self_description_service.common.consul.model.catalog.Cata
 import org.eclipse.slm.self_description_service.common.consul.model.catalog.Node;
 import org.eclipse.slm.self_description_service.common.consul.model.catalog.NodeService;
 import org.eclipse.slm.self_description_service.common.consul.model.exceptions.ConsulLoginFailedException;
-import org.eclipse.slm.self_description_service.common.consul.client.apis.*;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -34,7 +33,6 @@ import java.util.*;
 import java.util.stream.Stream;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = {

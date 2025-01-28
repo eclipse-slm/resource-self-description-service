@@ -9,10 +9,12 @@ import org.eclipse.digitaltwin.basyx.core.exceptions.*;
 import org.eclipse.digitaltwin.basyx.core.pagination.CursorResult;
 import org.eclipse.digitaltwin.basyx.core.pagination.PaginationInfo;
 import org.eclipse.digitaltwin.basyx.core.pagination.PaginationSupport;
+import org.eclipse.digitaltwin.basyx.http.Base64UrlEncodedIdentifier;
 import org.eclipse.digitaltwin.basyx.submodelservice.value.PropertyValue;
 import org.eclipse.digitaltwin.basyx.submodelservice.value.SubmodelElementValue;
 import org.eclipse.digitaltwin.basyx.submodelservice.value.SubmodelValueOnly;
 import org.eclipse.slm.self_description_service.datasource.DatasourceService;
+import org.eclipse.slm.self_description_service.service.rest.aas.exceptions.SubmodelNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -52,9 +54,10 @@ public class SubmodelRepository implements org.eclipse.digitaltwin.basyx.submode
 
     @Override
     public Submodel getSubmodel(String submodelId) throws ElementDoesNotExistException {
-        var datasource = this.datasourceService.getDatasourceForSubmodelId(submodelId);
+        var modelIdEncoded = Base64UrlEncodedIdentifier.fromEncodedValue(submodelId);
+        var datasource = this.datasourceService.getDatasourceForSubmodelId(modelIdEncoded.getIdentifier());
         if (datasource.isEmpty()) {
-            throw new ElementDoesNotExistException();
+            throw new SubmodelNotFoundException(submodelId);
         }
         try {
             var source = datasource.get().getModelById(submodelId);

@@ -13,40 +13,128 @@ deployment:
 
 ### Server / API
 server:
-  port: 8081
+  port: 8087
   error:
     include-message: always
 
+open-api:
+  title: Self Description Service
+  description: REST API of Self Description Service
+  version: "^project.version^"
+  contact:
+    name: Fraunhofer IPA
+    url: https://www.ipa.fraunhofer.de
+    email: matthias.schneider@ipa.fraunhofer.de
+
+springdoc:
+  swagger-ui:
+    disable-swagger-default-url: true
+    tags-sorter: alpha
+    operations-sorter: alpha
+    oauth:
+      clientId: ui
+      clientSecret: unused-and-not-required
+
+### Spring
 spring:
   application:
-    name: SelfDescriptionService
-  docker:
-    compose:
-      enabled: false
+    name: self_description_service
+  main:
+    allow-bean-definition-overriding: true
+  config:
+    import: "consul:"
+  cloud:
+    consul:
+      host: ${consul.host}
+      port: ${consul.port}
+      discovery:
+        enabled: true
+        hostname: ${deployment.hostname}
+        port: ${deployment.port}
+        acl-token: ${consul.acl-token}
+        register-health-check: true
+        tags: slm, backend, ${spring.application.name}
+        service-name: ${spring.application.name}
+        metadata:
+          version: ${application.version}
+      config:
+        enabled: true
+        fail-fast: true
+        profileSeparator: '::'
+        format: YAML
+        acl-token: ${consul.acl-token}
+  security:
+    user:
+      name: "user"
+      password: "password"
+
+management:
+  endpoints:
+    web.exposure.include: health,info
+  info:
+    git.enabled: false
 
 
-basyx:
-  smrepo:
-    name: sm-repo
-  backend: InMemory
+### Security
+security:
+  auth-white-list: ""
+  origins: "*"
+
+### Keycloak
+keycloak:
+  tenants:
+    config-path: "../../src/main/resources/static/test-keycloak.json"
+#    realm: 'fabos'
+#    auth-server-url: 'http://c8.slm.local:7080/auth/'
 
 
 resource:
-  aas-id: ""
-  id: "asdf"
+  aas:
+    prefix: "Resource_"
+    id: ${resource.aas.prefix}${resource.id}
+  id: "dad1c0a5-b248-47a1-9aa8-a1e0e5b8c6dd"
 
 aas:
+  broker:
+    host: localhost
+    port: 1884
+  aas-registry:
+    scheme: http
+    host: localhost
+    port: 8082
+    path:
+    url: ${aas.aas-registry.scheme}://${aas.aas-registry.host}:${aas.aas-registry.port}${aas.aas-registry.path}
+  aas-repository:
+    scheme: http
+    host: localhost
+    port: 8081
+    path:
+    url: ${aas.aas-repository.scheme}://${aas.aas-repository.host}:${aas.aas-repository.port}${aas.aas-repository.path}
+  submodel-registry:
+    scheme: http
+    host: localhost
+    port: 8083
+    path:
+    url: ${aas.submodel-registry.scheme}://${aas.submodel-registry.host}:${aas.submodel-registry.port}${aas.submodel-registry.path}
+
+  concept-descriptions-repository:
+    scheme: http
+    host: localhost
+    port: 8081
+    path:
+    url: ${aas.concept-descriptions-repository.scheme}://${aas.concept-descriptions-repository.host}:${aas.concept-descriptions-repository.port}${aas.concept-descriptions-repository.path}
+
   submodel-repository:
     scheme: ${deployment.scheme}
     host: ${deployment.hostname}
     port: ${server.port}
-    path:
+    path: /submodels
     url: ${aas.submodel-repository.scheme}://${aas.submodel-repository.host}:${aas.submodel-repository.port}${aas.submodel-repository.path}
 
 ### Consul
 consul:
   scheme: http
-  host: c8.slm.loca
+  host: c8.slm.local
   port: 8500
   datacenter: fabos
-  acl-token: 0h8W8Sp2VS4bIQUtHKHCtQvh
+  acl-token: F2vP4iTRDYb0sCqXgHzbQPWA

@@ -10,7 +10,7 @@ class UpdateAcl {
     var name: String? = null
 
     @JsonProperty("Type")
-    var type: org.eclipse.slm.self_description_service.common.consul.model.acl.AclType? = null
+    var type: AclType? = null
 
     @JsonProperty("Rules")
     var rules: String? = null

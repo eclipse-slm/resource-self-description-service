@@ -25,10 +25,10 @@ import java.util.UUID;
 
 @Component
 public class ConsulAgentApiClient extends AbstractConsulApiClient {
-    public static final String CONSUL_CLIENT_SERVICE_NAME = "consul-client";
-    private static final int CONSUL_CLIENT_DEFAULT_HTTP_PORT = 8500;
     private final ConsulNodesApiClient consulNodesApiClient;
     private final ConsulServicesApiClient consulServicesApiClient;
+    public static final String CONSUL_CLIENT_SERVICE_NAME = "consul-client";
+    private static final int CONSUL_CLIENT_DEFAULT_HTTP_PORT = 8500;
 
     public ConsulAgentApiClient(
             @Value("${consul.scheme}") String consulScheme,

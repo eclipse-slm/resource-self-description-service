@@ -1,4 +1,4 @@
-package org.eclipse.slm.self_description_service.common.consul.client.requests.catalog
+package org.eclipse.slm.common.consul.client.requests.catalog
 
 import org.eclipse.slm.self_description_service.common.consul.client.requests.ConsulRequest
 import org.eclipse.slm.self_description_service.common.consul.client.requests.parameters.NodeMetaParameters

@@ -28,7 +28,7 @@ public class TemplateRenderer {
         /* You should do this ONLY ONCE in the whole application life-cycle:        */
 
         /* Create and adjust the configuration singleton */
-        cfg = new Configuration(Configuration.VERSION_2_3_33);
+        cfg = new Configuration(Configuration.VERSION_2_3_0);
         // Recommended settings for new projects:
         cfg.setDefaultEncoding("UTF-8");
         cfg.setTemplateExceptionHandler(TemplateExceptionHandler.RETHROW_HANDLER);

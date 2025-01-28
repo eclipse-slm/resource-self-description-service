@@ -44,6 +44,7 @@ class TemplateTest{
 
 public class TemplateRendererTests {
 
+
     private String getPathForFile(String fileName) throws URISyntaxException {
         URL res = getClass().getClassLoader().getResource(fileName);
         File file = Paths.get(res.toURI()).toFile();

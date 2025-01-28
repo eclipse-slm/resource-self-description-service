@@ -36,4 +36,12 @@ Check for Consul -> Spring implementierung für Consul um Service zu finden
 - Prometheus Templating: (...)
     - ID/Type for an exporter -> lookup in config file for exporter -> collect data -> return data 
 
+20.01.2025
 
+- Registrierung testen
+- Datasource tests
+- Registration test
+
+
+- Github workflow
+- Repo 

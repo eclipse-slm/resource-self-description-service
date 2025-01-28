@@ -6,12 +6,11 @@ import com.orbitz.consul.model.catalog.*;
 import com.orbitz.consul.model.health.ImmutableService;
 import com.orbitz.consul.model.health.Node;
 import com.orbitz.consul.model.health.Service;
-import org.eclipse.slm.self_description_service.common.consul.model.acl.BindingRule;
-import org.eclipse.slm.self_description_service.common.consul.model.acl.Policy;
 import org.eclipse.slm.self_description_service.common.consul.model.acl.PolicyLink;
-import org.eclipse.slm.self_description_service.common.consul.model.acl.Role;
-import org.eclipse.slm.self_description_service.common.consul.model.catalog.CatalogNode;
-import org.modelmapper.*;
+import org.modelmapper.Conditions;
+import org.modelmapper.Converter;
+import org.modelmapper.ModelMapper;
+import org.modelmapper.PropertyMap;
 import org.modelmapper.convention.MatchingStrategies;
 import org.modelmapper.spi.MappingContext;
 
@@ -199,9 +198,9 @@ public class ConsulObjectMapper {
             }
         };
 
-        var catalogServiceToOptionalImmutableService = new Converter<CatalogNode.Service, Optional<Service>>() {
+        var catalogServiceToOptionalImmutableService = new Converter<org.eclipse.slm.self_description_service.common.consul.model.catalog.CatalogNode.Service, Optional<Service>>() {
             @Override
-            public Optional<Service> convert(MappingContext<CatalogNode.Service, Optional<Service>> mappingContext) {
+            public Optional<Service> convert(MappingContext<org.eclipse.slm.self_description_service.common.consul.model.catalog.CatalogNode.Service, Optional<Service>> mappingContext) {
                 if (mappingContext.getSource() != null) {
                     var service = map(mappingContext.getSource(), Service.class);
                     return Optional.of(service);
@@ -210,9 +209,9 @@ public class ConsulObjectMapper {
             }
         };
 
-        var catalogServiceToImmutableService = new Converter<CatalogNode.Service, Service>() {
+        var catalogServiceToImmutableService = new Converter<org.eclipse.slm.self_description_service.common.consul.model.catalog.CatalogNode.Service, Service>() {
             @Override
-            public Service convert(MappingContext<CatalogNode.Service, Service> mappingContext) {
+            public Service convert(MappingContext<org.eclipse.slm.self_description_service.common.consul.model.catalog.CatalogNode.Service, Service> mappingContext) {
                 if (mappingContext.getSource() != null) {
                     var source = mappingContext.getSource();
                     var builder = map(mappingContext.getSource(), ImmutableService.builder());
@@ -340,9 +339,9 @@ public class ConsulObjectMapper {
                 .setProvider(p -> ImmutableTaggedAddresses.builder());
 
 
-        modelMapper.typeMap(CatalogNode.Service.class, Service.class)
+        modelMapper.typeMap(org.eclipse.slm.self_description_service.common.consul.model.catalog.CatalogNode.Service.class, Service.class)
                 .setProvider(p -> map(p.getSource(), ImmutableService.Builder.class).build());
-        modelMapper.typeMap(CatalogNode.Service.class, ImmutableService.Builder.class)
+        modelMapper.typeMap(org.eclipse.slm.self_description_service.common.consul.model.catalog.CatalogNode.Service.class, ImmutableService.Builder.class)
                 .setProvider(p -> ImmutableService.builder());
 
         modelMapper.typeMap(CatalogNode.class, CatalogRegistration.class)
@@ -360,7 +359,7 @@ public class ConsulObjectMapper {
         modelMapper.typeMap(Policy.class, ImmutableBindingRule.Builder.class)
                 .setProvider(p -> ImmutableBindingRule.builder());
 
-        modelMapper.typeMap(ImmutableRoleResponse.class, Role.class)
+        modelMapper.typeMap(ImmutableRoleResponse.class, org.eclipse.slm.self_description_service.common.consul.model.acl.Role.class)
                 .setPostConverter(mappingContext -> {
                     var dest = mappingContext.getDestination();
                     if (dest.getPolicies() != null && !dest.getPolicies().isEmpty()) {

@@ -16,9 +16,15 @@
 
 
     <dependencies>
+
+        <!-- Spring !-->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-security</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-core</artifactId>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -32,10 +38,28 @@
             <optional>true</optional>
         </dependency>
         <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-oauth2-resource-server</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-oauth2-jose</artifactId>
+        </dependency>
+        <dependency>
             <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-docker-compose</artifactId>
-            <scope>runtime</scope>
-            <optional>true</optional>
+            <artifactId>spring-boot-starter-actuator</artifactId>
+            <version>3.4.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-consul-discovery</artifactId>
+            <version>4.2.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-consul-config</artifactId>
+            <version>4.1.2</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.security</groupId>
@@ -43,16 +67,15 @@
             <scope>test</scope>
         </dependency>
 
-        <dependency>
-            <groupId>org.eclipse.basyx</groupId>
-            <artifactId>basyx.sdk</artifactId>
-            <version>${basyx.sdk.version}</version>
-        </dependency>
-
+        <!-- OpenAPI !-->
         <dependency>
             <groupId>org.springdoc</groupId>
             <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
             <version>2.0.3</version>
+        </dependency>
+        <dependency>
+            <groupId>io.swagger.core.v3</groupId>
+            <artifactId>swagger-annotations</artifactId>
         </dependency>
 
         <dependency>
@@ -61,7 +84,7 @@
             <version>${revision}</version>
         </dependency>
 
-
+        <!-- AAS !-->
         <dependency>
             <groupId>org.eclipse.digitaltwin.aas4j</groupId>
             <artifactId>aas4j-model</artifactId>
@@ -120,6 +143,12 @@
 
         <!-- BaSyx !-->
         <dependency>
+            <groupId>org.eclipse.basyx</groupId>
+            <artifactId>basyx.sdk</artifactId>
+            <version>${basyx.sdk.version}</version>
+        </dependency>
+
+        <dependency>
             <groupId>org.eclipse.digitaltwin.basyx</groupId>
             <artifactId>basyx.submodelrepository-core</artifactId>
             <version>${basyx.version}</version>
@@ -138,24 +167,40 @@
         <dependency>
             <groupId>org.eclipse.slm</groupId>
             <artifactId>datasource</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
+            <version>${project.version}</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>org.eclipse.slm</groupId>
             <artifactId>common.consul.client</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.eclipse.slm</groupId>
             <artifactId>common.parent.configs</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
+            <version>${project.version}</version>
         </dependency>
+
+
         <dependency>
             <groupId>org.eclipse.slm</groupId>
             <artifactId>common.aas.clients</artifactId>
-            <version>1.4.0-SNAPSHOT</version>
+            <version>${project.version}</version>
             <scope>compile</scope>
+        </dependency>
+
+        <!-- Kotlin Standard Library -->
+        <dependency>
+            <groupId>org.jetbrains.kotlin</groupId>
+            <artifactId>kotlin-stdlib</artifactId>
+            <version>1.9.20</version>
+        </dependency>
+
+        <!-- Kotlin Reflection (optional but recommended) -->
+        <dependency>
+            <groupId>org.jetbrains.kotlin</groupId>
+            <artifactId>kotlin-reflect</artifactId>
+            <version>1.9.20</version>
         </dependency>
 
     </dependencies>
@@ -166,6 +211,31 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <version>${spring.boot.version}</version>
+            </plugin>
+
+            <plugin>
+                <groupId>org.jetbrains.kotlin</groupId>
+                <artifactId>kotlin-maven-plugin</artifactId>
+                <version>1.9.20</version>
+                <executions>
+                    <execution>
+                        <id>compile</id>
+                        <phase>compile</phase>
+                        <goals>
+                            <goal>compile</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>test-compile</id>
+                        <phase>test-compile</phase>
+                        <goals>
+                            <goal>test-compile</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <jvmTarget>17</jvmTarget>  <!-- Adjust this to match your Java version -->
+                </configuration>
             </plugin>
         </plugins>
     </build>

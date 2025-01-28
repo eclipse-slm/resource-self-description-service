@@ -17,7 +17,7 @@ class Check {
     var name: String? = null
 
     @JsonProperty("Status")
-    var status: org.eclipse.slm.self_description_service.common.consul.model.agent.Check.CheckStatus? = null
+    var status: CheckStatus? = null
 
     @JsonProperty("Notes")
     var notes: String? = null

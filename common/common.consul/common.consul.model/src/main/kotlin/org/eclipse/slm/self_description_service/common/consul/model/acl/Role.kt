@@ -15,7 +15,7 @@ class Role {
     var description: String? = null
 
     @JsonProperty("Policies", required = false)
-    var policies: List<PolicyLink>? = ArrayList()
+    var policies: List<org.eclipse.slm.self_description_service.common.consul.model.acl.PolicyLink>? = ArrayList()
 
     @JsonProperty("ID", required = false)
     var id: String? = null
@@ -28,7 +28,11 @@ class Role {
 
     public constructor() {}
 
-    constructor(name: String, description: String?, policies: List<PolicyLink>?) {
+    constructor(
+        name: String,
+        description: String?,
+        policies: List<org.eclipse.slm.self_description_service.common.consul.model.acl.PolicyLink>?
+    ) {
         this.name = name
         this.description = description
         this.policies = policies

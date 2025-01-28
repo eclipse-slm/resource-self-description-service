@@ -1,9 +1,9 @@
 package org.eclipse.slm.self_description_service.common.consul.model.authentication
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
-import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.annotation.JsonProperty
 import org.eclipse.slm.self_description_service.common.consul.model.acl.Role
+
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 class LoginResponse {

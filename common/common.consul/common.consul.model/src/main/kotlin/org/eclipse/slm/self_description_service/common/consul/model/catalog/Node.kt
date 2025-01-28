@@ -17,7 +17,7 @@ open class Node {
     var datacenter: String? = null
 
     @JsonProperty("TaggedAddresses")
-    var taggedAddresses: TaggedAddresses? = null
+    var taggedAddresses: org.eclipse.slm.self_description_service.common.consul.model.catalog.TaggedAddresses? = null
 
     @JsonProperty("Meta")
     open var meta: Map<String, String>? = null
