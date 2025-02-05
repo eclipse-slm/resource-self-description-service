@@ -13,6 +13,7 @@ import org.eclipse.digitaltwin.basyx.http.Base64UrlEncodedIdentifierSize;
 import org.eclipse.digitaltwin.basyx.http.pagination.Base64UrlEncodedCursor;
 import org.eclipse.digitaltwin.basyx.http.pagination.PagedResult;
 import org.eclipse.digitaltwin.basyx.http.pagination.PagedResultPagingMetadata;
+import org.eclipse.digitaltwin.basyx.pagination.GetSubmodelElementsResult;
 import org.eclipse.digitaltwin.basyx.submodelrepository.http.SubmodelRepositoryHTTPApi;
 import org.eclipse.digitaltwin.basyx.submodelrepository.http.pagination.GetSubmodelsResult;
 import org.eclipse.digitaltwin.basyx.submodelservice.value.SubmodelElementValue;
@@ -37,13 +38,7 @@ public class SubmodelRepositoryController implements SubmodelRepositoryHTTPApi {
         this.repository = repository;
     }
 
-    private String getEncodedCursorFromCursorResult(CursorResult<?> cursorResult) {
-        if (cursorResult == null || cursorResult.getCursor() == null) {
-            return null;
-        }
 
-        return Base64UrlEncodedCursor.encodeCursor(cursorResult.getCursor());
-    }
 
 
     @Override
@@ -104,17 +99,35 @@ public class SubmodelRepositoryController implements SubmodelRepositoryHTTPApi {
 
     @Override
     public ResponseEntity<PagedResult> getAllSubmodelElements(Base64UrlEncodedIdentifier submodelIdentifier, @Min(1L) @Valid Integer limit, @Valid Base64UrlEncodedCursor cursor, @Valid String level, @Valid String extent) {
-        return null;
+        if (limit == null) {
+            limit = 100;
+        }
+
+        String decodedCursor = "";
+        if (cursor != null) {
+            decodedCursor = cursor.getDecodedCursor();
+        }
+
+        PaginationInfo pInfo = new PaginationInfo(limit, decodedCursor);
+        CursorResult<List<SubmodelElement>> cursorResult = this.repository.getSubmodelElements(submodelIdentifier.getIdentifier(), pInfo);
+
+        GetSubmodelElementsResult paginatedSubmodelElement = new GetSubmodelElementsResult();
+        String encodedCursor = getEncodedCursorFromCursorResult(cursorResult);
+
+        paginatedSubmodelElement.result(new ArrayList<>(cursorResult.getResult()));
+        paginatedSubmodelElement.setPagingMetadata(new PagedResultPagingMetadata().cursor(encodedCursor));
+
+        return new ResponseEntity<PagedResult>(paginatedSubmodelElement, HttpStatus.OK);
     }
 
     @Override
     public ResponseEntity<SubmodelElement> getSubmodelElementByPathSubmodelRepo(Base64UrlEncodedIdentifier submodelIdentifier, String idShortPath, @Valid String level, @Valid String extent) {
-        return null;
+        return handleSubmodelElementValueNormalGetRequest(submodelIdentifier.getIdentifier(), idShortPath);
     }
 
     @Override
     public ResponseEntity<SubmodelElementValue> getSubmodelElementByPathValueOnlySubmodelRepo(Base64UrlEncodedIdentifier submodelIdentifier, String idShortPath, @Valid String level, @Valid String extent) {
-        return null;
+        return handleSubmodelElementValueGetRequest(submodelIdentifier.getIdentifier(), idShortPath);
     }
 
     @Override
@@ -165,5 +178,23 @@ public class SubmodelRepositoryController implements SubmodelRepositoryHTTPApi {
     @Override
     public ResponseEntity<Void> patchSubmodelByIdValueOnly(Base64UrlEncodedIdentifier submodelIdentifier, @Valid List<SubmodelElement> body, @Valid String level) {
         throw new MethodNotImplementedException();
+    }
+
+    private String getEncodedCursorFromCursorResult(CursorResult<?> cursorResult) {
+        if (cursorResult == null || cursorResult.getCursor() == null) {
+            return null;
+        }
+
+        return Base64UrlEncodedCursor.encodeCursor(cursorResult.getCursor());
+    }
+
+    private ResponseEntity<SubmodelElement> handleSubmodelElementValueNormalGetRequest(String submodelIdentifier, String idShortPath) {
+        SubmodelElement submodelElement = this.repository.getSubmodelElement(submodelIdentifier, idShortPath);
+        return new ResponseEntity<SubmodelElement>(submodelElement, HttpStatus.OK);
+    }
+
+    private ResponseEntity<SubmodelElementValue> handleSubmodelElementValueGetRequest(String submodelIdentifier, String idShortPath) {
+        SubmodelElementValue value = this.repository.getSubmodelElementValue(submodelIdentifier, idShortPath);
+        return new ResponseEntity<SubmodelElementValue>(value, HttpStatus.OK);
     }
 }

@@ -8,6 +8,7 @@ import org.eclipse.digitaltwin.aas4j.v3.model.impl.*;
 import java.text.SimpleDateFormat;
 import java.time.Duration;
 import java.util.*;
+import java.util.function.Function;
 
 public class DockerSubmodel extends DefaultSubmodel {
     public static final String SUBMODELID = "DockerInfo";
@@ -43,6 +44,7 @@ public class DockerSubmodel extends DefaultSubmodel {
 
         var listBuilder = new DefaultSubmodelElementList.Builder()
                 .displayName(new DefaultLangStringNameType.Builder().text(name).build());
+        listBuilder.idShort(name);
 
         for (var value : values) {
             if (value instanceof DockerObject dockerObject) {
@@ -51,7 +53,7 @@ public class DockerSubmodel extends DefaultSubmodel {
                 var listValues = listValue.stream().map(o -> (Object) o).toList();
                 createList(listValues).ifPresent(listBuilder::value);
             } else if (value instanceof Map<?, ?> map) {
-                createMap(this.mapMapValues(map)).ifPresent(listBuilder::value);
+                createMap(name, this.mapMapValues(map)).ifPresent(listBuilder::value);
             } else {
                 createProperty(name, value).ifPresent(listBuilder::value);
             }
@@ -68,6 +70,7 @@ public class DockerSubmodel extends DefaultSubmodel {
 
         var collectionBuilder = new DefaultSubmodelElementCollection.Builder()
                 .displayName(new DefaultLangStringNameType.Builder().text(name).build());
+        collectionBuilder.idShort(name);
 
         var values = dockerObject.getRawValues();
         values.forEach((key, value) -> {
@@ -84,7 +87,7 @@ public class DockerSubmodel extends DefaultSubmodel {
                     createList(key, listValues).ifPresent(collectionBuilder::value);
                 }
             } else if (value instanceof Map<?, ?> map) {
-                createMap(this.mapMapValues(map)).ifPresent(collectionBuilder::value);
+                createMap(key, this.mapMapValues(map)).ifPresent(collectionBuilder::value);
             } else {
                 createProperty(key, value).ifPresent(collectionBuilder::value);
             }
@@ -127,7 +130,7 @@ public class DockerSubmodel extends DefaultSubmodel {
                         m.put(keyName, v);
                     }
                 });
-                createMap(m).ifPresent(listBuilder::value);
+                createMap(className, m).ifPresent(listBuilder::value);
             } else {
                 createProperty(value).ifPresent(listBuilder::value);
             }
@@ -136,12 +139,14 @@ public class DockerSubmodel extends DefaultSubmodel {
         return Optional.of(listBuilder.build());
     }
 
-    private <T> Optional<SubmodelElementList> createMap(Map<String, T> map) {
+    private <T> Optional<SubmodelElementList> createMap(String name, Map<String, T> map) {
         if (map == null || map.isEmpty()) {
             return Optional.empty();
         }
 
-        var mapBuilder = new DefaultSubmodelElementList.Builder();
+        var mapBuilder = new DefaultSubmodelElementList.Builder()
+                .displayName(new DefaultLangStringNameType.Builder().text(name).build())
+                .idShort(name);
 
         map.forEach((mapKey, mapValue) -> {
             createMapElement(mapKey, mapValue).ifPresent(mapBuilder::value);
@@ -150,18 +155,16 @@ public class DockerSubmodel extends DefaultSubmodel {
         return Optional.of(mapBuilder.build());
     }
 
-    private <T> Optional<SubmodelElementCollection> createMapElement(String name, T value) {
+    private <T> Optional<? extends SubmodelElement> createMapElement(String name, T value) {
         if (name == null || value == null) {
             return Optional.empty();
         }
-        var collectionBuilder = new DefaultSubmodelElementCollection.Builder();
-        createProperty(name).ifPresent(collectionBuilder::value);
 
         if (value instanceof DockerObject dockerObject) {
-            createCollectionValue(name, dockerObject).ifPresent(collectionBuilder::value);
+            return createCollectionValue(name, dockerObject);
         } else if (value instanceof Collection<?> listValue) {
             var listValues = listValue.stream().map(o -> (Object) o).toList();
-            createList(listValues).ifPresent(collectionBuilder::value);
+            return createList(name, listValues);
         } else if (value instanceof Map<?, ?> map) {
             var m = new HashMap<String, Object>();
             map.forEach((k, v) -> {
@@ -169,12 +172,11 @@ public class DockerSubmodel extends DefaultSubmodel {
                     m.put(keyName, v);
                 }
             });
-            createMap(m).ifPresent(collectionBuilder::value);
+            return createMap(name, m);
         } else {
-            createProperty(value).ifPresent(collectionBuilder::value);
+            return createProperty(name, value);
         }
 
-        return Optional.of(collectionBuilder.build());
     }
 
     private <T> Optional<Property> createProperty(T value) {
@@ -196,7 +198,8 @@ public class DockerSubmodel extends DefaultSubmodel {
         }
 
         var property = new DefaultProperty.Builder()
-                .displayName(new DefaultLangStringNameType.Builder().text(name).build());
+                .displayName(new DefaultLangStringNameType.Builder().text(name).build())
+                .idShort(name);
         setValueForProperty(value, property);
 
         return Optional.of(property.build());
@@ -465,4 +468,16 @@ public class DockerSubmodel extends DefaultSubmodel {
     }
 
 
+    public <T extends DockerObject> void addSubmodelEntry(String name, List<T> values, Function<T, String> keyExtractor) {
+        var listBuilder = new DefaultSubmodelElementList.Builder()
+                .displayName(new DefaultLangStringNameType.Builder().text(name).build());
+        listBuilder.idShort(name);
+
+        for (T value : values) {
+            var valueName = keyExtractor.apply(value);
+            var collection = createCollectionValue(valueName, value);
+            collection.ifPresent(listBuilder::value);
+        }
+        this.submodelElements.add(listBuilder.build());
+    }
 }

@@ -10,6 +10,7 @@ import org.eclipse.digitaltwin.basyx.core.pagination.CursorResult;
 import org.eclipse.digitaltwin.basyx.core.pagination.PaginationInfo;
 import org.eclipse.digitaltwin.basyx.core.pagination.PaginationSupport;
 import org.eclipse.digitaltwin.basyx.http.Base64UrlEncodedIdentifier;
+import org.eclipse.digitaltwin.basyx.submodelservice.pathparsing.HierarchicalSubmodelElementParser;
 import org.eclipse.digitaltwin.basyx.submodelservice.value.PropertyValue;
 import org.eclipse.digitaltwin.basyx.submodelservice.value.SubmodelElementValue;
 import org.eclipse.digitaltwin.basyx.submodelservice.value.SubmodelValueOnly;
@@ -60,7 +61,7 @@ public class SubmodelRepository implements org.eclipse.digitaltwin.basyx.submode
             throw new SubmodelNotFoundException(submodelId);
         }
         try {
-            var source = datasource.get().getModelById(submodelId);
+            var source = datasource.get().getModelById(modelIdEncoded.getIdentifier());
             return source.orElse(null);
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -103,9 +104,9 @@ public class SubmodelRepository implements org.eclipse.digitaltwin.basyx.submode
     public SubmodelElement getSubmodelElement(String submodelId, String smeIdShort) throws ElementDoesNotExistException {
 
         var submodel = this.getSubmodel(submodelId);
-        var submodelElement = submodel.getSubmodelElements().stream().filter(smElement -> smElement.getIdShort().equals(smeIdShort)).findFirst();
+        var parser = new HierarchicalSubmodelElementParser(submodel);
 
-        return submodelElement.orElse(null);
+        return parser.getSubmodelElementFromIdShortPath(smeIdShort);
     }
 
     @Override

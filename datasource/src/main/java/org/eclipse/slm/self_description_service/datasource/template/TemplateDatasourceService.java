@@ -127,9 +127,9 @@ public class TemplateDatasourceService extends AbstractDatasource implements Dat
                 }
 
                 var aasxDeserializer = new AASXDeserializer(resource.get().getInputStream());
-                var environment = aasxDeserializer.read();
+                var aasx = aasxDeserializer.read();
 
-                optionalSubmodel = environment.getSubmodels().stream().filter(model -> {
+                optionalSubmodel = aasx.getSubmodels().stream().filter(model -> {
                     var submodelId = createSubmodelId(model.getIdShort());
                     return submodelId.equals(id);
                 }).findFirst();
@@ -139,10 +139,9 @@ public class TemplateDatasourceService extends AbstractDatasource implements Dat
             if (optionalSubmodel.isPresent()) {
 
                 var submodel = optionalSubmodel.get();
-                var submodelId = createSubmodelId(submodel.getIdShort());
-                submodel.setId(submodelId);
-
+                submodel.setId(createSubmodelId(submodel.getIdShort()));
                 renderSubmodel(submodel);
+                submodel.setKind(ModellingKind.INSTANCE);
                 return Optional.of(submodel);
             }
 

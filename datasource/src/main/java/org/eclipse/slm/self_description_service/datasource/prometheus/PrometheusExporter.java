@@ -13,7 +13,7 @@ public class PrometheusExporter extends AbstractDatasource implements Datasource
 
 
     public PrometheusExporter(@Value("${resource.id}") String resourceId) {
-        super(resourceId);
+        super(resourceId, "Prometheus");
     }
 
     @Override

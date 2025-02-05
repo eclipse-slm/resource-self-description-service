@@ -38,10 +38,18 @@ Check for Consul -> Spring implementierung für Consul um Service zu finden
 
 20.01.2025
 
+- Docker datasource anpassen
+- Submodel Element Endpoint
+- Auth über Env Variable ein/aus
+- Auth Aus, Keycloak, ... -> Einstellbar machen
+
 - Registrierung testen
 - Datasource tests
 - Registration test
 
-
 - Github workflow
-- Repo 
+- Repo
+
+- Playbook für die installation
+
+

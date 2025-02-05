@@ -1,7 +1,9 @@
 package org.eclipse.slm.self_description_service.datasource.docker;
 
 import com.github.dockerjava.api.DockerClient;
+import com.github.dockerjava.api.command.InspectVolumeResponse;
 import com.github.dockerjava.api.exception.DockerException;
+import com.github.dockerjava.api.model.*;
 import com.github.dockerjava.core.DefaultDockerClientConfig;
 import com.github.dockerjava.core.DockerClientConfig;
 import com.github.dockerjava.core.DockerClientImpl;
@@ -61,32 +63,32 @@ public class DockerDatasourceService extends AbstractDatasource implements Datas
 
 
         var containers = this.dockerClient.listContainersCmd().exec();
-        dockerSubmodel.addSubmodelEntry("Containers", containers);
+        dockerSubmodel.addSubmodelEntry("Containers", containers, Container::getId);
 
         var images = this.dockerClient.listImagesCmd().exec();
-        dockerSubmodel.addSubmodelEntry("Images", images);
+        dockerSubmodel.addSubmodelEntry("Images", images, Image::getId);
 
         var networks = this.dockerClient.listNetworksCmd().exec();
-        dockerSubmodel.addSubmodelEntry("Networks", networks);
+        dockerSubmodel.addSubmodelEntry("Networks", networks, Network::getName);
 
         var volumes = this.dockerClient.listVolumesCmd().exec().getVolumes();
-        dockerSubmodel.addSubmodelEntry("Volumes", volumes);
+        dockerSubmodel.addSubmodelEntry("Volumes", volumes, InspectVolumeResponse::getName);
 
         try {
             var services = this.dockerClient.listServicesCmd().exec();
-            dockerSubmodel.addSubmodelEntry("Services", services);
+            dockerSubmodel.addSubmodelEntry("Services", services, Service::getId);
 
             var tasks = this.dockerClient.listTasksCmd().exec();
-            dockerSubmodel.addSubmodelEntry("Tasks", tasks);
+            dockerSubmodel.addSubmodelEntry("Tasks", tasks, Task::getName);
 
             var swarmNodes = this.dockerClient.listSwarmNodesCmd().exec();
-            dockerSubmodel.addSubmodelEntry("Swarm Nodes", swarmNodes);
+            dockerSubmodel.addSubmodelEntry("Swarm Nodes", swarmNodes, SwarmNode::getId);
 
             var configs = this.dockerClient.listConfigsCmd().exec();
-            dockerSubmodel.addSubmodelEntry("Configs", configs);
+            dockerSubmodel.addSubmodelEntry("Configs", configs, Config::getId);
 
             var secrets = this.dockerClient.listSecretsCmd().exec();
-            dockerSubmodel.addSubmodelEntry("Secrets", secrets);
+            dockerSubmodel.addSubmodelEntry("Secrets", secrets, Secret::getId);
         } catch (DockerException exception) {
             LOG.info("Docker runs not in Swarm mode ");
         }
