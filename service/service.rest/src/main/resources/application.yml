@@ -77,6 +77,7 @@ management:
 
 ### Security
 security:
+  enabled: false
   auth-white-list: ""
   origins: "*"
 
@@ -84,6 +85,7 @@ security:
 keycloak:
   tenants:
     config-path: "../../src/main/resources/static/test-keycloak.json"
+#    config-path: consul:keycloak
 #    realm: 'fabos'
 #    auth-server-url: 'http://c8.slm.local:7080/auth/'
 

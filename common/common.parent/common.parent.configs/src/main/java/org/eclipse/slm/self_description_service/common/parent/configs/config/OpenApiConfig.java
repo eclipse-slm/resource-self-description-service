@@ -28,6 +28,9 @@ public class OpenApiConfig {
     private String version;
     private MultiTenantKeycloakRegistration multiTenantKeycloakRegistration;
 
+    @Value("${security.enabled:true}")
+    private boolean securityEnabled;
+
     @Autowired
     public OpenApiConfig(@Value("${application.version}") String version,
                          @Autowired MultiTenantKeycloakRegistration multiTenantKeycloakRegistration) {
@@ -57,29 +60,7 @@ public class OpenApiConfig {
             }
         }
 
-        return new OpenAPI()
-                .components(new Components()
-                        .addSecuritySchemes("spring_oauth", new SecurityScheme()
-                                .type(SecurityScheme.Type.OAUTH2)
-                                .description("Oauth2 flow")
-                                .flows(new OAuthFlows()
-                                        .authorizationCode(new OAuthFlow()
-                                                .authorizationUrl(authServerUrl)
-                                                .refreshUrl(tokenServerUrl)
-                                                .tokenUrl(tokenServerUrl)
-                                                .scopes(new Scopes()))
-                                )
-                        )
-                        .addSecuritySchemes("bearer_auth", new SecurityScheme()
-                                .type(SecurityScheme.Type.HTTP)
-                                .scheme("bearer")
-                                .bearerFormat("JWT")
-                        )
-                )
-                .security(Arrays.asList(
-                        new SecurityRequirement().addList("bearer_auth"),
-                        new SecurityRequirement().addList("spring_oauth")
-                ))
+        var openAi = new OpenAPI()
                 .info(new Info()
                         .title(title)
                         .description(description)
@@ -88,6 +69,34 @@ public class OpenApiConfig {
                                 .name(contactName)
                                 .url(contactUrl)
                                 .email(contactMail)));
+
+        if (securityEnabled) {
+            openAi.components(new Components()
+                    .addSecuritySchemes("spring_oauth", new SecurityScheme()
+                            .type(SecurityScheme.Type.OAUTH2)
+                            .description("Oauth2 flow")
+                            .flows(new OAuthFlows()
+                                    .authorizationCode(new OAuthFlow()
+                                            .authorizationUrl(authServerUrl)
+                                            .refreshUrl(tokenServerUrl)
+                                            .tokenUrl(tokenServerUrl)
+                                            .scopes(new Scopes()))
+                            )
+                    )
+                    .addSecuritySchemes("bearer_auth", new SecurityScheme()
+                            .type(SecurityScheme.Type.HTTP)
+                            .scheme("bearer")
+                            .bearerFormat("JWT")
+                    )
+            );
+            openAi.security(Arrays.asList(
+                    new SecurityRequirement().addList("bearer_auth"),
+                    new SecurityRequirement().addList("spring_oauth")
+            ));
+
+        }
+
+        return openAi;
     }
 
 }

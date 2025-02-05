@@ -46,6 +46,9 @@ public class WebSecurityConfig {
             "/swagger-ui/**",
             "/actuator/health"
     };
+
+    @Value("${security.enabled:true}")
+    private boolean securityEnabled;
     private final MultiTenantKeycloakRegistration multiTenantKeycloakRegistration;
 
     public WebSecurityConfig(MultiTenantKeycloakRegistration multiTenantKeycloakRegistration) {
@@ -61,39 +64,52 @@ public class WebSecurityConfig {
             AuthenticationManagerResolver<HttpServletRequest> authenticationManagerResolver)
             throws Exception {
 
-        http.oauth2ResourceServer(oauth2 -> oauth2.authenticationManagerResolver(authenticationManagerResolver));
+        if (securityEnabled) {
+            http.oauth2ResourceServer(oauth2 -> oauth2.authenticationManagerResolver(authenticationManagerResolver));
 
-        // Enable and configure CORS
-        http.cors(cors -> cors.configurationSource(corsConfigurationSource(origins)));
+            // Enable and configure CORS
+            http.cors(cors -> cors.configurationSource(corsConfigurationSource(origins)));
 
-        // State-less session (state in access-token only)
-        http.sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+            // State-less session (state in access-token only)
+            http.sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
-        // Disable CSRF because of state-less session-management
-        http.csrf(csrf -> csrf.disable());
+            // Disable CSRF because of state-less session-management
+            http.csrf(csrf -> csrf.disable());
 
-        // Disable 'X-Frame-Options' response header
-        http.headers((headers) -> headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::disable));
+            // Disable 'X-Frame-Options' response header
+            http.headers((headers) -> headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::disable));
 
-        // Return 401 (unauthorized) instead of 302 (redirect to login) when
-        // authorization is missing or invalid
-        http.exceptionHandling(eh -> eh.authenticationEntryPoint((request, response, authException) -> {
-            response.addHeader(HttpHeaders.WWW_AUTHENTICATE, "Bearer realm=\"Restricted Content\"");
-            response.sendError(HttpStatus.UNAUTHORIZED.value(), HttpStatus.UNAUTHORIZED.getReasonPhrase());
-        }));
+            // Return 401 (unauthorized) instead of 302 (redirect to login) when
+            // authorization is missing or invalid
+            http.exceptionHandling(eh -> eh.authenticationEntryPoint((request, response, authException) -> {
+                response.addHeader(HttpHeaders.WWW_AUTHENTICATE, "Bearer realm=\"Restricted Content\"");
+                response.sendError(HttpStatus.UNAUTHORIZED.value(), HttpStatus.UNAUTHORIZED.getReasonPhrase());
+            }));
 
-        // If SSL enabled, disable http (https only)
-        if (serverProperties.getSsl() != null && serverProperties.getSsl().isEnabled()) {
-            http.requiresChannel(channel -> channel.anyRequest().requiresSecure());
+            // If SSL enabled, disable http (https only)
+            if (serverProperties.getSsl() != null && serverProperties.getSsl().isEnabled()) {
+                http.requiresChannel(channel -> channel.anyRequest().requiresSecure());
+            }
+
+            // @formatter:off
+            var authWhiteList = (String[])ArrayUtils.addAll(configuredAuthWhiteList, STATIC_AUTH_WHITELIST);
+
+            http.authorizeHttpRequests(requests -> requests
+                    .requestMatchers(Stream.of(authWhiteList).map(AntPathRequestMatcher::new).toArray(AntPathRequestMatcher[]::new)).permitAll()
+                    .anyRequest().authenticated());
+            // @formatter:on
+
+        } else {
+            // Enable and configure CORS
+            String[] unsecure_origins = {"*"};
+            http.cors(cors -> cors.configurationSource(corsConfigurationSource(unsecure_origins)));
+
+            // Disable CSRF because of state-less session-management
+            http.csrf(csrf -> csrf.disable());
+
+            http.authorizeHttpRequests(r -> r.anyRequest().permitAll());
         }
 
-        // @formatter:off
-        var authWhiteList = (String[])ArrayUtils.addAll(configuredAuthWhiteList, STATIC_AUTH_WHITELIST);
-
-        http.authorizeHttpRequests(requests -> requests
-                .requestMatchers(Stream.of(authWhiteList).map(AntPathRequestMatcher::new).toArray(AntPathRequestMatcher[]::new)).permitAll()
-                .anyRequest().authenticated());
-        // @formatter:on
 
         return http.build();
     }
