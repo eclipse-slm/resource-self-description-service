@@ -15,6 +15,7 @@
         <module>templating</module>
         <module>datasource</module>
         <module>common</module>
+        <module>coverage</module>
     </modules>
 
     <profiles>
@@ -36,7 +37,11 @@
         <maven.compiler.target>${java.version}</maven.compiler.target>
 
         <spring.boot.version>3.3.3</spring.boot.version>
+        <springaddons-c4-soft.version>7.8.10</springaddons-c4-soft.version>
+        <spring-cloud-contract-wiremock.version>4.1.4</spring-cloud-contract-wiremock.version>
 
+        <maven.plugin.surefire.version>3.5.0</maven.plugin.surefire.version>
+        <maven.plugin.failsafe.version>3.5.0</maven.plugin.failsafe.version>
         <maven.plugin.apache.compiler.version>3.13.0</maven.plugin.apache.compiler.version>
         <maven.plugin.jacoco.version>0.8.12</maven.plugin.jacoco.version>
 
@@ -55,7 +60,6 @@
         <freemarker.version>2.3.33</freemarker.version>
         <snakeyaml.version>2.3</snakeyaml.version>
         <jayway.jsonpath.version>2.9.0</jayway.jsonpath.version>
-        <fasterxml.jackson.core.version>2.18.1</fasterxml.jackson.core.version>
         <basyx.version>2.0.0-milestone-04</basyx.version>
         <basyx.sdk.version>1.5.1</basyx.sdk.version>
         <docker-java.version>3.4.0</docker-java.version>
@@ -64,6 +68,13 @@
         <consul-client>1.0.2</consul-client>
         <jackson.version>2.17.2</jackson.version>
         <apache.httpcomponents>4.5.14</apache.httpcomponents>
+        <apache.httpcomponents.core5.version>5.3.1</apache.httpcomponents.core5.version>
+        <apache.httpcomponents.client5.version>5.4.1</apache.httpcomponents.client5.version>
+        <github.docker.java.version>3.2.13</github.docker.java.version>
+
+        <!-- Docker Image -->
+        <docker.image.registry>ghcr.io/eclipse-slm</docker.image.registry>
+        <docker.image.skip>false</docker.image.skip>
 
     </properties>
 
@@ -73,6 +84,90 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <version>3.4.0</version>
+            </plugin>
+
+
+            <!-- Testing !-->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>${maven.plugin.surefire.version}</version>
+                <configuration>
+                    <argLine>${surefireArgLine}</argLine>
+                    <redirectTestOutputToFile>true</redirectTestOutputToFile>
+                    <reportsDirectory>${project.build.directory}/test-reports</reportsDirectory>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-failsafe-plugin</artifactId>
+                <version>${maven.plugin.failsafe.version}</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>integration-test</goal>
+                            <goal>verify</goal>
+                        </goals>
+                        <configuration>
+                            <argLine>${failsafeArgLine}</argLine>
+                        </configuration>
+                    </execution>
+                </executions>
+                <configuration>
+                    <redirectTestOutputToFile>true</redirectTestOutputToFile>
+                    <reportsDirectory>${project.build.directory}/test-reports</reportsDirectory>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-site-plugin</artifactId>
+                <version>3.12.1</version>
+            </plugin>
+
+            <!-- to generate code coverage -->
+            <plugin>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+                <version>${maven.plugin.jacoco.version}</version>
+                <executions>
+                    <!-- set arg line property for surefire -->
+                    <execution>
+                        <id>prepare-agent</id>
+                        <goals>
+                            <goal>prepare-agent</goal>
+                        </goals>
+                        <configuration>
+                            <propertyName>surefireArgLine</propertyName>
+                        </configuration>
+                    </execution>
+                    <!-- set arg line property for failsafe -->
+                    <execution>
+                        <id>prepare-agent-integration</id>
+                        <goals>
+                            <goal>prepare-agent-integration</goal>
+                        </goals>
+                        <configuration>
+                            <propertyName>failsafeArgLine</propertyName>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!-- to push to coveralls -->
+            <plugin>
+                <groupId>org.eluder.coveralls</groupId>
+                <artifactId>coveralls-maven-plugin</artifactId>
+                <version>4.3.0</version>
+                <dependencies>
+                    <dependency>
+                        <groupId>javax.xml.bind</groupId>
+                        <artifactId>jaxb-api</artifactId>
+                        <version>2.3.1</version>
+                    </dependency>
+                </dependencies>
+                <configuration>
+                    <jacocoReports>coverage/target/site/jacoco-aggregate-ut/jacoco.xml</jacocoReports>
+                </configuration>
             </plugin>
 
             <!-- Compilation: Kotlin !-->
@@ -149,8 +244,100 @@
                     </execution>
                 </executions>
             </plugin>
-
+            <!-- Versioning !-->
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>flatten-maven-plugin</artifactId>
+                <version>1.2.7</version>
+                <configuration>
+                    <updatePomFile>true</updatePomFile>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>flatten</id>
+                        <phase>process-resources</phase>
+                        <goals>
+                            <goal>flatten</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>flatten.clean</id>
+                        <phase>clean</phase>
+                        <goals>
+                            <goal>clean</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
+
+        <pluginManagement>
+            <plugins>
+                <!-- Testing !-->
+                <plugin>
+                    <groupId>org.jacoco</groupId>
+                    <artifactId>jacoco-maven-plugin</artifactId>
+                    <version>${maven.plugin.jacoco.version}</version>
+                </plugin>
+
+                <!-- Spring Boot !-->
+                <plugin>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-maven-plugin</artifactId>
+                    <version>${maven.plugin.spring.boot.version}</version>
+                    <executions>
+                        <execution>
+                            <goals>
+                                <goal>repackage</goal>
+                                <goal>build-info</goal>
+                            </goals>
+                            <configuration>
+                                <classifier>exec</classifier>
+                            </configuration>
+                        </execution>
+                    </executions>
+                </plugin>
+                <!-- Docker Image !-->
+                <plugin>
+                    <groupId>com.spotify</groupId>
+                    <artifactId>dockerfile-maven-plugin</artifactId>
+                    <version>${maven.plugin.dockerfile.version}</version>
+                    <executions>
+                        <execution>
+                            <id>build-image</id>
+                            <goals>
+                                <goal>build</goal>
+                            </goals>
+                        </execution>
+                        <execution>
+                            <id>push-image</id>
+                            <phase>deploy</phase>
+                            <goals>
+                                <goal>push</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                    <configuration>
+                        <useMavenSettingsForAuth>true</useMavenSettingsForAuth>
+                        <repository>${docker.image.registry}/${docker.image.name}</repository>
+                        <tag>${project.version}</tag>
+                        <dockerfile>Dockerfile</dockerfile>
+                        <contextDirectory>.</contextDirectory>
+                        <skipDockerInfo>true</skipDockerInfo>
+                        <skip>${docker.image.skip}</skip>
+                    </configuration>
+                    <dependencies>
+                        <dependency>
+                            <groupId>javax.activation</groupId>
+                            <artifactId>javax.activation-api</artifactId>
+                            <version>1.2.0</version>
+                        </dependency>
+                    </dependencies>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+
+
     </build>
 
     <dependencyManagement>

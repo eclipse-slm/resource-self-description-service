@@ -7,9 +7,7 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.TestPropertySource;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-
+import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest(classes = {TemplateDatasourceService.class, TestConfig.class})
 @ComponentScan(basePackages = {"org.eclipse.slm.self_description_service"})
@@ -26,10 +24,7 @@ public class TemplateDatasourceServiceTests {
 
         var submodels = datasource.getModels();
 
-        assertNotNull(submodels);
-        assertFalse(submodels.isEmpty());
-
-
+        assertThat(submodels).isNotNull().isNotEmpty();
     }
 
 }

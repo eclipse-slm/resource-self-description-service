@@ -30,6 +30,60 @@ public class DockerSubmodel extends DefaultSubmodel {
         setSemanticId(SEMANTIC_ID);
     }
 
+
+    public Optional<SubmodelElementCollection> getContainers() {
+        return getElementCollection("Containers");
+    }
+
+    public Optional<SubmodelElementCollection> getImages() {
+        return getElementCollection("Images");
+    }
+
+    public Optional<SubmodelElementCollection> getNetworks() {
+        return getElementCollection("Networks");
+    }
+
+    public Optional<SubmodelElementCollection> getVolumes() {
+        return getElementCollection("Volumes");
+    }
+
+    public Optional<SubmodelElementCollection> getServices() {
+        return getElementCollection("Services");
+    }
+
+    public Optional<SubmodelElementCollection> getTasks() {
+        return getElementCollection("Tasks");
+    }
+
+    public Optional<SubmodelElementCollection> getSwarmNodes() {
+        return getElementCollection("Swarm Nodes");
+    }
+
+    public Optional<SubmodelElementCollection> getConfigs() {
+        return getElementCollection("Configs");
+    }
+
+    public Optional<SubmodelElementCollection> getSecrets() {
+        return getElementCollection("Secrets");
+    }
+
+
+    public Optional<SubmodelElement> getSubmodelElementByShortId(String shortId) {
+        return this.submodelElements.stream().filter(elem -> elem.getIdShort().equals(shortId)).findFirst();
+    }
+
+    private Optional<SubmodelElementCollection> getElementCollection(String shortId) {
+        var collection = this.getSubmodelElementByShortId(shortId);
+        if (collection.isPresent()) {
+            var containers = collection.get();
+            if (containers instanceof SubmodelElementCollection) {
+                return Optional.of((SubmodelElementCollection) containers);
+            }
+        }
+        return Optional.empty();
+    }
+
+
     public <T> void addSubmodelEntry(String name, List<T> values) {
         var optionalList = createList(name, values);
         optionalList.ifPresent(submodelElementList -> this.submodelElements.add(submodelElementList));
