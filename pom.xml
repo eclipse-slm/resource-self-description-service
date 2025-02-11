@@ -76,6 +76,11 @@
         <docker.image.registry>ghcr.io/eclipse-slm</docker.image.registry>
         <docker.image.skip>false</docker.image.skip>
 
+        <ecwid.consul.consul-api.version>1.4.5</ecwid.consul.consul-api.version>
+        <jayway.jsonpath.json-path.version>2.9.0</jayway.jsonpath.json-path.version>
+        <fab-os.consul.consul-client.version>1.0.2</fab-os.consul.consul-client.version>
+        <modelmapper.version>3.0.0</modelmapper.version>
+        <google.guava.version>32.0.0-jre</google.guava.version>
     </properties>
 
     <build>

@@ -134,7 +134,7 @@ aas:
     url: ${aas.submodel-repository.scheme}://${aas.submodel-repository.host}:${aas.submodel-repository.port}${aas.submodel-repository.path}
 
 ### Consul
-consul:
+optional:consul:
   scheme: http
   host: c8.slm.local
   port: 8500
