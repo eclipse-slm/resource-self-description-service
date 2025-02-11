@@ -19,8 +19,8 @@ public class DockerSubmodel extends DefaultSubmodel {
                     .value(SEMANTIC_ID_VALUE).build()).build();
 
 
-    private SimpleDateFormat dateTimeFormat = new SimpleDateFormat("MM/dd/yyyy KK:mm:ss a");
-    private SimpleDateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy");
+    private final SimpleDateFormat dateTimeFormat = new SimpleDateFormat("MM/dd/yyyy KK:mm:ss a");
+    private final SimpleDateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy");
 
 
     public DockerSubmodel(String resourceId) {

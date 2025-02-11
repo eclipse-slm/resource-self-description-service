@@ -24,6 +24,17 @@ public class TestTemplateManager implements ITemplateManager {
 
     @Override
     public Optional<Resource> getTemplate(String name) {
-        return Optional.empty();
+
+        PathMatchingResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();
+
+
+        try {
+            Resource[] resources = null;
+            resources = resolver.getResources("classpath:templates/**");
+            return Arrays.stream(resources)
+                    .filter(resource -> Objects.requireNonNull(resource.getFilename()).equals(name)).findFirst();
+        } catch (IOException e) {
+            return Optional.empty();
+        }
     }
 }

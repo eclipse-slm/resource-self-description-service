@@ -27,4 +27,27 @@ public class TemplateDatasourceServiceTests {
         assertThat(submodels).isNotNull().isNotEmpty();
     }
 
+    @Test
+    public void getSubmodels_Ids_Success() {
+        var submodelIds = datasource.getModelIds();
+        assertThat(submodelIds).isNotNull().isNotEmpty();
+    }
+
+    @Test
+    public void getSubmodel_by_Id_Success() {
+        var submodelIds = datasource.getModelIds();
+        assertThat(submodelIds).isNotNull().isNotEmpty();
+
+        var id = submodelIds.get(0);
+        var submodel = datasource.getModelById(id);
+        assertThat(submodel).isNotNull().isPresent();
+
+    }
+
+    @Test
+    public void getSubmodel_by_Id_Failure() {
+        var submodel = datasource.getModelById("");
+        assertThat(submodel).isNotPresent();
+    }
+
 }

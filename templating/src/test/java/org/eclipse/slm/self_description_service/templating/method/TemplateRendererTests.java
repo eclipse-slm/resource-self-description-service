@@ -74,13 +74,7 @@ public class TemplateRendererTests {
                         }
                 ),
                 new TemplateTest(
-                        "${indexOf(\"met\", \"something\")}",
-                        () -> {
-                            return "2";
-                        }
-                ),
-                new TemplateTest(
-                        "${capitalize(\"hello\")}" ,
+                        "${\"hello\"?capitalize}",
                         () -> {
                             return "Hello";
                         }

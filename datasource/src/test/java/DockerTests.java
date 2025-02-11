@@ -27,7 +27,6 @@ public class DockerTests {
     @BeforeEach
     public void initEach() {
         nginx.start();
-        var id = nginx.getContainerId();
     }
 
 
