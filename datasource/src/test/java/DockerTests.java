@@ -21,12 +21,16 @@ public class DockerTests {
     }
 
     @Container
-    public GenericContainer nginx = new GenericContainer(DockerImageName.parse("nginx:1.27.0-alpine3.19-slim")) //
+    public static GenericContainer nginx = new GenericContainer(DockerImageName.parse("nginx:1.27.0-alpine3.19-slim")) //
             .withExposedPorts(80).waitingFor(Wait.forHttp("/").forStatusCode(200).forStatusCode(301));
+
+    static {
+        nginx.start();
+    }
 
     @BeforeEach
     public void initEach() {
-        nginx.start();
+
     }
 
 
@@ -42,7 +46,7 @@ public class DockerTests {
         var models = this.dockerDatasourceServiceDatasource.getModels();
         assertThat(models).isNotEmpty();
 
-        Consumer<Optional<SubmodelElementCollection>> checkElement = (elem) -> {
+        Consumer<Optional<?>> checkElement = (elem) -> {
             assertThat(elem).isPresent();
             var containers = (DefaultSubmodelElementList) elem.get();
             assertThat(containers).isNotNull();

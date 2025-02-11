@@ -6,7 +6,11 @@ import com.orbitz.consul.model.catalog.*;
 import com.orbitz.consul.model.health.ImmutableService;
 import com.orbitz.consul.model.health.Node;
 import com.orbitz.consul.model.health.Service;
+import org.eclipse.slm.self_description_service.common.consul.model.acl.BindingRule;
+import org.eclipse.slm.self_description_service.common.consul.model.acl.Policy;
 import org.eclipse.slm.self_description_service.common.consul.model.acl.PolicyLink;
+import org.eclipse.slm.self_description_service.common.consul.model.acl.Role;
+import org.eclipse.slm.self_description_service.common.consul.model.catalog.CatalogNode;
 import org.modelmapper.Conditions;
 import org.modelmapper.Converter;
 import org.modelmapper.ModelMapper;
@@ -16,7 +20,6 @@ import org.modelmapper.spi.MappingContext;
 
 import java.util.*;
 import java.util.stream.Collectors;
-
 public class ConsulObjectMapper {
 
     public static ModelMapper modelMapper;
@@ -82,7 +85,7 @@ public class ConsulObjectMapper {
         var optionalStringListToOptionalList = new Converter<Optional<List<String>>, Optional<List<String>>>() {
             @Override
             public Optional<List<String>> convert(MappingContext<Optional<List<String>>, Optional<List<String>>> mappingContext) {
-                if (mappingContext.getSource().isPresent()) {
+                if(mappingContext.getSource().isPresent()){
                     return mappingContext.getSource();
                 }
                 return Optional.empty();
@@ -92,7 +95,7 @@ public class ConsulObjectMapper {
         var stringListToOptionalStringList = new Converter<List<String>, Optional<List<String>>>() {
             @Override
             public Optional<List<String>> convert(MappingContext<List<String>, Optional<List<String>>> mappingContext) {
-                if (mappingContext.getSource() != null) {
+                if(mappingContext.getSource() != null){
                     return Optional.of(mappingContext.getSource());
                 }
                 return Optional.empty();
@@ -198,9 +201,9 @@ public class ConsulObjectMapper {
             }
         };
 
-        var catalogServiceToOptionalImmutableService = new Converter<org.eclipse.slm.self_description_service.common.consul.model.catalog.CatalogNode.Service, Optional<Service>>() {
+        var catalogServiceToOptionalImmutableService = new Converter<CatalogNode.Service, Optional<Service>>() {
             @Override
-            public Optional<Service> convert(MappingContext<org.eclipse.slm.self_description_service.common.consul.model.catalog.CatalogNode.Service, Optional<Service>> mappingContext) {
+            public Optional<Service> convert(MappingContext<CatalogNode.Service, Optional<Service>> mappingContext) {
                 if (mappingContext.getSource() != null) {
                     var service = map(mappingContext.getSource(), Service.class);
                     return Optional.of(service);
@@ -209,9 +212,9 @@ public class ConsulObjectMapper {
             }
         };
 
-        var catalogServiceToImmutableService = new Converter<org.eclipse.slm.self_description_service.common.consul.model.catalog.CatalogNode.Service, Service>() {
+        var catalogServiceToImmutableService = new Converter<CatalogNode.Service, Service>() {
             @Override
-            public Service convert(MappingContext<org.eclipse.slm.self_description_service.common.consul.model.catalog.CatalogNode.Service, Service> mappingContext) {
+            public Service convert(MappingContext<CatalogNode.Service, Service> mappingContext) {
                 if (mappingContext.getSource() != null) {
                     var source = mappingContext.getSource();
                     var builder = map(mappingContext.getSource(), ImmutableService.builder());
@@ -227,17 +230,17 @@ public class ConsulObjectMapper {
         var optionalTaggedAddressesToTaggedAddresses = new Converter<Optional<TaggedAddresses>, org.eclipse.slm.self_description_service.common.consul.model.catalog.TaggedAddresses>() {
             @Override
             public org.eclipse.slm.self_description_service.common.consul.model.catalog.TaggedAddresses convert(MappingContext<Optional<TaggedAddresses>, org.eclipse.slm.self_description_service.common.consul.model.catalog.TaggedAddresses> mappingContext) {
-                if (mappingContext.getSource().isPresent()) {
+                if(mappingContext.getSource().isPresent()){
                     return map(mappingContext.getSource().get(), mappingContext.getDestinationType());
                 }
                 return null;
             }
         };
 
-        var taggedAddressToConsulTaggedAddresses = new Converter<org.eclipse.slm.self_description_service.common.consul.model.catalog.TaggedAddresses, TaggedAddresses>() {
+        var taggedAddressToConsulTaggedAddresses = new Converter<org.eclipse.slm.self_description_service.common.consul.model.catalog.TaggedAddresses, TaggedAddresses>(){
             @Override
             public TaggedAddresses convert(MappingContext<org.eclipse.slm.self_description_service.common.consul.model.catalog.TaggedAddresses, TaggedAddresses> mappingContext) {
-                if (mappingContext.getSource() != null) {
+                if(mappingContext.getSource() != null){
                     return map(mappingContext.getSource(), ImmutableTaggedAddresses.Builder.class).build();
                 }
                 return null;
@@ -249,7 +252,7 @@ public class ConsulObjectMapper {
             @Override
             public Optional<TaggedAddresses> convert(MappingContext<org.eclipse.slm.self_description_service.common.consul.model.catalog.TaggedAddresses, Optional<TaggedAddresses>> mappingContext) {
 
-                if (mappingContext.getSource() != null) {
+                if(mappingContext.getSource() != null){
                     return Optional.of(map(mappingContext.getSource(), TaggedAddresses.class));
                 }
                 return Optional.empty();
@@ -261,7 +264,7 @@ public class ConsulObjectMapper {
 
             @Override
             public Optional<TaggedAddresses> convert(MappingContext<Optional<org.eclipse.slm.self_description_service.common.consul.model.catalog.TaggedAddresses>, Optional<TaggedAddresses>> mappingContext) {
-                if (mappingContext.getSource().isPresent()) {
+                if(mappingContext.getSource().isPresent()){
                     return Optional.of(map(mappingContext.getSource().get(), TaggedAddresses.class));
                 }
                 return Optional.empty();
@@ -273,7 +276,7 @@ public class ConsulObjectMapper {
 
             @Override
             public TaggedAddresses convert(MappingContext<Optional<org.eclipse.slm.self_description_service.common.consul.model.catalog.TaggedAddresses>, TaggedAddresses> mappingContext) {
-                if (mappingContext.getSource().isPresent()) {
+                if(mappingContext.getSource().isPresent()){
                     return map(mappingContext.getSource().get(), TaggedAddresses.class);
                 }
                 return null;
@@ -290,7 +293,7 @@ public class ConsulObjectMapper {
         var optMapToMap = new Converter<Optional<Map<String, String>>, Map<String, String>>() {
             @Override
             public Map<String, String> convert(MappingContext<Optional<Map<String, String>>, Map<String, String>> mappingContext) {
-                if (mappingContext.getSource().isPresent())
+                if(mappingContext.getSource().isPresent())
                     return mappingContext.getSource().get();
                 return new HashMap<>();
             }
@@ -300,7 +303,7 @@ public class ConsulObjectMapper {
         var immutableListToList = new Converter<ImmutableList<String>, List<String>>() {
             @Override
             public List<String> convert(MappingContext<ImmutableList<String>, List<String>> mappingContext) {
-                if (mappingContext.getSource() != null) {
+                if(mappingContext.getSource() != null){
                     return mappingContext.getSource().stream().toList();
                 }
                 return new ArrayList<String>();
@@ -339,9 +342,9 @@ public class ConsulObjectMapper {
                 .setProvider(p -> ImmutableTaggedAddresses.builder());
 
 
-        modelMapper.typeMap(org.eclipse.slm.self_description_service.common.consul.model.catalog.CatalogNode.Service.class, Service.class)
+        modelMapper.typeMap(CatalogNode.Service.class, Service.class)
                 .setProvider(p -> map(p.getSource(), ImmutableService.Builder.class).build());
-        modelMapper.typeMap(org.eclipse.slm.self_description_service.common.consul.model.catalog.CatalogNode.Service.class, ImmutableService.Builder.class)
+        modelMapper.typeMap(CatalogNode.Service.class, ImmutableService.Builder.class)
                 .setProvider(p -> ImmutableService.builder());
 
         modelMapper.typeMap(CatalogNode.class, CatalogRegistration.class)
@@ -359,10 +362,10 @@ public class ConsulObjectMapper {
         modelMapper.typeMap(Policy.class, ImmutableBindingRule.Builder.class)
                 .setProvider(p -> ImmutableBindingRule.builder());
 
-        modelMapper.typeMap(ImmutableRoleResponse.class, org.eclipse.slm.self_description_service.common.consul.model.acl.Role.class)
+        modelMapper.typeMap(ImmutableRoleResponse.class, Role.class)
                 .setPostConverter(mappingContext -> {
                     var dest = mappingContext.getDestination();
-                    if (dest.getPolicies() != null && !dest.getPolicies().isEmpty()) {
+                    if(dest.getPolicies() != null && !dest.getPolicies().isEmpty()){
                         var policies = mapAll(dest.getPolicies(), PolicyLink.class);
                         dest.setPolicies(policies);
                     }
@@ -371,9 +374,10 @@ public class ConsulObjectMapper {
 
 
         modelMapper.typeMap(Node.class, org.eclipse.slm.self_description_service.common.consul.model.catalog.Node.class)
-                .addMappings(mapperContext -> {
+                .addMappings( mapperContext -> {
                     mapperContext.map(Node::getNodeMeta, org.eclipse.slm.self_description_service.common.consul.model.catalog.Node::setMeta);
                 });
+
 
 
         modelMapper.getConfiguration()

@@ -14,7 +14,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.TimeZone;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 
 
@@ -90,7 +91,7 @@ public class TemplateRendererTests {
                         String.format("${YamlFileValue(\"%s\", \"%s\")?string[\"0.0\"]}", "$.['price range'].cheap",
                                 PathHelper.getPathForFile(this, "yaml/simple_file.yaml", osIsWindows)),
                         () -> {
-                            return "10.0";
+                            return "10.1";
                         }
                 )
         );
@@ -99,7 +100,7 @@ public class TemplateRendererTests {
         for (var test : tests) {
             var result = templateRenderer.render(test.testTemplate, test.data);
             var expectedResult = test.getResult.getExpectedResult();
-            assertEquals(expectedResult, result);
+            assertThat(result).isEqualTo(expectedResult);
         }
 
 

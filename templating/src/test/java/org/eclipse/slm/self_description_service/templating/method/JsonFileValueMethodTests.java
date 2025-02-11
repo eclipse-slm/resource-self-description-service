@@ -7,7 +7,7 @@ import org.junit.jupiter.api.Test;
 import java.net.URISyntaxException;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class JsonFileValueMethodTests {
 
@@ -22,10 +22,9 @@ public class JsonFileValueMethodTests {
 
         var result = jsonFileValueMethod.exec(List.of(xpath, filePath));
 
-        var assertValue = "10.0";
+        var assertValue = 10.123123;
 
-        assertEquals(assertValue, result);
-
+        assertThat(result).isEqualTo(assertValue);
     }
 
 }

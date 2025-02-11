@@ -31,39 +31,39 @@ public class DockerSubmodel extends DefaultSubmodel {
     }
 
 
-    public Optional<SubmodelElementCollection> getContainers() {
+    public Optional<?> getContainers() {
         return getElementCollection("Containers");
     }
 
-    public Optional<SubmodelElementCollection> getImages() {
+    public Optional<?> getImages() {
         return getElementCollection("Images");
     }
 
-    public Optional<SubmodelElementCollection> getNetworks() {
+    public Optional<?> getNetworks() {
         return getElementCollection("Networks");
     }
 
-    public Optional<SubmodelElementCollection> getVolumes() {
+    public Optional<?> getVolumes() {
         return getElementCollection("Volumes");
     }
 
-    public Optional<SubmodelElementCollection> getServices() {
+    public Optional<?> getServices() {
         return getElementCollection("Services");
     }
 
-    public Optional<SubmodelElementCollection> getTasks() {
+    public Optional<?> getTasks() {
         return getElementCollection("Tasks");
     }
 
-    public Optional<SubmodelElementCollection> getSwarmNodes() {
+    public Optional<?> getSwarmNodes() {
         return getElementCollection("Swarm Nodes");
     }
 
-    public Optional<SubmodelElementCollection> getConfigs() {
+    public Optional<?> getConfigs() {
         return getElementCollection("Configs");
     }
 
-    public Optional<SubmodelElementCollection> getSecrets() {
+    public Optional<?> getSecrets() {
         return getElementCollection("Secrets");
     }
 
@@ -72,12 +72,12 @@ public class DockerSubmodel extends DefaultSubmodel {
         return this.submodelElements.stream().filter(elem -> elem.getIdShort().equals(shortId)).findFirst();
     }
 
-    private Optional<SubmodelElementCollection> getElementCollection(String shortId) {
+    private Optional<SubmodelElementList> getElementCollection(String shortId) {
         var collection = this.getSubmodelElementByShortId(shortId);
         if (collection.isPresent()) {
             var containers = collection.get();
-            if (containers instanceof SubmodelElementCollection) {
-                return Optional.of((SubmodelElementCollection) containers);
+            if (containers instanceof SubmodelElementList) {
+                return Optional.of((SubmodelElementList) containers);
             }
         }
         return Optional.empty();

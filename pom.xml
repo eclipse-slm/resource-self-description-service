@@ -3,7 +3,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <name>Self Description Service</name>
+    <name>self-description-service</name>
     <groupId>org.eclipse.slm</groupId>
     <artifactId>self_description_service</artifactId>
     <version>${revision}</version>

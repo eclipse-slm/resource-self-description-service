@@ -49,7 +49,10 @@ Check for Consul -> Spring implementierung für Consul um Service zu finden
 
 - Github workflow
 - Repo
-
+- 
 - Playbook für die installation
+    - Fist Docker
+    - Second JAR
+
 
 
