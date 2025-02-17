@@ -54,6 +54,11 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ github.token }}
           COVERALLS_TOKEN: ${{ secrets.COVERALLS_TOKEN }}
+
+      - name: "Display container list (for debugging)"
+        if: always()
+        run: docker ps -a
+
       - name: Log test output on failure
         if: failure() || cancelled()
         run: find . -type f -path "*test-reports/*-output.txt" -exec tail -n +1 {} +
