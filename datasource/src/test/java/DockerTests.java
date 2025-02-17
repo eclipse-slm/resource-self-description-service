@@ -2,9 +2,12 @@ import org.eclipse.digitaltwin.aas4j.v3.model.SubmodelElementCollection;
 import org.eclipse.digitaltwin.aas4j.v3.model.impl.DefaultSubmodelElementList;
 import org.eclipse.slm.self_description_service.datasource.docker.DockerDatasourceService;
 import org.eclipse.slm.self_description_service.datasource.docker.DockerSubmodel;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.testcontainers.containers.GenericContainer;
+import org.testcontainers.containers.wait.strategy.HostPortWaitStrategy;
 import org.testcontainers.containers.wait.strategy.Wait;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.utility.DockerImageName;
@@ -25,13 +28,19 @@ public class DockerTests {
 
     static {
         nginx = new GenericContainer(DockerImageName.parse("nginx:1.27.0-alpine3.19-slim")) //
-                .withExposedPorts(80).waitingFor(Wait.forHttp("/").forStatusCode(200).forStatusCode(301));
+                .withExposedPorts(80).waitingFor(Wait.forHttp("/").forStatusCode(200).forStatusCode(301))
+                .waitingFor(new HostPortWaitStrategy());
         nginx.start();
     }
 
-    @BeforeEach
-    public void initEach() {
+    @BeforeAll
+    public static void beforeAll() throws InterruptedException {
+        Thread.sleep(5000);
+    }
 
+    @AfterAll
+    public static void afterAll(){
+        nginx.stop();
     }
 
 
