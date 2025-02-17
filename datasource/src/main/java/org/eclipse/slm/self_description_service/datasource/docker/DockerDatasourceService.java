@@ -34,7 +34,6 @@ public class DockerDatasourceService extends AbstractDatasource implements Datas
         super(resourceId, "Docker");
         DockerClientConfig config = DefaultDockerClientConfig.createDefaultConfigBuilder()
                 .withDockerHost("tcp://localhost:2375")
-                .withDockerTlsVerify(false)
                 .build();
 
         DockerHttpClient httpClient = new ApacheDockerHttpClient.Builder()
