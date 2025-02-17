@@ -39,11 +39,7 @@ public class DockerTests {
 
     @BeforeAll
     public static void beforeAll() throws InterruptedException {
-        Thread.sleep(5000);
-        Map<String, String> env = System.getenv();
-        for (String envName : env.keySet()) {
-            System.out.format("%s=%s%n", envName, env.get(envName));
-        }
+        Thread.sleep(300000);
     }
 
     @AfterAll
