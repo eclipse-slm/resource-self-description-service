@@ -6,6 +6,8 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.wait.strategy.HostPortWaitStrategy;
 import org.testcontainers.containers.wait.strategy.Wait;
@@ -20,6 +22,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class DockerTests {
     private final DockerDatasourceService dockerDatasourceServiceDatasource = new DockerDatasourceService("docker");
+    private static final Logger LOG = LoggerFactory.getLogger(DockerTests.class);
 
     public DockerTests() {
     }
@@ -40,6 +43,7 @@ public class DockerTests {
         Map<String, String> env = System.getenv();
         for (String envName : env.keySet()) {
             System.out.format("%s=%s%n", envName, env.get(envName));
+            LOG.info(String.format("%s=%s%n", envName, env.get(envName)) );
         }
     }
 
