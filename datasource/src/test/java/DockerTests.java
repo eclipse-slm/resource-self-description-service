@@ -12,6 +12,7 @@ import org.testcontainers.containers.wait.strategy.Wait;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.utility.DockerImageName;
 
+import java.util.Map;
 import java.util.Optional;
 import java.util.function.Consumer;
 
@@ -36,6 +37,10 @@ public class DockerTests {
     @BeforeAll
     public static void beforeAll() throws InterruptedException {
         Thread.sleep(5000);
+        Map<String, String> env = System.getenv();
+        for (String envName : env.keySet()) {
+            System.out.format("%s=%s%n", envName, env.get(envName));
+        }
     }
 
     @AfterAll
