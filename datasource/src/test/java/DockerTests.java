@@ -39,7 +39,7 @@ public class DockerTests {
 
     @BeforeAll
     public static void beforeAll() throws InterruptedException {
-        Thread.sleep(300000);
+        Thread.sleep(5000);
     }
 
     @AfterAll
