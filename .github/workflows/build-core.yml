@@ -16,6 +16,15 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    container:
+      image: node:18
+      env:
+        NODE_ENV: development
+      ports:
+        - 80
+      volumes:
+        - my_docker_volume:/volume_mount
+      options: --cpus 1
     permissions:
       contents: read
       packages: write
@@ -23,7 +32,6 @@ jobs:
       MAVEN_CLI_OPTS: "-T 8 -s ci/ci_maven_settings.xml --batch-mode --errors --fail-at-end --show-version --no-transfer-progress -DinstallAtEnd=true -DdeployAtEnd=true"
       MAVEN_PROFILES: ""
       COVERALLS_TOKEN: ${{ secrets.COVERALLS_TOKEN }}
-
     steps:
       - uses: actions/checkout@v3
       - name: Set up JDK 19
