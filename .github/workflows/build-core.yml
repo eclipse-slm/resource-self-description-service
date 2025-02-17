@@ -24,6 +24,9 @@ jobs:
       MAVEN_PROFILES: ""
       COVERALLS_TOKEN: ${{ secrets.COVERALLS_TOKEN }}
     steps:
+      - name: "Display container list (for debugging)"
+        if: always()
+        run: docker run hello-world -d
       - uses: actions/checkout@v3
       - name: Set up JDK 19
         uses: actions/setup-java@v3
