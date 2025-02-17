@@ -44,7 +44,7 @@ jobs:
           ]'
       - name: "Display container list (for debugging)"
         if: always()
-        run: docker run hello-world -d
+        run: docker run -d hello-world
       - name: Build with Maven and push Docker Images
         if: github.event_name != 'pull_request' && (github.ref_name == 'develop' || github.ref_name == 'main' || startsWith(github.ref_name, 'release/'))
         run: mvn $MAVEN_PROFILES $MAVEN_CLI_OPTS deploy
