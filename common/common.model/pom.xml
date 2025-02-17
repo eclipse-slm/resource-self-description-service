@@ -52,7 +52,7 @@
                     </execution>
                 </executions>
                 <configuration>
-                    <jvmTarget>17</jvmTarget>  <!-- Adjust this to match your Java version -->
+                    <jvmTarget>${java.version}</jvmTarget>  <!-- Adjust this to match your Java version -->
                 </configuration>
             </plugin>
         </plugins>
