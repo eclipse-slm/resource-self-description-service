@@ -44,6 +44,7 @@
         <maven.plugin.failsafe.version>3.5.0</maven.plugin.failsafe.version>
         <maven.plugin.apache.compiler.version>3.13.0</maven.plugin.apache.compiler.version>
         <maven.plugin.jacoco.version>0.8.12</maven.plugin.jacoco.version>
+        <maven.plugin.dockerfile.version>1.4.10</maven.plugin.dockerfile.version>
 
         <keycloak.version>19.0.3</keycloak.version>
         <springdoc.openapi.version>2.5.0</springdoc.openapi.version>
