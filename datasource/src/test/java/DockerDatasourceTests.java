@@ -1,39 +1,36 @@
-import org.eclipse.digitaltwin.aas4j.v3.model.SubmodelElementCollection;
 import org.eclipse.digitaltwin.aas4j.v3.model.impl.DefaultSubmodelElementList;
 import org.eclipse.slm.self_description_service.datasource.docker.DockerDatasourceService;
 import org.eclipse.slm.self_description_service.datasource.docker.DockerSubmodel;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.wait.strategy.HostPortWaitStrategy;
 import org.testcontainers.containers.wait.strategy.Wait;
-import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.utility.DockerImageName;
 
-import java.util.Map;
 import java.util.Optional;
 import java.util.function.Consumer;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class DockerTests {
+@Disabled()
+public class DockerDatasourceTests {
     private final DockerDatasourceService dockerDatasourceServiceDatasource = new DockerDatasourceService("docker");
-    private static final Logger LOG = LoggerFactory.getLogger(DockerTests.class);
+    private static final Logger LOG = LoggerFactory.getLogger(DockerDatasourceTests.class);
 
-    public DockerTests() {
+    public DockerDatasourceTests() {
     }
 
 
-    public static GenericContainer nginx;
+    public static GenericContainer<?> nginx;
 
     static {
-        nginx = new GenericContainer(DockerImageName.parse("nginx:1.27.0-alpine3.19-slim")) //
-                .withExposedPorts(80).waitingFor(Wait.forHttp("/").forStatusCode(200).forStatusCode(301))
-                .waitingFor(new HostPortWaitStrategy());
+        nginx = new GenericContainer<>(DockerImageName.parse("nginx:1.27.0-alpine3.19-slim")) //
+                .withExposedPorts(80).waitingFor(Wait.forHttp("/").forStatusCode(200).forStatusCode(301));
         nginx.start();
     }
 

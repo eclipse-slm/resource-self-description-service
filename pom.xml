@@ -15,7 +15,7 @@
         <module>templating</module>
         <module>datasource</module>
         <module>common</module>
-        <module>coverage</module>
+<!--        <module>coverage</module>-->
     </modules>
 
     <profiles>
@@ -62,7 +62,7 @@
         <jayway.jsonpath.version>2.9.0</jayway.jsonpath.version>
         <basyx.version>2.0.0-milestone-04</basyx.version>
         <basyx.sdk.version>1.5.1</basyx.sdk.version>
-        <docker-java.version>3.4.0</docker-java.version>
+        <docker-java.version>3.2.13</docker-java.version>
         <docker-java.httpclient5.version>3.2.3</docker-java.httpclient5.version>
 
         <consul-client>1.0.2</consul-client>

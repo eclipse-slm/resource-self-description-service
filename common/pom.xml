@@ -18,7 +18,6 @@
         <module>common.aas</module>
         <module>common.consul</module>
         <module>common.keycloak</module>
-        <module>common.model</module>
         <module>common.parent</module>
         <module>common.utils</module>
 

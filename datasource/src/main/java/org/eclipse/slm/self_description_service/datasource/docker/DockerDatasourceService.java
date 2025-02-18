@@ -5,10 +5,8 @@ import com.github.dockerjava.api.command.InspectVolumeResponse;
 import com.github.dockerjava.api.exception.DockerException;
 import com.github.dockerjava.api.model.*;
 import com.github.dockerjava.core.DefaultDockerClientConfig;
-import com.github.dockerjava.core.DockerClientConfig;
 import com.github.dockerjava.core.DockerClientImpl;
 import com.github.dockerjava.httpclient5.ApacheDockerHttpClient;
-import com.github.dockerjava.transport.DockerHttpClient;
 import org.eclipse.digitaltwin.aas4j.v3.model.Identifiable;
 import org.eclipse.digitaltwin.aas4j.v3.model.Submodel;
 import org.eclipse.slm.self_description_service.datasource.AbstractDatasource;
@@ -32,16 +30,18 @@ public class DockerDatasourceService extends AbstractDatasource implements Datas
 
     public DockerDatasourceService(@Value("${resource.id}") String resourceId) {
         super(resourceId, "Docker");
-        DockerClientConfig config = DefaultDockerClientConfig.createDefaultConfigBuilder()
-                .withDockerHost(System.getenv().getOrDefault("DOCKER_HOST", "/var/run/docker.sock"))
+        var dockerHost = System.getenv().getOrDefault("DOCKER_HOST", "tcp://localhost:2375");
+        LOG.info("DockerDatasourceService use DOCKER_HOST '{}'", dockerHost);
+        var dockerClientConfig = DefaultDockerClientConfig.createDefaultConfigBuilder()
+                .withDockerHost(dockerHost)
+                .build();
+        var httpClient = new ApacheDockerHttpClient.Builder()
+                .dockerHost(dockerClientConfig.getDockerHost())
+                .sslConfig(dockerClientConfig.getSSLConfig())
                 .build();
 
-        DockerHttpClient httpClient = new ApacheDockerHttpClient.Builder()
-                .dockerHost(config.getDockerHost())
-                .sslConfig(config.getSSLConfig())
-                .build();
+        dockerClient = DockerClientImpl.getInstance(dockerClientConfig, httpClient);
 
-        dockerClient = DockerClientImpl.getInstance(config, httpClient);
     }
 
     @Override
@@ -62,15 +62,19 @@ public class DockerDatasourceService extends AbstractDatasource implements Datas
 
 
         var containers = this.dockerClient.listContainersCmd().exec();
+        LOG.info("Found {} containers", containers.size());
         dockerSubmodel.addSubmodelEntry("Containers", containers, Container::getId);
 
         var images = this.dockerClient.listImagesCmd().exec();
+        LOG.info("Found {} images", images.size());
         dockerSubmodel.addSubmodelEntry("Images", images, Image::getId);
 
         var networks = this.dockerClient.listNetworksCmd().exec();
+        LOG.info("Found {} networks", networks.size());
         dockerSubmodel.addSubmodelEntry("Networks", networks, Network::getName);
 
         var volumes = this.dockerClient.listVolumesCmd().exec().getVolumes();
+        LOG.info("Found {} volumes", volumes.size());
         dockerSubmodel.addSubmodelEntry("Volumes", volumes, InspectVolumeResponse::getName);
 
         try {
