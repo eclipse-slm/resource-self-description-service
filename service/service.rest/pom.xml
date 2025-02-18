@@ -14,6 +14,9 @@
         <version>${revision}</version>
     </parent>
 
+    <properties>
+        <docker.image.name>slm/resource-self-description-service</docker.image.name>
+    </properties>
 
     <dependencies>
 
@@ -236,6 +239,12 @@
                 <configuration>
                     <jvmTarget>17</jvmTarget>  <!-- Adjust this to match your Java version -->
                 </configuration>
+            </plugin>
+
+            <!-- Docker Image !-->
+            <plugin>
+                <groupId>com.spotify</groupId>
+                <artifactId>dockerfile-maven-plugin</artifactId>
             </plugin>
         </plugins>
     </build>

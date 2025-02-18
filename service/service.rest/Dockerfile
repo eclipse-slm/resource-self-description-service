@@ -1,5 +1,5 @@
 FROM openjdk:18.0.2.1-jdk-slim-buster
-#MAINTAINER Matthias Schneider (matthias.schneider@ipa.fraunhofer.de)
+MAINTAINER Matthias Schneider (matthias.schneider@ipa.fraunhofer.de)
 
 ENV CONSUL_SCHEME="http" \
     CONSUL_HOST="consul" \
@@ -17,6 +17,6 @@ RUN chmod +x /app/startup.sh
 
 WORKDIR /app
 
-#VOLUME "/app/keycloak"
+VOLUME "/app/keycloak"
 
 ENTRYPOINT ["/bin/bash", "-c", "/app/startup.sh"]
