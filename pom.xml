@@ -16,6 +16,11 @@
         <maven.compiler.source>${java.version}</maven.compiler.source>
         <maven.compiler.target>${java.version}</maven.compiler.target>
 
+        <!-- Deployment -->
+        <docker.image.registry>ghcr.io/ilgmi</docker.image.registry>
+        <docker.image.skip>false</docker.image.skip>
+        <artifact.deployment.skip>false</artifact.deployment.skip>
+
 
         <maven.plugin.surefire.version>3.5.0</maven.plugin.surefire.version>
         <maven.plugin.failsafe.version>3.5.0</maven.plugin.failsafe.version>
@@ -108,8 +113,6 @@
         <spring-boot-docker-compose.version>3.3.3</spring-boot-docker-compose.version>
 
         <!-- Docker Image -->
-        <docker.image.registry>ghcr.io/ilgmi</docker.image.registry>
-        <docker.image.skip>true</docker.image.skip>
 
         <docker-java.version>3.2.13</docker-java.version>
         <docker-java.httpclient5.version>3.2.3</docker-java.httpclient5.version>
@@ -461,7 +464,7 @@
                 <artifactId>maven-deploy-plugin</artifactId>
                 <version>${maven.plugin.apache.deploy.version}</version>
                 <configuration>
-                    <skip>true</skip>
+                    <skip>${artifact.deployment.skip}</skip>
                 </configuration>
             </plugin>
             <!-- Testing !-->
