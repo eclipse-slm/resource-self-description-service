@@ -109,7 +109,7 @@
 
         <!-- Docker Image -->
         <docker.image.registry>ghcr.io/ilgmi</docker.image.registry>
-        <docker.image.skip>false</docker.image.skip>
+        <docker.image.skip>true</docker.image.skip>
 
         <docker-java.version>3.2.13</docker-java.version>
         <docker-java.httpclient5.version>3.2.3</docker-java.httpclient5.version>
@@ -704,6 +704,9 @@
             <id>github</id>
             <name>GitHub Packages</name>
             <url>https://maven.pkg.github.com/Ilgmi/resource-self-description-service</url>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
         </repository>
     </distributionManagement>
 
