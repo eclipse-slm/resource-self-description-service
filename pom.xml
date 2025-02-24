@@ -365,14 +365,6 @@
 
     </dependencies>
 
-    <repositories>
-        <repository>
-            <id>github</id>
-            <name>GitHub Packages</name>
-            <url>https://maven.pkg.github.com/Ilgmi/resource-self-description-service</url>
-        </repository>
-    </repositories>
-
     <build>
         <resources>
             <resource>
@@ -708,6 +700,11 @@
             <id>cloud-edge-deployment</id>
             <url>http://10.3.7.149/</url>
         </site>
+        <repository>
+            <id>github</id>
+            <name>GitHub Packages</name>
+            <url>https://maven.pkg.github.com/Ilgmi/resource-self-description-service</url>
+        </repository>
     </distributionManagement>
 
 </project>
