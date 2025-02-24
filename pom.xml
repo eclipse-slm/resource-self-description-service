@@ -4,8 +4,8 @@
     <modelVersion>4.0.0</modelVersion>
 
     <name>self-description-service</name>
-    <groupId>org.eclipse.slm</groupId>
-    <artifactId>self_description_service</artifactId>
+    <groupId>org.ilgmi</groupId>
+    <artifactId>resource_self_description_service</artifactId>
     <version>${revision}</version>
     <properties>
         <revision>0.0.1-SNAPSHOT</revision>
