@@ -34,17 +34,20 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-security</artifactId>
+            <version>${spring-boot-starter-security.version}</version>
         </dependency>
 
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-devtools</artifactId>
+            <version>${spring-boot-devtools.version}</version>
             <scope>runtime</scope>
             <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-docker-compose</artifactId>
+            <version>${spring-boot-docker-compose.version}</version>
             <scope>runtime</scope>
             <optional>true</optional>
         </dependency>
@@ -60,12 +63,13 @@
             <groupId>org.springframework.security</groupId>
             <artifactId>spring-security-test</artifactId>
             <scope>test</scope>
+            <version>${spring-security-test.version}</version>
         </dependency>
 
         <dependency>
             <groupId>org.springdoc</groupId>
             <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
-            <version>2.0.3</version>
+            <version>${springdoc-openapi-starter-webmvc-ui.version}</version>
         </dependency>
 
         <dependency>
@@ -92,30 +96,15 @@
             <version>${jackson.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.eclipse.digitaltwin.aas4j</groupId>
-            <artifactId>aas4j-model</artifactId>
-        </dependency>
-        <dependency>
             <groupId>org.eclipse.slm</groupId>
             <artifactId>templating</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
+            <version>${project.version}</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>org.eclipse.digitaltwin.aas4j</groupId>
             <artifactId>aas4j-dataformat-aasx</artifactId>
             <version>${aas4j.dataformat.aasx.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>com.github.docker-java</groupId>
-            <artifactId>docker-java</artifactId>
-            <version>${docker-java.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.github.docker-java</groupId>
-            <artifactId>docker-java-transport-httpclient5</artifactId>
-            <version>${docker-java.version}</version>
         </dependency>
 
         <dependency>
@@ -140,12 +129,12 @@
         <dependency>
             <groupId>io.prometheus</groupId>
             <artifactId>prometheus-metrics-simpleclient-bridge</artifactId>
-            <version>1.0.0</version>
+            <version>${prometheus-metrics-simpleclient-bridge.version}</version>
         </dependency>
         <dependency>
             <groupId>org.eclipse.digitaltwin.basyx</groupId>
             <artifactId>basyx.core</artifactId>
-            <version>2.0.0-milestone-04</version>
+            <version>${basyx.version}</version>
             <scope>compile</scope>
         </dependency>
 
@@ -159,21 +148,8 @@
         <dependency>
             <groupId>com.epages</groupId>
             <artifactId>restdocs-api-spec-restassured</artifactId>
-            <version>0.16.2</version>
+            <version>${restdocs-api-spec-restassured.version}</version>
             <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.testcontainers</groupId>
-            <artifactId>testcontainers</artifactId>
-            <version>${testcontainers.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.testcontainers</groupId>
-            <artifactId>junit-jupiter</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.testcontainers</groupId>
-            <artifactId>mariadb</artifactId>
         </dependency>
         <dependency>
             <groupId>com.github.docker-java</groupId>
@@ -195,18 +171,19 @@
         <dependency>
             <groupId>com.h2database</groupId>
             <artifactId>h2</artifactId>
+            <version>${h2database.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>com.github.dasniko</groupId>
             <artifactId>testcontainers-keycloak</artifactId>
-            <version>2.5.0</version>
+            <version>${github.dasniko.testcontainers-keycloak.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>com.github.tomakehurst</groupId>
             <artifactId>wiremock</artifactId>
-            <version>2.27.2</version>
+            <version>${github.tomakehurst.wiremock.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>

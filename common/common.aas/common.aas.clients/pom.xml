@@ -19,12 +19,9 @@
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-webflux</artifactId>
+            <version>${spring-webflux.version}</version>
         </dependency>
-        <!-- AAS !-->
-        <dependency>
-            <groupId>org.eclipse.digitaltwin.aas4j</groupId>
-            <artifactId>aas4j-dataformat-aasx</artifactId>
-        </dependency>
+
         <!-- BaSyx !-->
         <dependency>
             <groupId>org.eclipse.digitaltwin.basyx</groupId>

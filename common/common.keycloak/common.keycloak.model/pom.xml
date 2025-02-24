@@ -18,20 +18,21 @@
         <dependency>
             <groupId>org.jetbrains.kotlin</groupId>
             <artifactId>kotlin-stdlib</artifactId>
-            <version>1.9.20</version>
+            <version>${kotlin.version}</version>
         </dependency>
 
         <!-- Kotlin Reflection (optional but recommended) -->
         <dependency>
             <groupId>org.jetbrains.kotlin</groupId>
             <artifactId>kotlin-reflect</artifactId>
-            <version>1.9.20</version>
+            <version>${kotlin.version}</version>
         </dependency>
 
         <!-- Jackson !-->
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
+            <version>${jackson.version}</version>
         </dependency>
 
     </dependencies>
@@ -41,7 +42,7 @@
             <plugin>
                 <groupId>org.jetbrains.kotlin</groupId>
                 <artifactId>kotlin-maven-plugin</artifactId>
-                <version>1.9.20</version>
+                <version>${kotlin.version}</version>
                 <executions>
                     <execution>
                         <id>compile</id>
@@ -59,7 +60,7 @@
                     </execution>
                 </executions>
                 <configuration>
-                    <jvmTarget>17</jvmTarget>  <!-- Adjust this to match your Java version -->
+                    <jvmTarget>${java.version}</jvmTarget>  <!-- Adjust this to match your Java version -->
                 </configuration>
             </plugin>
         </plugins>
