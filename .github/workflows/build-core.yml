@@ -43,10 +43,11 @@ jobs:
               "password": "${{secrets.GITHUB_TOKEN}}"
             }
           ]'
-      - name: lower-repo
+      - id: lower-repo
+        name: Lower
         shell: pwsh
         run: |
-          "::set-output name=repository::$($env:GITHUB_REPOSITORY.ToLowerInvariant())"
+          "::set-output name=repository::$($env:GITHUB_ACTOR.ToLowerInvariant())"
       - name: Build with Maven and push Docker Images
         if: github.event_name != 'pull_request' && (github.ref_name == 'develop' || github.ref_name == 'main' || startsWith(github.ref_name, 'release/'))
         run: mvn $MAVEN_PROFILES $MAVEN_CLI_OPTS -Ddocker.image.registry="ghcr.io/${{ steps.lower-repo.outputs.repository }}" deploy
