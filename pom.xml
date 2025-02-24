@@ -108,7 +108,7 @@
         <spring-boot-docker-compose.version>3.3.3</spring-boot-docker-compose.version>
 
         <!-- Docker Image -->
-        <docker.image.registry>ghcr.io/eclipse-slm</docker.image.registry>
+        <docker.image.registry>ghcr.io/ilgmi</docker.image.registry>
         <docker.image.skip>false</docker.image.skip>
 
         <docker-java.version>3.2.13</docker-java.version>
