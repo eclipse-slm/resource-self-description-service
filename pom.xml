@@ -19,7 +19,7 @@
         <!-- Deployment -->
         <docker.image.registry>ghcr.io/ilgmi</docker.image.registry>
         <docker.image.skip>false</docker.image.skip>
-        <artifact.deployment.skip>false</artifact.deployment.skip>
+        <artifact.deployment.skip>true</artifact.deployment.skip>
 
 
         <maven.plugin.surefire.version>3.5.0</maven.plugin.surefire.version>
