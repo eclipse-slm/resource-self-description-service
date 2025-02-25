@@ -7,6 +7,14 @@
     <artifactId>datasource</artifactId>
     <version>${revision}</version>
     <packaging>jar</packaging>
+
+
+    <properties>
+        <artifact.deployment.skip>true</artifact.deployment.skip>
+
+    </properties>
+
+
     <build>
         <plugins>
             <plugin>

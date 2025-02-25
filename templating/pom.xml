@@ -9,6 +9,10 @@
     <packaging>jar</packaging>
 
 
+    <properties>
+        <artifact.deployment.skip>true</artifact.deployment.skip>
+    </properties>
+
     <parent>
         <groupId>org.eclipse.slm</groupId>
         <artifactId>self_description_service</artifactId>

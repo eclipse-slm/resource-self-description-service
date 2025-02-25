@@ -3,7 +3,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <name>self-description-service</name>
+    <name>resource-self-description-service</name>
     <groupId>org.eclipse.slm</groupId>
     <artifactId>self_description_service</artifactId>
     <version>${revision}</version>
@@ -15,6 +15,11 @@
 
         <maven.compiler.source>${java.version}</maven.compiler.source>
         <maven.compiler.target>${java.version}</maven.compiler.target>
+
+        <!-- Deployment -->
+        <docker.image.registry>ghcr.io/ilgmi</docker.image.registry>
+        <docker.image.skip>false</docker.image.skip>
+        <artifact.deployment.skip>true</artifact.deployment.skip>
 
 
         <maven.plugin.surefire.version>3.5.0</maven.plugin.surefire.version>
@@ -108,8 +113,6 @@
         <spring-boot-docker-compose.version>3.3.3</spring-boot-docker-compose.version>
 
         <!-- Docker Image -->
-        <docker.image.registry>ghcr.io/eclipse-slm</docker.image.registry>
-        <docker.image.skip>false</docker.image.skip>
 
         <docker-java.version>3.2.13</docker-java.version>
         <docker-java.httpclient5.version>3.2.3</docker-java.httpclient5.version>
@@ -365,14 +368,6 @@
 
     </dependencies>
 
-    <repositories>
-        <repository>
-            <id>spring-milestones</id>
-            <name>Spring Milestones</name>
-            <url>https://repo.spring.io/milestone</url>
-        </repository>
-    </repositories>
-
     <build>
         <resources>
             <resource>
@@ -469,7 +464,7 @@
                 <artifactId>maven-deploy-plugin</artifactId>
                 <version>${maven.plugin.apache.deploy.version}</version>
                 <configuration>
-                    <skip>true</skip>
+                    <skip>${artifact.deployment.skip}</skip>
                 </configuration>
             </plugin>
             <!-- Testing !-->
@@ -708,6 +703,14 @@
             <id>cloud-edge-deployment</id>
             <url>http://10.3.7.149/</url>
         </site>
+        <repository>
+            <id>github</id>
+            <name>GitHub Packages</name>
+            <url>https://maven.pkg.github.com/Ilgmi/resource-self-description-service</url>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </repository>
     </distributionManagement>
 
 </project>
