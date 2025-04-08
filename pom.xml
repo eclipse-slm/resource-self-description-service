@@ -1,0 +1,716 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <name>resource-self-description-service</name>
+    <groupId>org.eclipse.slm</groupId>
+    <artifactId>self_description_service</artifactId>
+    <version>${revision}</version>
+    <properties>
+        <revision>0.0.1-SNAPSHOT</revision>
+
+        <java.version>19</java.version>
+        <kotlin.version>1.9.20</kotlin.version>
+
+        <maven.compiler.source>${java.version}</maven.compiler.source>
+        <maven.compiler.target>${java.version}</maven.compiler.target>
+
+        <!-- Deployment -->
+        <docker.image.registry>ghcr.io/slm</docker.image.registry>
+        <docker.image.skip>false</docker.image.skip>
+        <artifact.deployment.skip>true</artifact.deployment.skip>
+
+
+        <maven.plugin.surefire.version>3.5.0</maven.plugin.surefire.version>
+        <maven.plugin.failsafe.version>3.5.0</maven.plugin.failsafe.version>
+        <maven.plugin.apache.compiler.version>3.13.0</maven.plugin.apache.compiler.version>
+        <maven.plugin.jacoco.version>0.8.12</maven.plugin.jacoco.version>
+        <maven.plugin.dockerfile.version> 1.4.10</maven.plugin.dockerfile.version>
+        <maven.plugin.codehaus.exec.version>3.4.1</maven.plugin.codehaus.exec.version>
+        <maven.plugin.apache.deploy.version>3.1.3</maven.plugin.apache.deploy.version>
+        <maven.plugin.apache.resources.version>3.2.0</maven.plugin.apache.resources.version>
+
+        <!-- Docker Image and Registry -->
+        <jib-maven-plugin.version>3.4.2</jib-maven-plugin.version>
+
+        <!-- commons-io -->
+        <commons-io.version>2.16.1</commons-io.version>
+
+        <!-- Keycloak -->
+        <keycloak.version>19.0.3</keycloak.version>
+
+        <!-- freemarker -->
+        <freemarker.version>2.3.33</freemarker.version>
+
+        <!-- snakeyaml -->
+        <snakeyaml.version>2.3</snakeyaml.version>
+
+        <!-- jayway -->
+        <jayway.jsonpath.version>2.9.0</jayway.jsonpath.version>
+
+        <!-- Jackson -->
+        <jackson.version>2.17.2</jackson.version>
+
+        <!-- IO.Projectreactor.Netty -->
+        <reactor-netty-http.version>1.1.22</reactor-netty-http.version>
+
+        <!-- Consul -->
+        <consul-client>1.0.2</consul-client>
+
+        <!-- AAS -->
+        <aas.aas4j.version>1.0.2</aas.aas4j.version>
+        <aas4j.dataformat.aasx.version>1.0.2</aas4j.dataformat.aasx.version>
+
+        <!-- BASYX -->
+        <basyx.version>2.0.0-milestone-04</basyx.version>
+        <basyx.sdk.version>1.5.1</basyx.sdk.version>
+
+        <!-- Prometheus -->
+        <prometheus-metrics-simpleclient-bridge.version>1.0.0</prometheus-metrics-simpleclient-bridge.version>
+
+        <!-- Apache -->
+        <apache.httpcomponents>4.5.14</apache.httpcomponents>
+        <apache.httpcomponents.core5.version>5.3.1</apache.httpcomponents.core5.version>
+        <apache.httpcomponents.client5.version>5.4.1</apache.httpcomponents.client5.version>
+
+        <apache.commons.commons-lang3.version>3.14.0</apache.commons.commons-lang3.version>
+
+        <!-- Github -->
+        <github.docker.java.version>3.2.13</github.docker.java.version>
+        <github.dasniko.testcontainers-keycloak.version>2.5.0</github.dasniko.testcontainers-keycloak.version>
+        <github.tomakehurst.wiremock.version>2.27.2</github.tomakehurst.wiremock.version>
+
+        <!-- Springframework -->
+
+        <springdoc.openapi.version>2.5.0</springdoc.openapi.version>
+        <springdoc-openapi-starter-webmvc-ui.version>2.0.3</springdoc-openapi-starter-webmvc-ui.version>
+
+        <swagger.version>2.2.22</swagger.version>
+        <spring.boot.version>3.3.3</spring.boot.version>
+        <springaddons-c4-soft.version>7.8.10</springaddons-c4-soft.version>
+        <spring-cloud-contract-wiremock.version>4.1.4</spring-cloud-contract-wiremock.version>
+
+
+        <spring-context.version>6.1.12</spring-context.version>
+        <spring-web.version>6.1.12</spring-web.version>
+        <spring-webflux.version>6.2.0</spring-webflux.version>
+        <spring-cloud-starter-consul-discovery.version>4.2.0</spring-cloud-starter-consul-discovery.version>
+        <spring-cloud-starter-consul-config.version>4.1.2</spring-cloud-starter-consul-config.version>
+
+        <spring-security-core.version>6.3.3</spring-security-core.version>
+        <spring-security-oauth2-resource-server.version>6.3.3</spring-security-oauth2-resource-server.version>
+        <spring-security-oauth2-jose.version>6.3.3</spring-security-oauth2-jose.version>
+        <spring-security-config.version>6.3.3</spring-security-config.version>
+        <spring-security-test.version>6.3.3</spring-security-test.version>
+
+        <spring-boot-starter.version>3.3.3</spring-boot-starter.version>
+        <spring-boot-starter-web.version>3.3.3</spring-boot-starter-web.version>
+        <spring-boot-starter-actuator.version>3.3.3</spring-boot-starter-actuator.version>
+        <spring-boot-starter-security.version>3.3.3</spring-boot-starter-security.version>
+        <spring-boot-starter-test.version>3.3.3</spring-boot-starter-test.version>
+        <spring-boot-devtools.version>3.3.3</spring-boot-devtools.version>
+        <spring-boot-docker-compose.version>3.3.3</spring-boot-docker-compose.version>
+
+        <!-- Docker Image -->
+
+        <docker-java.version>3.2.13</docker-java.version>
+        <docker-java.httpclient5.version>3.2.3</docker-java.httpclient5.version>
+
+        <!-- ecwid -->
+        <ecwid.consul.consul-api.version>1.4.5</ecwid.consul.consul-api.version>
+
+        <!-- Jayway -->
+        <jayway.jsonpath.json-path.version>2.9.0</jayway.jsonpath.json-path.version>
+
+        <!-- Fabos -->
+        <fab-os.consul.consul-client.version>1.0.2</fab-os.consul.consul-client.version>
+
+        <!-- Modelmapper -->
+        <modelmapper.version>3.0.0</modelmapper.version>
+
+        <!-- Google -->
+        <google.guava.version>32.0.1-android</google.guava.version>
+
+        <!-- slf4j -->
+        <slf4j-api.version>2.0.16</slf4j-api.version>
+
+        <!-- Epages -->
+        <restdocs-api-spec-restassured.version>0.16.2</restdocs-api-spec-restassured.version>
+
+        <!-- Testing -->
+        <assertj.version>3.26.3</assertj.version>
+
+        <jacoco.version>0.8.12</jacoco.version>
+
+        <mockito-core.version>5.14.2</mockito-core.version>
+        <mockito-inline.version>5.2.0</mockito-inline.version>
+
+        <testcontainers.version>1.20.1</testcontainers.version>
+
+        <hamcrest-all.version>1.3</hamcrest-all.version>
+
+        <h2database.version>2.2.224</h2database.version>
+
+        <junit-jupiter-api.version>5.11.4</junit-jupiter-api.version>
+        <junit-jupiter-engine.version>5.11.4</junit-jupiter-engine.version>
+        <junit-platform-suite-engine.version>1.11.3</junit-platform-suite-engine.version>
+        <junit-platform-commons.version>1.11.3</junit-platform-commons.version>
+    </properties>
+
+
+    <packaging>pom</packaging>
+
+    <modules>
+        <module>service</module>
+        <module>templating</module>
+        <module>datasource</module>
+        <module>common</module>
+<!--        <module>coverage</module>-->
+    </modules>
+
+    <profiles>
+        <profile>
+            <id>e2e-tests</id>
+            <!--<modules>
+                <module>tests</module>
+            </modules>-->
+        </profile>
+    </profiles>
+
+    <dependencyManagement>
+
+        <dependencies>
+            <!-- Spring -->
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-dependencies</artifactId>
+                <version>${spring.boot.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+
+            <!-- Kotlin !-->
+            <dependency>
+                <groupId>org.jetbrains.kotlin</groupId>
+                <artifactId>kotlin-stdlib</artifactId>
+                <version>${kotlin.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.jetbrains.kotlin</groupId>
+                <artifactId>kotlin-stdlib-common</artifactId>
+                <version>${kotlin.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.jetbrains.kotlin</groupId>
+                <artifactId>kotlin-stdlib-jdk8</artifactId>
+                <version>${kotlin.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.jetbrains.kotlin</groupId>
+                <artifactId>kotlin-reflect</artifactId>
+                <version>${kotlin.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.jetbrains.kotlin</groupId>
+                <artifactId>kotlin-test</artifactId>
+                <version>${kotlin.version}</version>
+                <scope>test</scope>
+            </dependency>
+
+
+
+            <!-- Keycloak !-->
+            <dependency>
+                <groupId>org.keycloak.bom</groupId>
+                <artifactId>keycloak-adapter-bom</artifactId>
+                <version>${keycloak.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <!-- OpenAPI !-->
+            <dependency>
+                <groupId>org.springdoc</groupId>
+                <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+                <version>${springdoc.openapi.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.swagger.core.v3</groupId>
+                <artifactId>swagger-annotations</artifactId>
+                <version>${swagger.version}</version>
+            </dependency>
+
+            <!-- Jackson !-->
+            <dependency>
+                <groupId>com.fasterxml.jackson.core</groupId>
+                <artifactId>jackson-databind</artifactId>
+                <version>${jackson.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.fasterxml.jackson.module</groupId>
+                <artifactId>jackson-module-kotlin</artifactId>
+                <version>${jackson.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.fasterxml.jackson.module</groupId>
+                <artifactId>jackson-module-jakarta-xmlbind-annotations</artifactId>
+                <version>${jackson.version}</version>
+            </dependency>
+
+            <!-- Testing !-->
+            <dependency>
+                <groupId>org.junit</groupId>
+                <artifactId>junit-bom</artifactId>
+                <version>${junit-jupiter.version}</version>
+                <scope>test</scope>
+                <type>pom</type>
+            </dependency>
+            <dependency>
+                <groupId>org.jacoco</groupId>
+                <artifactId>org.jacoco.agent</artifactId>
+                <version>${jacoco.version}</version>
+                <classifier>runtime</classifier>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.testcontainers</groupId>
+                <artifactId>testcontainers</artifactId>
+                <version>${testcontainers.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.testcontainers</groupId>
+                <artifactId>junit-jupiter</artifactId>
+                <version>${testcontainers.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.testcontainers</groupId>
+                <artifactId>mariadb</artifactId>
+                <version>${testcontainers.version}</version>
+                <scope>test</scope>
+            </dependency>
+
+            <!-- AAS !-->
+            <dependency>
+                <groupId>org.eclipse.digitaltwin.aas4j</groupId>
+                <artifactId>aas4j-model</artifactId>
+                <version>${aas.aas4j.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.eclipse.digitaltwin.aas4j</groupId>
+                <artifactId>aas4j-dataformat-aasx</artifactId>
+                <version>${aas.aas4j.version}</version>
+            </dependency>
+
+
+
+        </dependencies>
+    </dependencyManagement>
+    <dependencies>
+
+        <!-- Testing !-->
+
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-api</artifactId>
+            <scope>test</scope>
+            <version>${junit-jupiter-api.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-engine</artifactId>
+            <scope>test</scope>
+            <version>${junit-jupiter-engine.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.platform</groupId>
+            <artifactId>junit-platform-suite-engine</artifactId>
+            <scope>test</scope>
+            <version>${junit-platform-suite-engine.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.platform</groupId>
+            <artifactId>junit-platform-commons</artifactId>
+            <scope>test</scope>
+            <version>${junit-platform-commons.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-core</artifactId>
+            <scope>test</scope>
+            <version>${mockito-core.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-inline</artifactId>
+            <version>${mockito-inline.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.hamcrest</groupId>
+            <artifactId>hamcrest-all</artifactId>
+            <version>${hamcrest-all.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.openpojo</groupId>
+            <artifactId>openpojo</artifactId>
+            <version>${maven.plugin.jacoco.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.assertj</groupId>
+            <artifactId>assertj-core</artifactId>
+            <version>${assertj.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+    </dependencies>
+
+    <build>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>true</filtering>
+                <excludes>
+                    <exclude>truststore/*</exclude>
+                </excludes>
+            </resource>
+            <resource>
+                <directory>src/main/resources/truststore</directory>
+                <filtering>false</filtering>
+            </resource>
+        </resources>
+
+        <pluginManagement>
+
+            <plugins>
+                <!-- Testing !-->
+                <plugin>
+                    <groupId>org.jacoco</groupId>
+                    <artifactId>jacoco-maven-plugin</artifactId>
+                    <version>${maven.plugin.jacoco.version}</version>
+                </plugin>
+
+                <!-- Spring Boot !-->
+                <plugin>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-maven-plugin</artifactId>
+                    <version>${maven.plugin.spring.boot.version}</version>
+                    <executions>
+                        <execution>
+                            <goals>
+                                <goal>repackage</goal>
+                                <goal>build-info</goal>
+                            </goals>
+                            <configuration>
+                                <classifier>exec</classifier>
+                            </configuration>
+                        </execution>
+                    </executions>
+                </plugin>
+                <!-- Docker Image !-->
+                <plugin>
+                    <artifactId>jib-maven-plugin</artifactId>
+                    <groupId>com.google.cloud.tools</groupId>
+                    <version>${jib-maven-plugin.version}</version>
+                    <configuration>
+                        <to>
+                            <image>${docker.image.registry}/${docker.image.name}:${project.version}</image>
+
+                            <tags>
+                                <tag>${project.version}</tag>
+                            </tags>
+                        </to>
+                        <skip>${docker.image.skip}</skip>
+                    </configuration>
+                    <executions>
+                        <execution>
+                            <id>build-image</id>
+                            <phase>package</phase>
+                            <goals>
+                                <goal>dockerBuild</goal>
+                            </goals>
+                        </execution>
+                        <execution>
+                            <id>push-image</id>
+                            <phase>deploy</phase>
+                            <goals>
+                                <goal>build</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+
+        <plugins>
+            <!-- Resources !-->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-resources-plugin</artifactId>
+                <version>${maven.plugin.apache.resources.version}</version>
+                <configuration>
+                    <delimiters>
+                        <delimiter>${resource.delimiter}</delimiter>
+                    </delimiters>
+                    <useDefaultDelimiters>false</useDefaultDelimiters>
+                </configuration>
+            </plugin>
+            <!-- Deployment !-->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-deploy-plugin</artifactId>
+                <version>${maven.plugin.apache.deploy.version}</version>
+                <configuration>
+                    <skip>${artifact.deployment.skip}</skip>
+                </configuration>
+            </plugin>
+            <!-- Testing !-->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>${maven.plugin.surefire.version}</version>
+                <configuration>
+                    <argLine>${surefireArgLine}</argLine>
+                    <redirectTestOutputToFile>true</redirectTestOutputToFile>
+                    <reportsDirectory>${project.build.directory}/test-reports</reportsDirectory>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-failsafe-plugin</artifactId>
+                <version>${maven.plugin.failsafe.version}</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>integration-test</goal>
+                            <goal>verify</goal>
+                        </goals>
+                        <configuration>
+                            <argLine>${failsafeArgLine}</argLine>
+                        </configuration>
+                    </execution>
+                </executions>
+                <configuration>
+                    <redirectTestOutputToFile>true</redirectTestOutputToFile>
+                    <reportsDirectory>${project.build.directory}/test-reports</reportsDirectory>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-site-plugin</artifactId>
+                <version>3.12.1</version>
+            </plugin>
+
+            <!-- to generate code coverage -->
+            <plugin>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+                <version>${maven.plugin.jacoco.version}</version>
+                <executions>
+                    <!-- set arg line property for surefire -->
+                    <execution>
+                        <id>prepare-agent</id>
+                        <goals>
+                            <goal>prepare-agent</goal>
+                        </goals>
+                        <configuration>
+                            <propertyName>surefireArgLine</propertyName>
+                        </configuration>
+                    </execution>
+                    <!-- set arg line property for failsafe -->
+                    <execution>
+                        <id>prepare-agent-integration</id>
+                        <goals>
+                            <goal>prepare-agent-integration</goal>
+                        </goals>
+                        <configuration>
+                            <propertyName>failsafeArgLine</propertyName>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!-- to push to coveralls -->
+            <plugin>
+                <groupId>org.eluder.coveralls</groupId>
+                <artifactId>coveralls-maven-plugin</artifactId>
+                <version>4.3.0</version>
+                <dependencies>
+                    <dependency>
+                        <groupId>javax.xml.bind</groupId>
+                        <artifactId>jaxb-api</artifactId>
+                        <version>2.3.1</version>
+                    </dependency>
+                </dependencies>
+                <configuration>
+                    <jacocoReports>coverage/target/site/jacoco-aggregate-ut/jacoco.xml</jacocoReports>
+                </configuration>
+            </plugin>
+
+            <!-- Compilation: Kotlin !-->
+            <plugin>
+                <groupId>org.jetbrains.kotlin</groupId>
+                <artifactId>kotlin-maven-plugin</artifactId>
+                <version>${kotlin.version}</version>
+                <executions>
+                    <execution>
+                        <id>compile</id>
+                        <phase>compile</phase>
+                        <goals>
+                            <goal>compile</goal>
+                        </goals>
+                        <configuration>
+                            <sourceDirs>
+                                <sourceDir>${project.basedir}/src/main/kotlin</sourceDir>
+                                <sourceDir>${project.basedir}/src/main/java</sourceDir>
+                            </sourceDirs>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>test-compile</id>
+                        <phase>test-compile</phase>
+                        <goals>
+                            <goal>test-compile</goal>
+                        </goals>
+                        <configuration>
+                            <sourceDirs>
+                                <sourceDir>${project.basedir}/src/test/kotlin</sourceDir>
+                                <sourceDir>${project.basedir}/src/test/java</sourceDir>
+                            </sourceDirs>
+                        </configuration>
+                    </execution>
+                </executions>
+                <configuration>
+                    <jvmTarget>${java.version}</jvmTarget>
+                </configuration>
+            </plugin>
+            <!-- Compilation: Java !-->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>${maven.plugin.apache.compiler.version}</version>
+                <configuration>
+                    <source>${java.version}</source>
+                    <target>${java.version}</target>
+                    <compilerArgument>-Xlint:unchecked</compilerArgument>
+                </configuration>
+                <executions>
+                    <!-- Replacing default-compile as it is treated specially by maven -->
+                    <execution>
+                        <id>default-compile</id>
+                        <phase>none</phase>
+                    </execution>
+                    <!-- Replacing default-testCompile as it is treated specially by maven -->
+                    <execution>
+                        <id>default-testCompile</id>
+                        <phase>none</phase>
+                    </execution>
+                    <execution>
+                        <id>java-compile</id>
+                        <phase>compile</phase>
+                        <goals>
+                            <goal>compile</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>java-test-compile</id>
+                        <phase>test-compile</phase>
+                        <goals>
+                            <goal>testCompile</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <!-- Versioning !-->
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>flatten-maven-plugin</artifactId>
+                <version>1.2.7</version>
+                <configuration>
+                    <updatePomFile>true</updatePomFile>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>flatten</id>
+                        <phase>process-resources</phase>
+                        <goals>
+                            <goal>flatten</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>flatten.clean</id>
+                        <phase>clean</phase>
+                        <goals>
+                            <goal>clean</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+
+
+    </build>
+
+    <reporting>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-project-info-reports-plugin</artifactId>
+                <version>2.9</version>
+                <reportSets>
+                    <reportSet>
+                        <reports>
+                            <report>index</report>
+                            <report>summary</report>
+                        </reports>
+                    </reportSet>
+                </reportSets>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-report-plugin</artifactId>
+                <version>3.0.0-M9</version>
+                <configuration>
+                    <aggregate>true</aggregate>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jxr-plugin</artifactId>
+                <version>3.3.0</version>
+            </plugin>
+            <plugin>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+                <version>${maven.plugin.jacoco.version}</version>
+                <reportSets>
+                    <reportSet>
+                        <reports>
+                            <!-- select non-aggregate reports -->
+                            <report>report-aggregate</report>
+                        </reports>
+                    </reportSet>
+                </reportSets>
+            </plugin>
+        </plugins>
+    </reporting>
+
+    <distributionManagement>
+        <site>
+            <id>cloud-edge-deployment</id>
+            <url>http://10.3.7.149/</url>
+        </site>
+        <repository>
+            <id>github</id>
+            <name>GitHub Packages</name>
+            <url>https://maven.pkg.github.com/Ilgmi/resource-self-description-service</url>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </repository>
+    </distributionManagement>
+
+</project>
