@@ -5,6 +5,8 @@ permissions:
 
 on:
   push:
+    tags:
+      - "*"
     branches:
       - main
       - develop
