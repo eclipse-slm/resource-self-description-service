@@ -57,5 +57,6 @@ jobs:
         with:
           draft: true
           prerelease: true
+          tag_name: ${{env.NAME}}
           name: ${{env.NAME}}
           files: ${{env.NAME}}.jar
