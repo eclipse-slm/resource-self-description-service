@@ -7,9 +7,6 @@ on:
   push:
     tags:
       - "*"
-    branches:
-      - main
-      - develop
 
 jobs:
   build:
@@ -40,11 +37,6 @@ jobs:
         run: echo "VERSION=$(echo $(mvn help:evaluate -Dexpression=project.version -q -DforceStdout))" >> $GITHUB_ENV
 
       - name: Set Name
-        if: github.ref_name == 'develop'
-        run: echo "NAME=$(echo resource-self-description-service-develop-${{env.VERSION}})" >> $GITHUB_ENV
-
-      - name: Set Name
-        if: github.ref_name == 'main' || github.ref_type == 'tag'
         run: echo "NAME=$(echo resource-self-description-service-${{env.VERSION}})" >> $GITHUB_ENV
 
       - name: Copy Jar exec
@@ -55,7 +47,6 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          draft: true
           prerelease: true
           name: ${{env.NAME}}
           files: ${{env.NAME}}.jar
