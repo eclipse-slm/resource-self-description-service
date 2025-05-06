@@ -44,7 +44,7 @@ jobs:
         run: echo "NAME=$(echo resource-self-description-service-develop-${{env.VERSION}})" >> $GITHUB_ENV
 
       - name: Set Name
-        if: github.ref_name == 'main'
+        if: github.ref_name == 'main' || github.ref_type == 'tag'
         run: echo "NAME=$(echo resource-self-description-service-${{env.VERSION}})" >> $GITHUB_ENV
 
       - name: Copy Jar exec
