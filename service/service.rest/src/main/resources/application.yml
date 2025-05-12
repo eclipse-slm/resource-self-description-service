@@ -84,10 +84,10 @@ security:
 ### Keycloak
 keycloak:
   tenants:
-    config-path: "../../src/main/resources/static/test-keycloak.json"
-#    config-path: consul:keycloak
-#    realm: 'fabos'
-#    auth-server-url: 'http://c8.slm.local:7080/auth/'
+#    config-path: "../../src/main/resources/static/test-keycloak.json"
+    config-path: consul:keycloak
+    realm: 'fabos'
+    auth-server-url: 'http://c8.slm.local:7080/auth/'
 
 
 resource:
@@ -127,14 +127,14 @@ aas:
     url: ${aas.concept-descriptions-repository.scheme}://${aas.concept-descriptions-repository.host}:${aas.concept-descriptions-repository.port}${aas.concept-descriptions-repository.path}
 
   submodel-repository:
-    scheme: ${deployment.scheme}
-    host: ${deployment.hostname}
-    port: ${server.port}
+    scheme: http
+    host: localhost
+    port: 8081
     path: /submodels
     url: ${aas.submodel-repository.scheme}://${aas.submodel-repository.host}:${aas.submodel-repository.port}${aas.submodel-repository.path}
 
 ### Consul
-optional:consul:
+consul:
   scheme: http
   host: c8.slm.local
   port: 8500

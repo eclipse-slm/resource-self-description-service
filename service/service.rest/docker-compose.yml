@@ -1,0 +1,12 @@
+services:
+  resource-self-description-service:
+    build: .
+
+    environment:
+      - CONSUL_ACLTOKEN=F2vP4iTRDYb0sCqXgHzbQPWA
+
+    extra_hosts:
+      - "consul:10.3.7.176"
+      - "fabos.local:10.3.7.176"
+#      - "c8.slm.local:10.3.7.176"
+      - "aas-host:10.3.7.176"

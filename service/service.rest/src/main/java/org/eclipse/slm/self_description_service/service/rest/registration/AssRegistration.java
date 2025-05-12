@@ -17,6 +17,8 @@ import org.eclipse.slm.self_description_service.common.consul.model.catalog.Cata
 import org.eclipse.slm.self_description_service.datasource.DatasourceService;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
@@ -27,6 +29,8 @@ import java.util.stream.Collectors;
 
 @Component
 public class AssRegistration implements InitializingBean {
+
+    private static final Logger LOG = LoggerFactory.getLogger(AssRegistration.class);
 
     private final Environment env;
     
@@ -67,8 +71,13 @@ public class AssRegistration implements InitializingBean {
         var services = getServices(names);
 
         var aasRegistryUrl = this.getServiceUrl(services, "aas-registry", "http");
+        LOG.debug("AAS Registry URL: {}", aasRegistryUrl);
+
         var aasRepositoryUrl = this.getServiceUrl(services, "aas-repository", "http");
+        LOG.debug("AAS Repository URL: {}", aasRepositoryUrl);
+
         var submodelRegistryUrl = this.getServiceUrl(services, "submodel-registry", "http");
+        LOG.debug("AAS Submodel Registry URL: {}", submodelRegistryUrl);
 
         var aasRegistryClient = new AasRegistryClient(aasRegistryUrl, aasRepositoryUrl, this.objectMapper);
         var aasRepositoryClient = new AasRepositoryClient(aasRepositoryUrl);
