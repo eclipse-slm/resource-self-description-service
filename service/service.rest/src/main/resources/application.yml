@@ -86,8 +86,9 @@ keycloak:
   tenants:
 #    config-path: "../../src/main/resources/static/test-keycloak.json"
     config-path: consul:keycloak
+    kv-name: 'services'
     realm: 'fabos'
-    auth-server-url: 'http://c8.slm.local:7080/auth/'
+    auth-server-url: 'http://fabos.local:7080/auth/'
 
 
 resource:
