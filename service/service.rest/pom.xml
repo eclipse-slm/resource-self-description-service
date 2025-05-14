@@ -15,7 +15,7 @@
     </parent>
 
     <properties>
-        <docker.image.name>slm/resource-self-description-service</docker.image.name>
+        <docker.image.name>resource-self-description-service</docker.image.name>
     </properties>
 
     <dependencies>
