@@ -35,13 +35,13 @@ public class AssRegistration implements InitializingBean {
     private final Environment env;
     
     private final ConsulCredential consulCredential;
-    private final ConsulServicesApiClient client;
+    private final ConsulServicesApiClient consulClient;
     private final ObjectMapper objectMapper;
     private final DatasourceService datasourceService;
     private final String resourceId;
     private final String submodelRepositoryUrl;
-    public AssRegistration(ConsulServicesApiClient client, ObjectMapper objectMapper, DatasourceService datasourceService, @Value("${resource.aas.id}") String resourceId, @Value("${aas.submodel-repository.url}") String submodelRepositoryUrl, Environment env) {
-        this.client = client;
+    public AssRegistration(ConsulServicesApiClient consulClient, ObjectMapper objectMapper, DatasourceService datasourceService, @Value("${resource.aas.id}") String resourceId, @Value("${aas.submodel-repository.url}") String submodelRepositoryUrl, Environment env) {
+        this.consulClient = consulClient;
         this.datasourceService = datasourceService;
         this.resourceId = resourceId;
         this.submodelRepositoryUrl = submodelRepositoryUrl;
@@ -148,7 +148,7 @@ public class AssRegistration implements InitializingBean {
 
     private Map<String, List<CatalogService>> getServices(List<String> names) {
         try {
-            return this.client.getServicesByName(consulCredential, names);
+            return this.consulClient.getServicesByName(consulCredential, names);
         } catch (Exception e) {
             return new HashMap<>();
         }
