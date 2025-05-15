@@ -6,11 +6,11 @@ ENV CONSUL_SCHEME="http" \
     CONSUL_PORT=8500 \
     CONSUL_DATACENTER="fabos" \
     CONSUL_ACLTOKEN="password" \
-    AAS_BROKER="aas-broker" \
-    AAS_AASREGISTRY_HOST="aas-host" \
-    AAS_AASREPOSITORY_HOST="aas-host" \
-    AAS_AASSUBMODELREGISTRY_HOST="aas-host" \
-    AAS_AASSUBMODELREPOSITORY_HOST="aas-host"
+    AAS_AASREGISTRY_HOST="localhost" \
+    AAS_AASREPOSITORY_HOST="localhost" \
+    AAS_AASSUBMODELREGISTRY_HOST="localhost" \
+    RESOURCE_ID="00000000-0000-0000-0000-000000000000" \
+    USECONFIGURLS=true
 
 RUN apt update && \
     apt install -y curl jq
@@ -24,4 +24,3 @@ WORKDIR /app
 VOLUME "/app/keycloak"
 
 ENTRYPOINT ["/bin/bash", "-c", "/app/startup.sh"]
-#ENTRYPOINT ["/bin/bash", "-c", "top"]

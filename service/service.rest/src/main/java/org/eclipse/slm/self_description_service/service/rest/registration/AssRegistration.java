@@ -67,17 +67,32 @@ public class AssRegistration implements InitializingBean {
 
     @NotNull
     private AASClients getAasClients() {
-        var names = List.of("aas-registry", "aas-repository", "submodel-registry");
-        var services = getServices(names);
 
-        var aasRegistryUrl = this.getServiceUrl(services, "aas-registry", "http");
-        LOG.debug("AAS Registry URL: {}", aasRegistryUrl);
+        var useConfigUrls = env.getProperty("resource.use-config-urls", boolean.class);
 
-        var aasRepositoryUrl = this.getServiceUrl(services, "aas-repository", "http");
-        LOG.debug("AAS Repository URL: {}", aasRepositoryUrl);
+        String aasRegistryUrl;
+        String aasRepositoryUrl;
+        String submodelRegistryUrl;
 
-        var submodelRegistryUrl = this.getServiceUrl(services, "submodel-registry", "http");
-        LOG.debug("AAS Submodel Registry URL: {}", submodelRegistryUrl);
+        if (Boolean.TRUE.equals(useConfigUrls)) {
+            aasRegistryUrl = env.getProperty("aas.aas-registry.url");
+            aasRepositoryUrl = env.getProperty("aas.aas-repository.url");
+            submodelRegistryUrl = env.getProperty("aas.submodel-registry.url");
+        }else {
+            var names = List.of("aas-registry", "aas-repository", "submodel-registry");
+            var services = getServices(names);
+
+            aasRegistryUrl = this.getServiceUrl(services, "aas-registry", "http");
+            LOG.debug("AAS Registry URL: {}", aasRegistryUrl);
+
+            aasRepositoryUrl = this.getServiceUrl(services, "aas-repository", "http");
+            LOG.debug("AAS Repository URL: {}", aasRepositoryUrl);
+
+            submodelRegistryUrl = this.getServiceUrl(services, "submodel-registry", "http");
+            LOG.debug("AAS Submodel Registry URL: {}", submodelRegistryUrl);
+        }
+
+
 
         var aasRegistryClient = new AasRegistryClient(aasRegistryUrl, aasRepositoryUrl, this.objectMapper);
         var aasRepositoryClient = new AasRepositoryClient(aasRepositoryUrl);

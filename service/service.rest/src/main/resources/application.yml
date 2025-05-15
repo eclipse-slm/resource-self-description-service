@@ -95,7 +95,8 @@ resource:
   aas:
     prefix: "Resource_"
     id: ${resource.aas.prefix}${resource.id}
-  id: "dad1c0a5-b248-47a1-9aa8-a1e0e5b8c6dd"
+  id: "00000000-0000-0000-0000-000000000000"
+  use-config-urls: true
 
 aas:
   broker:
