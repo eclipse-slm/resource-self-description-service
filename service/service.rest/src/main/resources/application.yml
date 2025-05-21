@@ -88,7 +88,7 @@ keycloak:
     config-path: consul:keycloak
     kv-name: 'services'
     realm: 'fabos'
-    auth-server-url: 'http://fabos.local:7080/auth/'
+    auth-server-url: 'http://keycloak:7080/auth/'
 
 
 resource:
