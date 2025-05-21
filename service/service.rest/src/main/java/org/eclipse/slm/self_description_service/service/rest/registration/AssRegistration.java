@@ -86,9 +86,9 @@ public class AssRegistration implements InitializingBean {
             submodelRegistryUrl = this.getServiceUrl(services, "submodel-registry", "http");
         }
 
-        LOG.debug("AAS Registry URL: {}", aasRegistryUrl);
-        LOG.debug("AAS Repository URL: {}", aasRepositoryUrl);
-        LOG.debug("AAS Submodel Registry URL: {}", submodelRegistryUrl);
+        LOG.info("AAS Registry URL: {}", aasRegistryUrl);
+        LOG.info("AAS Repository URL: {}", aasRepositoryUrl);
+        LOG.info("AAS Submodel Registry URL: {}", submodelRegistryUrl);
 
         var aasRegistryClient = new AasRegistryClient(aasRegistryUrl, aasRepositoryUrl, this.objectMapper);
         var aasRepositoryClient = new AasRepositoryClient(aasRepositoryUrl);
