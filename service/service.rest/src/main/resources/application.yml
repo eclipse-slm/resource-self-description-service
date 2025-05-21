@@ -138,7 +138,7 @@ aas:
 ### Consul
 consul:
   scheme: http
-  host: localhost
+  host: consul
   port: 8500
   datacenter: fabos
   acl-token: password
