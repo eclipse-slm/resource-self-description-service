@@ -86,7 +86,7 @@ keycloak:
   tenants:
 #    config-path: "../../src/main/resources/static/test-keycloak.json"
     config-path: consul:keycloak
-    kv-name: 'services'
+    kv-name: 'resource_self_description_services'
     realm: 'fabos'
     auth-server-url: 'http://keycloak:7080/auth/'
 
