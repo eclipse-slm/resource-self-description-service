@@ -17,6 +17,8 @@ import org.eclipse.slm.self_description_service.common.consul.model.catalog.Cata
 import org.eclipse.slm.self_description_service.datasource.DatasourceService;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
@@ -28,16 +30,18 @@ import java.util.stream.Collectors;
 @Component
 public class AssRegistration implements InitializingBean {
 
+    private static final Logger LOG = LoggerFactory.getLogger(AssRegistration.class);
+
     private final Environment env;
     
     private final ConsulCredential consulCredential;
-    private final ConsulServicesApiClient client;
+    private final ConsulServicesApiClient consulClient;
     private final ObjectMapper objectMapper;
     private final DatasourceService datasourceService;
     private final String resourceId;
     private final String submodelRepositoryUrl;
-    public AssRegistration(ConsulServicesApiClient client, ObjectMapper objectMapper, DatasourceService datasourceService, @Value("${resource.aas.id}") String resourceId, @Value("${aas.submodel-repository.url}") String submodelRepositoryUrl, Environment env) {
-        this.client = client;
+    public AssRegistration(ConsulServicesApiClient consulClient, ObjectMapper objectMapper, DatasourceService datasourceService, @Value("${resource.aas.id}") String resourceId, @Value("${aas.submodel-repository.url}") String submodelRepositoryUrl, Environment env) {
+        this.consulClient = consulClient;
         this.datasourceService = datasourceService;
         this.resourceId = resourceId;
         this.submodelRepositoryUrl = submodelRepositoryUrl;
@@ -63,12 +67,28 @@ public class AssRegistration implements InitializingBean {
 
     @NotNull
     private AASClients getAasClients() {
-        var names = List.of("aas-registry", "aas-repository", "submodel-registry");
-        var services = getServices(names);
 
-        var aasRegistryUrl = this.getServiceUrl(services, "aas-registry", "http");
-        var aasRepositoryUrl = this.getServiceUrl(services, "aas-repository", "http");
-        var submodelRegistryUrl = this.getServiceUrl(services, "submodel-registry", "http");
+        var useConfigUrls = env.getProperty("resource.use-config-urls", boolean.class);
+
+        String aasRegistryUrl;
+        String aasRepositoryUrl;
+        String submodelRegistryUrl;
+
+        if (Boolean.TRUE.equals(useConfigUrls)) {
+            aasRegistryUrl = env.getProperty("aas.aas-registry.url");
+            aasRepositoryUrl = env.getProperty("aas.aas-repository.url");
+            submodelRegistryUrl = env.getProperty("aas.submodel-registry.url");
+        }else {
+            var names = List.of("aas-registry", "aas-repository", "submodel-registry");
+            var services = getServices(names);
+            aasRegistryUrl = this.getServiceUrl(services, "aas-registry", "http");
+            aasRepositoryUrl = this.getServiceUrl(services, "aas-repository", "http");
+            submodelRegistryUrl = this.getServiceUrl(services, "submodel-registry", "http");
+        }
+
+        LOG.info("AAS Registry URL: {}", aasRegistryUrl);
+        LOG.info("AAS Repository URL: {}", aasRepositoryUrl);
+        LOG.info("AAS Submodel Registry URL: {}", submodelRegistryUrl);
 
         var aasRegistryClient = new AasRegistryClient(aasRegistryUrl, aasRepositoryUrl, this.objectMapper);
         var aasRepositoryClient = new AasRepositoryClient(aasRepositoryUrl);
@@ -139,7 +159,7 @@ public class AssRegistration implements InitializingBean {
 
     private Map<String, List<CatalogService>> getServices(List<String> names) {
         try {
-            return this.client.getServicesByName(consulCredential, names);
+            return this.consulClient.getServicesByName(consulCredential, names);
         } catch (Exception e) {
             return new HashMap<>();
         }

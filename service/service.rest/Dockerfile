@@ -6,7 +6,11 @@ ENV CONSUL_SCHEME="http" \
     CONSUL_PORT=8500 \
     CONSUL_DATACENTER="fabos" \
     CONSUL_ACLTOKEN="password" \
-    AAS_BROKER="aas-broker"
+    AAS_AASREGISTRY_HOST="aas-registry" \
+    AAS_AASREPOSITORY_HOST="aas-repository" \
+    AAS_AASSUBMODELREGISTRY_HOST="submodel-registry" \
+    RESOURCE_ID="00000000-0000-0000-0000-000000000000" \
+    USECONFIGURLS=true
 
 RUN apt update && \
     apt install -y curl jq

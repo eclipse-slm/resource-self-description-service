@@ -43,6 +43,10 @@ public class MultiTenantKeycloakRegistration {
     private final List<String> realms = new ArrayList<>();
     @Value("${keycloak.tenants.config-path}")
     private String keycloakConfigPath;
+
+    @Value("${keycloak.tenants.kv-name}")
+    private Optional<String> consulKeyValueName = Optional.empty();
+
     private Map<String, File> oidcConfigFiles;
 
     private Map<String, RealmResource> realmResourceMap = new HashMap<>();
@@ -82,8 +86,11 @@ public class MultiTenantKeycloakRegistration {
     @PostConstruct
     public void init() throws IOException {
         if (keycloakConfigPath.startsWith("consul:")) {
+
+            String kvPathPrefix = consulKeyValueName.map(s -> this.consulKVPrefix + "/" + s)
+                    .orElseGet(() -> this.consulKVPrefix + "/" + this.applicationName);
+
             // Load Keycloak config from Consul KV
-            var kvPathPrefix = this.consulKVPrefix + "/" + this.applicationName;
             var kvSubPath = keycloakConfigPath.replace("consul:", "");
             var kvPath = kvPathPrefix + "/" + kvSubPath;
             this.loadKeycloakConfigFromConsul(kvPath);
