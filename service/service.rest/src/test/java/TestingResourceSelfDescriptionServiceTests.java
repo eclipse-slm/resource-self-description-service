@@ -48,8 +48,11 @@ public class TestingResourceSelfDescriptionServiceTests {
         var consulKeyValueApiClient = new ConsulKeyValueApiClient("http", "localhost", 7500, "acl-test", "fabos", objectMapper);
         consulKeyValueApiClient.createKey(new ConsulCredential("acl-test"), "config/services", keycloakKV);
 
-        var aasRepository = new AasRepositoryClient("http://localhost:8082");
-        var default_des = new DefaultAssetAdministrationShell.Builder().id("Resource_" + resourceId.toString());
+        var id = "Resource_" + resourceId;
+        var aasRepository = new AasRepositoryClient("http://localhost:8081");
+        var default_des = new DefaultAssetAdministrationShell.Builder()
+                .id(id)
+                .idShort(id);
 
         aasRepository.createOrUpdateAas(default_des.build());
     }
@@ -62,6 +65,7 @@ public class TestingResourceSelfDescriptionServiceTests {
 
     @Test
     void contextLoads() {
+        var a  = 1;
     }
 
 }

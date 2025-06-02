@@ -97,7 +97,7 @@ services:
       BASYX_CORS_ALLOWEDMETHODS: GET,POST,PATCH,DELETE,PUT,OPTIONS,HEAD
       BASYX_AASREPOSITORY_FEATURE_REGISTRYINTEGRATION: http://aas-registry:8080
       BASYX_SUBMODELREPOSITORY_FEATURE_REGISTRYINTEGRATION: http://submodel-registry:8080
-      BASYX_EXTERNALURL: http://fabos.local:8081
+      BASYX_EXTERNALURL: http://localhost:8081
       MANAGEMENT_ENDPOINTS_WEB_EXPOSURE_INCLUDE: "health,info"
       MANAGEMENT_INFO_GIT_ENABLED: "false"
     ports:
@@ -134,6 +134,20 @@ services:
       default:
         aliases:
           - aas-broker
+
+  aas-gui:
+    image: "eclipsebasyx/aas-gui:v2-240913"
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+#      AAS_DISCOVERY_PATH: "{{ AAS_AAS_DISCOVERY_URL }}"
+      AAS_REGISTRY_PATH: "http://localhost:8082"
+      SUBMODEL_REGISTRY_PATH: "http://localhost:8083"
+      AAS_REPO_PATH: "http://localhost:8081/shells"
+      SUBMODEL_REPO_PATH: "http://localhost:8082/submodels"
+      BASYX_CORS_ALLOWED_ORIGIN: "*"
+      BASYX_CORS_ALLOWED_METHODS: "GET,POST,PATCH,DELETE,PUT,OPTIONS,HEAD"
 
 volumes:
   aas_database:
