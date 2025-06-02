@@ -1,4 +1,6 @@
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.eclipse.digitaltwin.aas4j.v3.model.impl.DefaultAssetAdministrationShell;
+import org.eclipse.slm.self_description_service.common.aas.clients.aas.AasRepositoryClient;
 import org.eclipse.slm.self_description_service.common.consul.client.ConsulCredential;
 import org.eclipse.slm.self_description_service.common.consul.client.apis.ConsulKeyValueApiClient;
 import org.eclipse.slm.self_description_service.common.consul.model.exceptions.ConsulLoginFailedException;
@@ -14,11 +16,13 @@ import org.testcontainers.containers.wait.strategy.Wait;
 import java.io.File;
 import java.time.Duration;
 import java.util.HashMap;
+import java.util.UUID;
 
 @SpringBootTest(classes = SelfDescriptionServiceApplication.class)
 @TestPropertySource(properties = {"spring.config.location=classpath:application-test.yml"})
 public class TestingResourceSelfDescriptionServiceTests {
 
+    private static final UUID resourceId = UUID.fromString("dad1c0a5-b248-47a1-9aa8-a1e0e5b8c6dd");
 
     public static HashMap<String, Object> keycloakKV = new HashMap<>() {
         {
@@ -43,6 +47,11 @@ public class TestingResourceSelfDescriptionServiceTests {
         var objectMapper = new ObjectMapper();
         var consulKeyValueApiClient = new ConsulKeyValueApiClient("http", "localhost", 7500, "acl-test", "fabos", objectMapper);
         consulKeyValueApiClient.createKey(new ConsulCredential("acl-test"), "config/services", keycloakKV);
+
+        var aasRepository = new AasRepositoryClient("http://localhost:8082");
+        var default_des = new DefaultAssetAdministrationShell.Builder().id("Resource_" + resourceId.toString());
+
+        aasRepository.createOrUpdateAas(default_des.build());
     }
 
 
