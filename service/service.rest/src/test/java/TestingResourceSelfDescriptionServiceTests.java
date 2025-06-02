@@ -27,10 +27,14 @@ public class TestingResourceSelfDescriptionServiceTests {
     public static HashMap<String, Object> keycloakKV = new HashMap<>() {
         {
             put("realm", "fabos");
-            put("auth-server-url", "http://localhost:7080/auth");
+            put("auth-server-url", "http://localhost:7070/");
             put("ssl-required", "external");
             put("resource", "services");
-            put("credentials", "{'secret': '7cFBKWWctQ8hIUDw4y2GK7scrhFFOKV9'}");
+            put("credentials", new HashMap<String, Object>() {
+                {
+                    put("secret", "7cFBKWWctQ8hIUDw4y2GK7scrhFFOKV9");
+                }
+            });
             put("confidential-port", 0);
         }
     };
@@ -46,7 +50,7 @@ public class TestingResourceSelfDescriptionServiceTests {
         environment.start();
         var objectMapper = new ObjectMapper();
         var consulKeyValueApiClient = new ConsulKeyValueApiClient("http", "localhost", 7500, "acl-test", "fabos", objectMapper);
-        consulKeyValueApiClient.createKey(new ConsulCredential("acl-test"), "config/services", keycloakKV);
+        consulKeyValueApiClient.createKey(new ConsulCredential("acl-test"), "config/services/keycloak", keycloakKV);
 
         var id = "Resource_" + resourceId;
         var aasRepository = new AasRepositoryClient("http://localhost:8081");

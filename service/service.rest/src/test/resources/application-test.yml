@@ -84,10 +84,11 @@ security:
 ### Keycloak
 keycloak:
   tenants:
-    config-path: "../../src/main/resources/static/test-keycloak.json"
-#    config-path: consul:keycloak
-#    realm: 'fabos'
-#    auth-server-url: 'http://c8.slm.local:7080/auth/'
+#    config-path: "../../src/main/resources/static/test-keycloak.json"
+    config-path: consul:keycloak
+    kv-name: 'services'
+    realm: 'fabos'
+    auth-server-url: 'http://keycloak:7080/auth/'
 
 
 resource:

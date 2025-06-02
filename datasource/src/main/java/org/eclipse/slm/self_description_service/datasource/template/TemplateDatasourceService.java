@@ -110,7 +110,6 @@ public class TemplateDatasourceService extends AbstractDatasource implements Dat
             }
         } catch (IOException | InvalidFormatException | DeserializationException e) {
             LOG.error("Failed to get model ids with error message: {}", e.getMessage());
-            throw new RuntimeException(e);
         }
 
         return submodelIDs;
