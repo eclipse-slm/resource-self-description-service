@@ -1,0 +1,16 @@
+services:
+  resource-self-description-service:
+    build: .
+
+    environment:
+      - CONSUL_ACLTOKEN=password
+      - AAS_AASREGISTRY_HOST="aas-registry"
+      - AAS_AASREPOSITORY_HOST="aas-repository"
+      - AAS_AASSUBMODELREGISTRY_HOST="submodel-registry"
+      - RESOURCE_ID="00000000-0000-0000-0000-000000000000"
+      - USECONFIGURLS=true
+
+    extra_hosts:
+      - "consul:localhost"
+      - "fabos.local:localhost"
+      - "aas-host:localhost"
