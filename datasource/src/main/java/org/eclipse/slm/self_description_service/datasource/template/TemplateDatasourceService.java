@@ -38,17 +38,21 @@ public class TemplateDatasourceService extends AbstractDatasource implements Dat
 
     @Override
     public void afterPropertiesSet() throws Exception {
-        var templates = this.templateManager.getTemplates();
-        for (Resource template : templates) {
-            AASXDeserializer aasxDeserializer = null;
-            aasxDeserializer = new AASXDeserializer(template.getInputStream());
-            var environment = aasxDeserializer.read();
+        try{
+            var templates = this.templateManager.getTemplates();
+            for (Resource template : templates) {
+                AASXDeserializer aasxDeserializer = null;
+                aasxDeserializer = new AASXDeserializer(template.getInputStream());
+                var environment = aasxDeserializer.read();
 
-            for (Submodel submodel : environment.getSubmodels()) {
-                var id = createSubmodelId(submodel.getIdShort());
-                this.idToFileMap.put(id, template.getFilename());
+                for (Submodel submodel : environment.getSubmodels()) {
+                    var id = createSubmodelId(submodel.getIdShort());
+                    this.idToFileMap.put(id, template.getFilename());
+                }
+
             }
-
+        }catch (Exception e){
+            LOG.error(e.getMessage());
         }
     }
 
@@ -106,7 +110,6 @@ public class TemplateDatasourceService extends AbstractDatasource implements Dat
             }
         } catch (IOException | InvalidFormatException | DeserializationException e) {
             LOG.error("Failed to get model ids with error message: {}", e.getMessage());
-            throw new RuntimeException(e);
         }
 
         return submodelIDs;
