@@ -17,7 +17,6 @@
         <maven.compiler.target>${java.version}</maven.compiler.target>
 
         <!-- Deployment -->
-        <docker.image.registry>ghcr.io/slm</docker.image.registry>
         <docker.image.skip>false</docker.image.skip>
         <docker.image.registry>ghcr.io/eclipse-slm</docker.image.registry>
         <artifact.deployment.skip>true</artifact.deployment.skip>
