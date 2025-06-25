@@ -4,7 +4,7 @@ import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.eclipse.digitaltwin.aas4j.v3.dataformat.aasx.AASXDeserializer;
 import org.eclipse.digitaltwin.aas4j.v3.dataformat.core.DeserializationException;
 import org.eclipse.digitaltwin.aas4j.v3.model.*;
-import org.eclipse.slm.self_description_service.datasource.AbstractDatasource;
+import org.eclipse.slm.self_description_service.datasource.AbstractDatasourceService;
 import org.eclipse.slm.self_description_service.datasource.Datasource;
 import org.eclipse.slm.self_description_service.templating.TemplateRenderer;
 import org.slf4j.Logger;
@@ -21,8 +21,12 @@ import java.util.List;
 import java.util.Optional;
 
 @Component
-public class TemplateDatasourceService extends AbstractDatasource implements Datasource, InitializingBean {
+public class TemplateDatasourceService extends AbstractDatasourceService implements InitializingBean {
+
     private final static Logger LOG = LoggerFactory.getLogger(TemplateDatasourceService.class);
+
+    public static final String DATASOURCE_NAME = "Template";
+
     private final static String ID_PREFIX = "Template";
 
     private ITemplateManager templateManager;
@@ -57,7 +61,7 @@ public class TemplateDatasourceService extends AbstractDatasource implements Dat
     }
 
 
-    public List<Submodel> getModels() {
+    public List<Submodel> getSubmodels() {
 
         ArrayList<Submodel> submodels = new ArrayList<>();
 
@@ -87,7 +91,7 @@ public class TemplateDatasourceService extends AbstractDatasource implements Dat
     }
 
     @Override
-    public List<String> getModelIds() {
+    public List<String> getSubmodelIds() {
         ArrayList<String> submodelIDs = new ArrayList<>();
 
         Resource[] templates;
@@ -116,7 +120,7 @@ public class TemplateDatasourceService extends AbstractDatasource implements Dat
     }
 
     @Override
-    public Optional<Submodel> getModelById(String id) {
+    public Optional<Submodel> getSubmodelById(String id) {
         try {
             Optional<Submodel> optionalSubmodel;
             if (!this.idToFileMap.containsKey(id)) {
@@ -169,7 +173,8 @@ public class TemplateDatasourceService extends AbstractDatasource implements Dat
             if (element instanceof Property property) {
                 var value = property.getValue();
                 if (value != null) {
-                    property.setValue(this.renderer.render(property.getValue()));
+                    var renderedValue = this.renderer.render(value);
+                    property.setValue(renderedValue);
                 }
             } else if (element instanceof SubmodelElementList submodelElementList) {
                 for (SubmodelElement child : submodelElementList.getValue()) {

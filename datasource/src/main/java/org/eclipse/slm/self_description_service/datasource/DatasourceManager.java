@@ -2,45 +2,41 @@ package org.eclipse.slm.self_description_service.datasource;
 
 import org.eclipse.digitaltwin.aas4j.v3.model.Submodel;
 import org.eclipse.digitaltwin.basyx.core.exceptions.ElementDoesNotExistException;
-import org.eclipse.slm.self_description_service.datasource.docker.DockerDatasourceService;
-import org.eclipse.slm.self_description_service.datasource.template.TemplateDatasourceService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.util.*;
 
 @Component
-public class DatasourceService {
-    private final static Logger LOG = LoggerFactory.getLogger(DatasourceService.class);
-    private final HashMap<String, Datasource> submodelToDatasourceMap = new HashMap<>();
-    private final HashMap<String, Datasource> datasource = new HashMap<>();
+public class DatasourceManager {
 
-    public DatasourceService(TemplateDatasourceService templateDatasourceService, @Value("${resource.id}") String resourceId) {
+    private final static Logger LOG = LoggerFactory.getLogger(DatasourceManager.class);
 
-        this.datasource.put("Template", templateDatasourceService);
-        this.datasource.put("Docker", new DockerDatasourceService(resourceId));
+    private final Map<String, Datasource> submodelToDatasourceMap = new HashMap<>();
+    private final List<AbstractDatasourceService> datasourceServices;
 
+    public DatasourceManager(List<AbstractDatasourceService> datasourceServices) {
+        this.datasourceServices = datasourceServices;
 
-        for (Datasource datasource : this.datasource.values()) {
-            var modelIds = datasource.getModelIds();
+        for (var datasource : this.datasourceServices) {
+            var modelIds = datasource.getSubmodelIds();
             for (String id : modelIds) {
                 this.submodelToDatasourceMap.put(id, datasource);
             }
         }
     }
 
-    public List<Datasource> getDatasources() {
-        return new ArrayList<>(this.datasource.values());
+    public List<Datasource> getDatasourceServices() {
+        return new ArrayList<>(this.datasourceServices);
     }
 
     public Optional<Datasource> getDatasourceForSubmodelId(String submodelId) {
         if (!this.submodelToDatasourceMap.containsKey(submodelId)) {
-            for (Datasource datasource : datasource.values()) {
+            for (var datasource : datasourceServices) {
                 try {
-                    var submodel = datasource.getModelById(submodelId);
+                    var submodel = datasource.getSubmodelById(submodelId);
                     if (submodel.isPresent()) {
                         this.submodelToDatasourceMap.put(submodelId, datasource);
                         return Optional.of(datasource);
@@ -53,7 +49,6 @@ public class DatasourceService {
             var datasource = this.submodelToDatasourceMap.get(submodelId);
             return Optional.of(datasource);
         }
-
 
         return Optional.empty();
     }
@@ -70,7 +65,7 @@ public class DatasourceService {
         }
         try {
             var datasource = optionalDatasource.get();
-            return datasource.getModelById(submodelId);
+            return datasource.getSubmodelById(submodelId);
         } catch (Exception e) {
             return Optional.empty();
         }
@@ -78,8 +73,8 @@ public class DatasourceService {
 
     public List<Submodel> getSubmodels() {
         ArrayList<Submodel> submodels = new ArrayList<>();
-        for (Datasource datasource : this.datasource.values()) {
-            submodels.addAll(datasource.getModels());
+        for (Datasource datasource : this.datasourceServices) {
+            submodels.addAll(datasource.getSubmodels());
         }
 
         return submodels;

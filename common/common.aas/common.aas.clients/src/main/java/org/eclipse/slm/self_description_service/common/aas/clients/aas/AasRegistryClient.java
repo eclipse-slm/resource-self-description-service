@@ -13,7 +13,9 @@ import org.eclipse.digitaltwin.basyx.aasregistry.client.api.RegistryAndDiscovery
 import org.eclipse.digitaltwin.basyx.submodelregistry.client.model.SubmodelDescriptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cloud.client.discovery.DiscoveryClient;
 import org.springframework.stereotype.Component;
 
 import java.net.http.HttpClient;
@@ -27,36 +29,43 @@ public class AasRegistryClient {
 
     private static final Logger LOG = LoggerFactory.getLogger(AasRegistryClient.class);
 
-    private final String aasRegistryUrl;
+    private String aasRegistryUrl;
 
-    private final String aasRepositoryUrl;
-    private final ObjectMapper objectMapper;
     private RegistryAndDiscoveryInterfaceApi aasRegistryApi;
 
+    private final DiscoveryClient discoveryClient;
+
+    private final String aasRegistryDiscoveryInstanceId = "aas-registry";
+
+
+    private final ObjectMapper objectMapper;
+
+    @Autowired
     public AasRegistryClient(@Value("${aas.aas-registry.url}") String aasRegistryUrl,
-                             @Value("${aas.aas-repository.url}") String aasRepositoryUrl, ObjectMapper objectMapper) {
+                             DiscoveryClient discoveryClient,
+                             ObjectMapper objectMapper) {
         this.aasRegistryUrl = aasRegistryUrl;
-        this.aasRepositoryUrl = aasRepositoryUrl;
+        this.discoveryClient = discoveryClient;
         this.objectMapper = objectMapper;
+
+        var aasRegistryServiceInstances = this.discoveryClient.getInstances(aasRegistryDiscoveryInstanceId);
+        if (!aasRegistryServiceInstances.isEmpty()) {
+            var aasRegistryServiceInstance = aasRegistryServiceInstances.get(0);
+            var path = "";
+            if (aasRegistryServiceInstance.getMetadata().get("path") != null) {
+                path = aasRegistryServiceInstance.getMetadata().get("path");
+            }
+
+            this.aasRegistryUrl = "http://" + aasRegistryServiceInstance.getHost()
+                    + ":" + aasRegistryServiceInstance.getPort() + path;
+        }
+        else {
+            LOG.warn("No service instance '" + aasRegistryDiscoveryInstanceId + "' found via discovery client. Using default URL '"
+                    + this.aasRegistryUrl + "' from application.yml.");
+        }
+
         var aasRegistryClient = new ApiClient(HttpClient.newBuilder(), objectMapper, this.aasRegistryUrl);
         this.aasRegistryApi = new RegistryAndDiscoveryInterfaceApi(aasRegistryClient);
-    }
-
-    public static org.eclipse.digitaltwin.aas4j.v3.model.AssetAdministrationShellDescriptor convertAasDescriptor(
-            org.eclipse.digitaltwin.basyx.aasregistry.client.model.AssetAdministrationShellDescriptor aasDescriptor) {
-        try {
-            var aasJsonSerializer = new JsonSerializer();
-            var aasJsonDeserializer = new JsonDeserializer();
-
-            var registryModelJson = aasJsonSerializer.write(aasDescriptor);
-            var convertedAasDescriptor = aasJsonDeserializer.read(registryModelJson, DefaultAssetAdministrationShellDescriptor.class);
-
-            return convertedAasDescriptor;
-        } catch (SerializationException e) {
-            throw new RuntimeException(e);
-        } catch (DeserializationException e) {
-            throw new RuntimeException(e);
-        }
     }
 
     public List<AssetAdministrationShellDescriptor> getAllShellDescriptors() {
@@ -114,9 +123,27 @@ public class AasRegistryClient {
         } catch (ApiException e) {
             if (e.getCode() == 409) {
                 this.aasRegistryApi.putSubmodelDescriptorByIdThroughSuperpath(aasId, submodelDescriptor.getId(), submodelDescriptor);
-            } else {
+            }
+            else {
                 throw new RuntimeException(e);
             }
+        }
+    }
+
+    public static AssetAdministrationShellDescriptor convertAasDescriptor(
+            org.eclipse.digitaltwin.basyx.aasregistry.client.model.AssetAdministrationShellDescriptor aasDescriptor) {
+        try {
+            var aasJsonSerializer = new JsonSerializer();
+            var aasJsonDeserializer = new JsonDeserializer();
+
+            var registryModelJson = aasJsonSerializer.write(aasDescriptor);
+            var convertedAasDescriptor = aasJsonDeserializer.read(registryModelJson, DefaultAssetAdministrationShellDescriptor.class);
+
+            return convertedAasDescriptor;
+        } catch (SerializationException e) {
+            throw new RuntimeException(e);
+        } catch (DeserializationException e) {
+            throw new RuntimeException(e);
         }
     }
 }

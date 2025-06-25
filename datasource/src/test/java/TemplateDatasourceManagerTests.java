@@ -13,7 +13,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @ComponentScan(basePackages = {"org.eclipse.slm.self_description_service"})
 @TestPropertySource(locations = "classpath:test.yml")
 @Import(TestConfig.class)
-public class TemplateDatasourceServiceTests {
+public class TemplateDatasourceManagerTests {
 
     @Autowired
     private TemplateDatasourceService datasource;
@@ -22,31 +22,31 @@ public class TemplateDatasourceServiceTests {
     @Test
     public void getSubmodels_Success() {
 
-        var submodels = datasource.getModels();
+        var submodels = datasource.getSubmodels();
 
         assertThat(submodels).isNotNull().isNotEmpty();
     }
 
     @Test
     public void getSubmodels_Ids_Success() {
-        var submodelIds = datasource.getModelIds();
+        var submodelIds = datasource.getSubmodelIds();
         assertThat(submodelIds).isNotNull().isNotEmpty();
     }
 
     @Test
     public void getSubmodel_by_Id_Success() {
-        var submodelIds = datasource.getModelIds();
+        var submodelIds = datasource.getSubmodelIds();
         assertThat(submodelIds).isNotNull().isNotEmpty();
 
         var id = submodelIds.get(0);
-        var submodel = datasource.getModelById(id);
+        var submodel = datasource.getSubmodelById(id);
         assertThat(submodel).isNotNull().isPresent();
 
     }
 
     @Test
     public void getSubmodel_by_Id_Failure() {
-        var submodel = datasource.getModelById("");
+        var submodel = datasource.getSubmodelById("");
         assertThat(submodel).isNotPresent();
     }
 

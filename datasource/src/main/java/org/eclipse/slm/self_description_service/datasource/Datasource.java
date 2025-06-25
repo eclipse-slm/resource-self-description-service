@@ -8,10 +8,10 @@ import java.util.Optional;
 
 public interface Datasource {
 
-    List<Submodel> getModels();
+    List<Submodel> getSubmodels();
 
-    List<String> getModelIds();
+    List<String> getSubmodelIds();
 
-    Optional<Submodel> getModelById(String id) throws IOException;
+    Optional<Submodel> getSubmodelById(String id) throws IOException;
 
 }

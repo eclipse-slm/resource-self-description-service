@@ -4,12 +4,13 @@ application:
   version: "^project.version^"
   timestamp: "^timestamp^"
 
-
 ### Deployment
 deployment:
   scheme: "http"
   hostname: "localhost"
   port: ${server.port}
+  path: ""
+  url: ${deployment.scheme}://${deployment.hostname}:${deployment.port}${deployment.path}
 
 ### Server / API
 server:
@@ -142,3 +143,9 @@ consul:
   port: 8500
   datacenter: fabos
   acl-token: password
+
+### Datasources
+datasources:
+  docker:
+    enabled: true
+    docker-host: "tcp://localhost:2375"
