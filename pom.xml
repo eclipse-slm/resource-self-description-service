@@ -381,6 +381,13 @@
                 <directory>src/main/resources/truststore</directory>
                 <filtering>false</filtering>
             </resource>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>false</filtering>
+                <includes>
+                    <include>**/*.aasx</include>
+                </includes>
+            </resource>
         </resources>
 
         <pluginManagement>
@@ -456,6 +463,9 @@
                         <delimiter>${resource.delimiter}</delimiter>
                     </delimiters>
                     <useDefaultDelimiters>false</useDefaultDelimiters>
+                    <nonFilteredFileExtensions>
+                        <nonFilteredFileExtension>aasx</nonFilteredFileExtension>
+                    </nonFilteredFileExtensions>
                 </configuration>
             </plugin>
             <!-- Deployment !-->
