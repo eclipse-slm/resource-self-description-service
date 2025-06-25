@@ -87,7 +87,7 @@
         <springdoc-openapi-starter-webmvc-ui.version>2.0.3</springdoc-openapi-starter-webmvc-ui.version>
 
         <swagger.version>2.2.22</swagger.version>
-        <spring.boot.version>3.3.3</spring.boot.version>
+        <spring.boot.version>3.4.7</spring.boot.version>
         <springaddons-c4-soft.version>7.8.10</springaddons-c4-soft.version>
         <spring-cloud-contract-wiremock.version>4.1.4</spring-cloud-contract-wiremock.version>
 
