@@ -11,13 +11,15 @@ import java.util.*;
 import java.util.function.Function;
 
 public class DockerSubmodel extends DefaultSubmodel {
-    public static final String SUBMODELID = "DockerInfo";
+    public static final String ID_SHORT = "DockerInfo";
     public static final String SEMANTIC_ID_VALUE = "http://eclipse.dev/slm/aas/sm/DockerInfo";
-    public static final Reference SEMANTIC_ID = new DefaultReference.Builder().keys(
-            new DefaultKey.Builder()
-                    .type(KeyTypes.CONCEPT_DESCRIPTION)
-                    .value(SEMANTIC_ID_VALUE).build()).build();
-
+    public static final Reference SEMANTIC_ID = new DefaultReference.Builder()
+            .type(ReferenceTypes.MODEL_REFERENCE)
+            .keys(
+                    new DefaultKey.Builder()
+                    .type(KeyTypes.SUBMODEL)
+                    .value(SEMANTIC_ID_VALUE).build()
+            ).build();
 
     private final SimpleDateFormat dateTimeFormat = new SimpleDateFormat("MM/dd/yyyy KK:mm:ss a");
     private final SimpleDateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy");
@@ -25,8 +27,8 @@ public class DockerSubmodel extends DefaultSubmodel {
 
     public DockerSubmodel(String resourceId) {
         super();
-        this.id = SUBMODELID + "-" + resourceId;
-        this.idShort = SUBMODELID;
+        this.id = ID_SHORT + "-" + resourceId;
+        this.idShort = ID_SHORT;
         setSemanticId(SEMANTIC_ID);
     }
 

@@ -5,15 +5,15 @@ import org.eclipse.digitaltwin.aas4j.v3.dataformat.core.DeserializationException
 import org.eclipse.digitaltwin.aas4j.v3.dataformat.core.SerializationException;
 import org.eclipse.digitaltwin.aas4j.v3.dataformat.json.JsonDeserializer;
 import org.eclipse.digitaltwin.aas4j.v3.dataformat.json.JsonSerializer;
-import org.eclipse.digitaltwin.aas4j.v3.model.Submodel;
 import org.eclipse.digitaltwin.aas4j.v3.model.impl.DefaultSubmodelDescriptor;
 import org.eclipse.digitaltwin.basyx.submodelregistry.client.ApiException;
 import org.eclipse.digitaltwin.basyx.submodelregistry.client.api.SubmodelRegistryApi;
-import org.eclipse.digitaltwin.basyx.submodelregistry.client.model.Endpoint;
-import org.eclipse.digitaltwin.basyx.submodelregistry.client.model.SubmodelDescriptor;
+import org.eclipse.digitaltwin.basyx.submodelregistry.client.model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cloud.client.discovery.DiscoveryClient;
 import org.springframework.stereotype.Component;
 
 import java.net.http.HttpClient;
@@ -27,35 +27,44 @@ public class SubmodelRegistryClient {
 
     private static final Logger LOG = LoggerFactory.getLogger(SubmodelRegistryClient.class);
 
-    private final String submodelRegistryUrl;
-
-    private final String submodelRepositoryUrl;
+    private String submodelRegistryUrl;
 
     private SubmodelRegistryApi submodelRegistryApi;
 
+    private final DiscoveryClient discoveryClient;
+
+    private final String submodelRegistryDiscoveryInstanceId = "submodel-registry";
+
+    @Autowired
     public SubmodelRegistryClient(@Value("${aas.submodel-registry.url}") String submodelRegistryUrl,
-                                  @Value("${aas.submodel-repository.url}") String submodelRepositoryUrl) {
+                                  DiscoveryClient discoveryClient) {
         this.submodelRegistryUrl = submodelRegistryUrl;
-        this.submodelRepositoryUrl = submodelRepositoryUrl;
+        this.discoveryClient = discoveryClient;
+
+        var submodelRegistryServiceInstances = this.discoveryClient.getInstances(submodelRegistryDiscoveryInstanceId);
+        if (!submodelRegistryServiceInstances.isEmpty()) {
+            var submodelRegistryServiceInstance = submodelRegistryServiceInstances.get(0);
+            var path = "";
+            if (submodelRegistryServiceInstance.getMetadata().get("path") != null) {
+                path = submodelRegistryServiceInstance.getMetadata().get("path");
+            }
+            if (submodelRegistryServiceInstance != null) {
+                this.submodelRegistryUrl = "http://" + submodelRegistryServiceInstance.getHost()
+                        + ":" + submodelRegistryServiceInstance.getPort() + path;
+            }
+        }
+        else {
+            LOG.warn("No service instance '" + submodelRegistryDiscoveryInstanceId + "' found via discovery client. Using default URL '"
+                    + this.submodelRegistryUrl + "' from application.yml.");
+        }
+
         var objectMapper = new ObjectMapper();
         var submodelRegistryClient = new org.eclipse.digitaltwin.basyx.submodelregistry.client.ApiClient(HttpClient.newBuilder(), objectMapper, this.submodelRegistryUrl);
         this.submodelRegistryApi = new SubmodelRegistryApi(submodelRegistryClient);
     }
 
-    public static org.eclipse.digitaltwin.aas4j.v3.model.SubmodelDescriptor convertSubmodelDescriptor(SubmodelDescriptor submodelDescriptor) {
-        try {
-            var aasJsonSerializer = new JsonSerializer();
-            var aasJsonDeserializer = new JsonDeserializer();
-
-            var registryModelJson = aasJsonSerializer.write(submodelDescriptor);
-            var convertedSubmodelDescriptor = aasJsonDeserializer.read(registryModelJson, DefaultSubmodelDescriptor.class);
-
-            return convertedSubmodelDescriptor;
-        } catch (SerializationException e) {
-            throw new RuntimeException(e);
-        } catch (DeserializationException e) {
-            throw new RuntimeException(e);
-        }
+    public SubmodelRegistryClient(String submodelRegistryUrl) {
+        this(submodelRegistryUrl, null);
     }
 
     public List<org.eclipse.digitaltwin.aas4j.v3.model.SubmodelDescriptor> getAllSubmodelDescriptors() {
@@ -93,7 +102,7 @@ public class SubmodelRegistryClient {
         var endpoints = new ArrayList<Endpoint>();
         var endpoint = new Endpoint();
         endpoint.setInterface("SUBMODEL-3.0");
-        var protocolInformation = new org.eclipse.digitaltwin.basyx.submodelregistry.client.model.ProtocolInformation();
+        var protocolInformation = new ProtocolInformation();
         protocolInformation.setEndpointProtocol("http");
         protocolInformation.setHref(submodelUrl);
         endpoint.setProtocolInformation(protocolInformation);
@@ -104,13 +113,13 @@ public class SubmodelRegistryClient {
         submodelDescriptor.setIdShort(smIdShort);
         submodelDescriptor.setEndpoints(endpoints);
         if (semanticId != null) {
-// Correct KeyType cannot be set with current version of Submodel Registry Client
-//            var semanticIdRef = new Reference();
-//            var semanticIdKey = new Key();
-//            semanticIdKey.setType(org.eclipse.digitaltwin.basyx.submodelregistry.client.model.KeyTypes.CONCEPTDESCRIPTION);
-//            semanticIdKey.setValue(semanticId);
-//            semanticIdRef.addKeysItem(semanticIdKey);
-//            submodelDescriptor.setSemanticId(semanticIdRef);
+            var semanticIdRef = new Reference();
+            semanticIdRef.setType(ReferenceTypes.EXTERNALREFERENCE);
+            var semanticIdKey = new Key();
+            semanticIdKey.setType(KeyTypes.GLOBALREFERENCE);
+            semanticIdKey.setValue(semanticId);
+            semanticIdRef.addKeysItem(semanticIdKey);
+            submodelDescriptor.setSemanticId(semanticIdRef);
         }
 
         try {
@@ -118,17 +127,30 @@ public class SubmodelRegistryClient {
         } catch (ApiException e) {
             if (e.getCode() == 409) {
                 this.submodelRegistryApi.putSubmodelDescriptorById(submodelDescriptor.getId(), submodelDescriptor);
-            } else {
+            }
+            else {
                 throw e;
             }
         }
     }
 
-    public void registerSubmodel(String submodelRepositoryUrl, Submodel submodel) throws ApiException {
-        this.registerSubmodel(submodelRepositoryUrl, submodel.getId(), submodel.getIdShort(), submodel.getSemanticId().getKeys().get(0).getValue());
-    }
-
     public void unregisterSubmodel(String submodelId) throws ApiException {
         this.submodelRegistryApi.deleteSubmodelDescriptorById(submodelId);
+    }
+
+    public static org.eclipse.digitaltwin.aas4j.v3.model.SubmodelDescriptor convertSubmodelDescriptor(SubmodelDescriptor submodelDescriptor) {
+        try {
+            var aasJsonSerializer = new JsonSerializer();
+            var aasJsonDeserializer = new JsonDeserializer();
+
+            var registryModelJson = aasJsonSerializer.write(submodelDescriptor);
+            var convertedSubmodelDescriptor = aasJsonDeserializer.read(registryModelJson, DefaultSubmodelDescriptor.class);
+
+            return convertedSubmodelDescriptor;
+        } catch (SerializationException e) {
+            throw new RuntimeException(e);
+        } catch (DeserializationException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

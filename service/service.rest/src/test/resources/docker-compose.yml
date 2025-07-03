@@ -1,0 +1,153 @@
+version: '3'
+
+
+services:
+  keycloak:
+    image: quay.io/keycloak/keycloak:19.0.3
+    ports:
+      - "7070:8080"
+    environment:
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: password
+      KEYCLOAK_DEFAULT_USER_PASSWORD: password
+    command: start-dev --import-realm
+    volumes:
+      - "./realm-export.json:/opt/keycloak/data/import/realm-export.json"
+  consul:
+    image: consul:1.14
+    ports:
+      - "7500:8500"
+    environment:
+      CONSUL_LOCAL_CONFIG: '{ "datacenter": "fabos", "domain": ".fabos", "bind_addr": "0.0.0.0", "retry_join": ["0.0.0.0"], "acl": { "enabled": true, "default_policy": "allow", "tokens": { "master": "acl-test" } } }'
+
+
+  aas-discovery:
+    image: "eclipsebasyx/aas-discovery:2.0.0-milestone-04"
+    restart: unless-stopped
+    ports:
+      - "8084:8081"
+    networks:
+      default:
+        aliases:
+          - aas-discovery
+    environment:
+      SERVER_PORT: 8081
+      SPRING_APPLICATION_NAME: AAS Discovery Service
+      BASYX_AASDISCOVERYSERVICE_NAME: aas-discovery-service
+      BASYX_BACKEND: MongoDB
+      SPRING_DATA_MONGODB_HOST: aas-database
+      SPRING_DATA_MONGODB_DATABASE: aas-discovery
+      SPRING_DATA_MONGODB_AUTHENTICATIONDATABASE: admin
+      SPRING_DATA_MONGODB_USERNAME: "mongoAdmin"
+      SPRING_DATA_MONGODB_PASSWORD: "mongoPassword"
+      BASYX_CORS_ALLOWEDORIGINS: "*"
+      BASYX_CORS_ALLOWEDMETHODS: GET,POST,PATCH,DELETE,PUT,OPTIONS,HEAD
+      MANAGEMENT_ENDPOINTS_WEB_EXPOSURE_INCLUDE: "health,info"
+      MANAGEMENT_INFO_GIT_ENABLED: "false"
+
+  aas-registry:
+    image: "eclipsebasyx/aas-registry-log-mongodb:2.0.0-milestone-04"
+    restart: unless-stopped
+    ports:
+      - "8082:8080"
+    networks:
+      default:
+        aliases:
+          - aas-registry
+    environment:
+      BASYX_CORS_ALLOWEDORIGINS: "*"
+      BASYX_CORS_ALLOWEDMETHODS: GET,POST,PATCH,DELETE,PUT,OPTIONS,HEAD
+      SPRING_DATA_MONGODB_URI: "mongodb://mongoAdmin:mongoPassword@aas-database:27017"
+      MANAGEMENT_ENDPOINTS_WEB_EXPOSURE_INCLUDE: "health,info"
+      MANAGEMENT_INFO_GIT_ENABLED: "false"
+
+  submodel-registry:
+    image: "eclipsebasyx/submodel-registry-log-mongodb:2.0.0-milestone-04"
+    restart: unless-stopped
+    ports:
+      - "8083:8080"
+    networks:
+      default:
+        aliases:
+          - submodel-registry
+    environment:
+      BASYX_CORS_ALLOWEDORIGINS: "*"
+      BASYX_CORS_ALLOWEDMETHODS: GET,POST,PATCH,DELETE,PUT,OPTIONS,HEAD
+      SPRING_DATA_MONGODB_URI: "mongodb://mongoAdmin:mongoPassword@aas-database:27017"
+      MANAGEMENT_ENDPOINTS_WEB_EXPOSURE_INCLUDE: "health,info"
+      MANAGEMENT_INFO_GIT_ENABLED: "false"
+
+  aas-environment:
+    image: "eclipsebasyx/aas-environment:2.0.0-milestone-04"
+    restart: unless-stopped
+    environment:
+      SERVER_PORT: 8081
+      BASYX_BACKEND: MongoDB
+      SPRING_DATA_MONGODB_HOST: aas-database
+      SPRING_DATA_MONGODB_DATABASE: aas-environment
+      SPRING_DATA_MONGODB_AUTHENTICATIONDATABASE: admin
+      SPRING_DATA_MONGODB_USERNAME: "mongoAdmin"
+      SPRING_DATA_MONGODB_PASSWORD: "mongoPassword"
+      MQTT_CLIENTID: AAS-Environment
+      MQTT_HOSTNAME: aas-broker
+      MQTT_PORT: 1884
+      BASYX_AASREPOSITORY_FEATURE_MQTT_ENABLED: "true"
+      BASYX_SUBMODELREPOSITORY_FEATURE_MQTT_ENABLED: "true"
+      BASYX_CORS_ALLOWEDORIGINS: "*"
+      BASYX_CORS_ALLOWEDMETHODS: GET,POST,PATCH,DELETE,PUT,OPTIONS,HEAD
+      BASYX_AASREPOSITORY_FEATURE_REGISTRYINTEGRATION: http://aas-registry:8080
+      BASYX_SUBMODELREPOSITORY_FEATURE_REGISTRYINTEGRATION: http://submodel-registry:8080
+      BASYX_EXTERNALURL: http://localhost:8081
+      MANAGEMENT_ENDPOINTS_WEB_EXPOSURE_INCLUDE: "health,info"
+      MANAGEMENT_INFO_GIT_ENABLED: "false"
+    ports:
+      - "8081:8081"
+    networks:
+      default:
+        aliases:
+          - aas-environment
+
+  aas-database:
+    image: mongo:5.0.10
+    restart: unless-stopped
+    networks:
+      default:
+        aliases:
+          - aas-database
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: "mongoAdmin"
+      MONGO_INITDB_ROOT_PASSWORD: "mongoPassword"
+    volumes:
+      - aas_database:/data/db
+
+  aas-broker:
+    image: "ghcr.io/eclipse-slm/aas/broker:2.0.15"
+    restart: unless-stopped
+    logging:
+      driver: "json-file"
+      options:
+        max-file: "5"
+        max-size: "10m"
+    ports:
+      - "1884:1884"
+    networks:
+      default:
+        aliases:
+          - aas-broker
+
+  aas-gui:
+    image: "eclipsebasyx/aas-gui:v2-240913"
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+#      AAS_DISCOVERY_PATH: "{{ AAS_AAS_DISCOVERY_URL }}"
+      AAS_REGISTRY_PATH: "http://localhost:8082"
+      SUBMODEL_REGISTRY_PATH: "http://localhost:8083"
+      AAS_REPO_PATH: "http://localhost:8081/shells"
+      SUBMODEL_REPO_PATH: "http://localhost:8082/submodels"
+      BASYX_CORS_ALLOWED_ORIGIN: "*"
+      BASYX_CORS_ALLOWED_METHODS: "GET,POST,PATCH,DELETE,PUT,OPTIONS,HEAD"
+
+volumes:
+  aas_database:

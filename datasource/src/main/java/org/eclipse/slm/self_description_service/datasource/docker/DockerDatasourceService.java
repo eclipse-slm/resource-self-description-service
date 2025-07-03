@@ -9,11 +9,12 @@ import com.github.dockerjava.core.DockerClientImpl;
 import com.github.dockerjava.httpclient5.ApacheDockerHttpClient;
 import org.eclipse.digitaltwin.aas4j.v3.model.Identifiable;
 import org.eclipse.digitaltwin.aas4j.v3.model.Submodel;
-import org.eclipse.slm.self_description_service.datasource.AbstractDatasource;
+import org.eclipse.slm.self_description_service.datasource.AbstractDatasourceService;
 import org.eclipse.slm.self_description_service.datasource.Datasource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
@@ -22,16 +23,24 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Component
-public class DockerDatasourceService extends AbstractDatasource implements Datasource {
+@ConditionalOnProperty(name = "datasources.docker.enabled", havingValue = "true", matchIfMissing = false)
+public class DockerDatasourceService extends AbstractDatasourceService {
+
     private final static Logger LOG = LoggerFactory.getLogger(DockerDatasourceService.class);
 
+    public static final String DATASOURCE_NAME = "Docker";
 
-    DockerClient dockerClient;
+    private final DockerSubmodelFactory dockerSubmodelFactory;
 
-    public DockerDatasourceService(@Value("${resource.id}") String resourceId) {
+    private DockerClient dockerClient;
+
+    public DockerDatasourceService(@Value("${resource.id}") String resourceId,
+                                   @Value("${datasources.docker.docker-host}") String dockerHost,
+                                   DockerSubmodelFactory dockerSubmodelFactory) {
         super(resourceId, "Docker");
-        var dockerHost = System.getenv().getOrDefault("DOCKER_HOST", "tcp://localhost:2375");
-        LOG.info("DockerDatasourceService use DOCKER_HOST '{}'", dockerHost);
+        this.dockerSubmodelFactory = dockerSubmodelFactory;
+
+        LOG.info("Using DOCKER_HOST '{}'", dockerHost);
         var dockerClientConfig = DefaultDockerClientConfig.createDefaultConfigBuilder()
                 .withDockerHost(dockerHost)
                 .build();
@@ -40,12 +49,11 @@ public class DockerDatasourceService extends AbstractDatasource implements Datas
                 .sslConfig(dockerClientConfig.getSSLConfig())
                 .build();
 
-        dockerClient = DockerClientImpl.getInstance(dockerClientConfig, httpClient);
-
+        this.dockerClient = DockerClientImpl.getInstance(dockerClientConfig, httpClient);
     }
 
     @Override
-    public List<Submodel> getModels() {
+    public List<Submodel> getSubmodels() {
         try {
             return this.getModelsByGenericCode();
         } catch (Exception e) {
@@ -56,10 +64,7 @@ public class DockerDatasourceService extends AbstractDatasource implements Datas
 
     public List<Submodel> getModelsByGenericCode() {
 
-        // TODO: Get ResourceID and use it in the ID to be global unique
-
         var dockerSubmodel = new DockerSubmodel(this.resourceId);
-
 
         var containers = this.dockerClient.listContainersCmd().exec();
         LOG.info("Found {} containers", containers.size());
@@ -100,7 +105,7 @@ public class DockerDatasourceService extends AbstractDatasource implements Datas
     }
 
     @Override
-    public List<String> getModelIds() {
+    public List<String> getSubmodelIds() {
         try {
             return this.getModelsByGenericCode().stream().map(Identifiable::getId).collect(Collectors.toList());
         } catch (Exception e) {
@@ -110,7 +115,7 @@ public class DockerDatasourceService extends AbstractDatasource implements Datas
     }
 
     @Override
-    public Optional<Submodel> getModelById(String id) throws IOException {
+    public Optional<Submodel> getSubmodelById(String id) throws IOException {
         var models = this.getModelsByGenericCode();
         for (Submodel model : models) {
             if (model.getId().equals(id)) {
