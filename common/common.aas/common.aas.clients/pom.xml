@@ -15,11 +15,21 @@
     </parent>
 
     <dependencies>
-        <!-- HTTP !-->
+        <!-- Spring !-->
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context</artifactId>
+        </dependency>
+        <!-- Spring | HTTP !-->
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-webflux</artifactId>
             <version>${spring-webflux.version}</version>
+        </dependency>
+        <!-- Spring | Discovery !-->
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-commons</artifactId>
         </dependency>
 
         <!-- BaSyx !-->
@@ -44,22 +54,12 @@
         </dependency>
         <dependency>
             <groupId>org.eclipse.digitaltwin.basyx</groupId>
-            <artifactId>basyx.submodelrepository-client</artifactId>
-            <version>${basyx.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.eclipse.digitaltwin.basyx</groupId>
             <artifactId>basyx.aasregistry-client-native</artifactId>
             <version>${basyx.version}</version>
         </dependency>
         <dependency>
             <groupId>org.eclipse.digitaltwin.basyx</groupId>
             <artifactId>basyx.submodelregistry-client-native</artifactId>
-            <version>${basyx.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.eclipse.digitaltwin.basyx</groupId>
-            <artifactId>basyx.submodelservice-client</artifactId>
             <version>${basyx.version}</version>
         </dependency>
     </dependencies>

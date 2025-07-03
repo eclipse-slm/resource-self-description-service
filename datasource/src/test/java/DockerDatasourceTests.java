@@ -1,6 +1,7 @@
 import org.eclipse.digitaltwin.aas4j.v3.model.impl.DefaultSubmodelElementList;
 import org.eclipse.slm.self_description_service.datasource.docker.DockerDatasourceService;
 import org.eclipse.slm.self_description_service.datasource.docker.DockerSubmodel;
+import org.eclipse.slm.self_description_service.datasource.docker.DockerSubmodelFactory;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Disabled;
@@ -8,19 +9,24 @@ import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testcontainers.containers.GenericContainer;
-import org.testcontainers.containers.wait.strategy.HostPortWaitStrategy;
 import org.testcontainers.containers.wait.strategy.Wait;
 import org.testcontainers.utility.DockerImageName;
 
 import java.util.Optional;
+import java.util.UUID;
 import java.util.function.Consumer;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 @Disabled()
 public class DockerDatasourceTests {
-    private final DockerDatasourceService dockerDatasourceServiceDatasource = new DockerDatasourceService("docker");
+
     private static final Logger LOG = LoggerFactory.getLogger(DockerDatasourceTests.class);
+
+    private final DockerDatasourceService dockerDatasourceServiceDatasource =
+            new DockerDatasourceService("docker", "tcp://localhost:2375",
+                    new DockerSubmodelFactory(UUID.randomUUID().toString()));
+
 
     public DockerDatasourceTests() {
     }
@@ -47,14 +53,14 @@ public class DockerDatasourceTests {
 
     @Test
     void GetSubmodelsSuccessful() {
-        var models = this.dockerDatasourceServiceDatasource.getModels();
+        var models = this.dockerDatasourceServiceDatasource.getSubmodels();
 
         assertThat(models).isNotEmpty();
     }
 
     @Test
     void SubmodelHasAtLeastOneContainerAndImage() {
-        var models = this.dockerDatasourceServiceDatasource.getModels();
+        var models = this.dockerDatasourceServiceDatasource.getSubmodels();
         assertThat(models).isNotEmpty();
 
         Consumer<Optional<?>> checkElement = (elem) -> {

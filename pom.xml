@@ -17,7 +17,6 @@
         <maven.compiler.target>${java.version}</maven.compiler.target>
 
         <!-- Deployment -->
-        <docker.image.registry>ghcr.io/slm</docker.image.registry>
         <docker.image.skip>false</docker.image.skip>
         <docker.image.registry>ghcr.io/eclipse-slm</docker.image.registry>
         <artifact.deployment.skip>true</artifact.deployment.skip>
@@ -88,7 +87,8 @@
         <springdoc-openapi-starter-webmvc-ui.version>2.0.3</springdoc-openapi-starter-webmvc-ui.version>
 
         <swagger.version>2.2.22</swagger.version>
-        <spring.boot.version>3.3.3</spring.boot.version>
+        <spring.boot.version>3.4.7</spring.boot.version>
+        <spring-cloud.version>2024.0.1</spring-cloud.version>
         <springaddons-c4-soft.version>7.8.10</springaddons-c4-soft.version>
         <spring-cloud-contract-wiremock.version>4.1.4</spring-cloud-contract-wiremock.version>
 
@@ -187,6 +187,13 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-dependencies</artifactId>
                 <version>${spring.boot.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework.cloud</groupId>
+                <artifactId>spring-cloud-dependencies</artifactId>
+                <version>${spring-cloud.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
@@ -382,6 +389,13 @@
                 <directory>src/main/resources/truststore</directory>
                 <filtering>false</filtering>
             </resource>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>false</filtering>
+                <includes>
+                    <include>**/*.aasx</include>
+                </includes>
+            </resource>
         </resources>
 
         <pluginManagement>
@@ -457,6 +471,9 @@
                         <delimiter>${resource.delimiter}</delimiter>
                     </delimiters>
                     <useDefaultDelimiters>false</useDefaultDelimiters>
+                    <nonFilteredFileExtensions>
+                        <nonFilteredFileExtension>aasx</nonFilteredFileExtension>
+                    </nonFilteredFileExtensions>
                 </configuration>
             </plugin>
             <!-- Deployment !-->
