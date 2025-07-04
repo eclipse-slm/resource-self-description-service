@@ -17,6 +17,11 @@ server:
   port: 8081
   error:
     include-message: always
+  ssl:
+    enabled: true
+    key-store-type: PEM
+    certificate: file:./certs/${resource.id}.crt
+    certificate-private-key: file:./certs/${resource.id}.key
 
 open-api:
   title: Self Description Service
