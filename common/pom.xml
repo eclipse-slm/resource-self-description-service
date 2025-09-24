@@ -8,7 +8,6 @@
     <version>${revision}</version>
     <packaging>pom</packaging>
 
-
     <parent>
         <groupId>org.eclipse.slm</groupId>
         <artifactId>self_description_service</artifactId>
@@ -19,15 +18,8 @@
         <artifact.deployment.skip>true</artifact.deployment.skip>
     </properties>
 
-
     <modules>
         <module>common.aas</module>
-        <module>common.consul</module>
-        <module>common.keycloak</module>
-        <module>common.parent</module>
-        <module>common.utils</module>
-
-
     </modules>
 
 </project>

@@ -13,13 +13,6 @@ services:
     command: start-dev --import-realm
     volumes:
       - "./realm-export.json:/opt/keycloak/data/import/realm-export.json"
-  consul:
-    image: consul:1.14
-    ports:
-      - "7500:8500"
-    environment:
-      CONSUL_LOCAL_CONFIG: '{ "datacenter": "fabos", "domain": ".fabos", "bind_addr": "0.0.0.0", "retry_join": ["0.0.0.0"], "acl": { "enabled": true, "default_policy": "allow", "tokens": { "master": "acl-test" } } }'
-
 
   aas-discovery:
     image: "eclipsebasyx/aas-discovery:2.0.0-milestone-04"
@@ -88,11 +81,8 @@ services:
       SPRING_DATA_MONGODB_AUTHENTICATIONDATABASE: admin
       SPRING_DATA_MONGODB_USERNAME: "mongoAdmin"
       SPRING_DATA_MONGODB_PASSWORD: "mongoPassword"
-      MQTT_CLIENTID: AAS-Environment
-      MQTT_HOSTNAME: aas-broker
-      MQTT_PORT: 1884
-      BASYX_AASREPOSITORY_FEATURE_MQTT_ENABLED: "true"
-      BASYX_SUBMODELREPOSITORY_FEATURE_MQTT_ENABLED: "true"
+      BASYX_AASREPOSITORY_FEATURE_MQTT_ENABLED: "false"
+      BASYX_SUBMODELREPOSITORY_FEATURE_MQTT_ENABLED: "false"
       BASYX_CORS_ALLOWEDORIGINS: "*"
       BASYX_CORS_ALLOWEDMETHODS: GET,POST,PATCH,DELETE,PUT,OPTIONS,HEAD
       BASYX_AASREPOSITORY_FEATURE_REGISTRYINTEGRATION: http://aas-registry:8080
@@ -119,21 +109,6 @@ services:
       MONGO_INITDB_ROOT_PASSWORD: "mongoPassword"
     volumes:
       - aas_database:/data/db
-
-  aas-broker:
-    image: "ghcr.io/eclipse-slm/aas/broker:2.0.15"
-    restart: unless-stopped
-    logging:
-      driver: "json-file"
-      options:
-        max-file: "5"
-        max-size: "10m"
-    ports:
-      - "1884:1884"
-    networks:
-      default:
-        aliases:
-          - aas-broker
 
   aas-gui:
     image: "eclipsebasyx/aas-gui:v2-240913"

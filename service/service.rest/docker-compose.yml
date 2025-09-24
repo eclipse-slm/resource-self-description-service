@@ -3,7 +3,6 @@ services:
     build: .
 
     environment:
-      - CONSUL_ACLTOKEN=password
       - AAS_AASREGISTRY_HOST="aas-registry"
       - AAS_AASREPOSITORY_HOST="aas-repository"
       - AAS_AASSUBMODELREGISTRY_HOST="submodel-registry"
@@ -11,6 +10,5 @@ services:
       - USECONFIGURLS=true
 
     extra_hosts:
-      - "consul:localhost"
       - "fabos.local:localhost"
       - "aas-host:localhost"

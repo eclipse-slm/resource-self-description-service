@@ -43,28 +43,6 @@ spring:
     name: self_description_service
   main:
     allow-bean-definition-overriding: true
-  config:
-    import: "consul:"
-  cloud:
-    consul:
-      host: ${consul.host}
-      port: ${consul.port}
-      discovery:
-        enabled: true
-        hostname: ${deployment.hostname}
-        port: ${deployment.port}
-        acl-token: ${consul.acl-token}
-        register-health-check: true
-        tags: slm, backend, ${spring.application.name}
-        service-name: ${spring.application.name}
-        metadata:
-          version: ${application.version}
-      config:
-        enabled: true
-        fail-fast: true
-        profileSeparator: '::'
-        format: YAML
-        acl-token: ${consul.acl-token}
   security:
     user:
       name: "user"
@@ -87,7 +65,6 @@ security:
 keycloak:
   tenants:
 #    config-path: "../../src/main/resources/static/test-keycloak.json"
-    config-path: consul:keycloak
     kv-name: 'services'
     realm: 'fabos'
     auth-server-url: 'http://keycloak:7080/auth/'
@@ -98,7 +75,6 @@ resource:
     prefix: "Resource_"
     id: ${resource.aas.prefix}${resource.id}
   id: "dad1c0a5-b248-47a1-9aa8-a1e0e5b8c6dd"
-  use-config-urls: true
   template:
     src: "classpath:templates/**"
 
@@ -138,14 +114,6 @@ aas:
     port: 8081
     path: /submodels
     url: ${aas.submodel-repository.scheme}://${aas.submodel-repository.host}:${aas.submodel-repository.port}${aas.submodel-repository.path}
-
-### Consul
-consul:
-  scheme: http
-  host: localhost
-  port: 7500
-  datacenter: fabos
-  acl-token: acl-test
 
 ### Datasources
 datasources:

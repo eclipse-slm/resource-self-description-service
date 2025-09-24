@@ -4,13 +4,34 @@ application:
   version: "^project.version^"
   timestamp: "^timestamp^"
 
+### Resource
+resource:
+  aas:
+    prefix: "Resource_"
+    id: ${resource.aas.prefix}${resource.id}
+  id: "be242aca-193f-4ee2-977a-327798ad9d10"
+
 ### Deployment
 deployment:
-  scheme: "http"
+  scheme: "https"
   hostname: "localhost"
   port: ${server.port}
   path: ""
   url: ${deployment.scheme}://${deployment.hostname}:${deployment.port}${deployment.path}
+
+### Security
+security:
+  enabled: true
+  auth-white-list: ""
+  origins: "*"
+
+# JWT Configuration
+jwt:
+  auth:
+    issuer-uri: https://slm.dev-vm.local/auth/realms/fabos
+    converter:
+      resource-id: resource_self_description_services
+      principal-attribute: preferred_username
 
 ### Server / API
 server:
@@ -19,10 +40,9 @@ server:
     include-message: always
   ssl:
     enabled: true
-    key-store-type: PEM
-    certificate: file:./certs/${resource.id}.crt
-    certificate-private-key: file:./certs/${resource.id}.key
+    bundle: "web-server"
 
+### OpenAPI
 open-api:
   title: Self Description Service
   description: REST API of Self Description Service
@@ -47,109 +67,48 @@ spring:
     name: self_description_service
   main:
     allow-bean-definition-overriding: true
-  config:
-    import: "consul:"
-  cloud:
-    consul:
-      host: ${consul.host}
-      port: ${consul.port}
-      discovery:
-        enabled: true
-        hostname: ${deployment.hostname}
-        port: ${deployment.port}
-        acl-token: ${consul.acl-token}
-        register-health-check: true
-        tags: slm, backend, ${spring.application.name}
-        service-name: ${spring.application.name}
-        metadata:
-          version: ${application.version}
-      config:
-        enabled: true
-        fail-fast: true
-        profileSeparator: '::'
-        format: YAML
-        acl-token: ${consul.acl-token}
+  ssl:
+    bundle:
+      pem:
+        web-server:
+          keystore:
+            certificate:  classpath:./certs/resource.crt
+            privateKey: classpath:./certs/resource.key
   security:
-    user:
-      name: "user"
-      password: "password"
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: ${jwt.auth.issuer-uri}
 
+### Management
 management:
   endpoints:
     web.exposure.include: health,info
   info:
     git.enabled: false
 
-
-### Security
-security:
-  enabled: true
-  auth-white-list: ""
-  origins: "*"
-
-### Keycloak
-keycloak:
-  tenants:
-#    config-path: "../../src/main/resources/static/test-keycloak.json"
-    config-path: consul:keycloak
-    kv-name: 'resource_self_description_services'
-    realm: 'fabos'
-    auth-server-url: 'http://keycloak:7080/auth/'
-
-
-resource:
-  aas:
-    prefix: "Resource_"
-    id: ${resource.aas.prefix}${resource.id}
-  id: "00000000-0000-0000-0000-000000000000"
-  use-config-urls: true
-
+### AAS
 aas:
-  broker:
-    host: localhost
-    port: 1884
   aas-registry:
-    scheme: http
-    host: aas-registry
-    port: 8082
+    scheme: https
+    host: slm.dev-vm.local
+    port: 443
     path: /aas/shell-registry
     url: ${aas.aas-registry.scheme}://${aas.aas-registry.host}:${aas.aas-registry.port}${aas.aas-registry.path}
   aas-repository:
-    scheme: http
-    host: aas-repository
-    port: 8081
+    scheme: https
+    host: slm.dev-vm.local
+    port: 443
     path: /aas/environment
     url: ${aas.aas-repository.scheme}://${aas.aas-repository.host}:${aas.aas-repository.port}${aas.aas-repository.path}
   submodel-registry:
-    scheme: http
-    host: submodel-registry
-    port: 8083
+    scheme: https
+    host: slm.dev-vm.local
+    port: 443
     path: /aas/submodel-registry
     url: ${aas.submodel-registry.scheme}://${aas.submodel-registry.host}:${aas.submodel-registry.port}${aas.submodel-registry.path}
 
-  concept-descriptions-repository:
-    scheme: http
-    host: localhost
-    port: 8081
-    path:
-    url: ${aas.concept-descriptions-repository.scheme}://${aas.concept-descriptions-repository.host}:${aas.concept-descriptions-repository.port}${aas.concept-descriptions-repository.path}
-
-  submodel-repository:
-    scheme: http
-    host: submodel-repository
-    port: 8081
-    path: /aas/environment
-    url: ${aas.submodel-repository.scheme}://${aas.submodel-repository.host}:${aas.submodel-repository.port}${aas.submodel-repository.path}
-
-### Consul
-consul:
-  scheme: http
-  host: consul
-  port: 8500
-  datacenter: fabos
-  acl-token: password
-
-### Datasources
+### Data Sources
 datasources:
   docker:
     enabled: true

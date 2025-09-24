@@ -1,12 +1,7 @@
 FROM eclipse-temurin:21
 MAINTAINER Matthias Schneider (matthias.schneider@ipa.fraunhofer.de)
 
-ENV CONSUL_SCHEME="http" \
-    CONSUL_HOST="consul" \
-    CONSUL_PORT=8500 \
-    CONSUL_DATACENTER="fabos" \
-    CONSUL_ACLTOKEN="password" \
-    AAS_AASREGISTRY_HOST="aas-registry" \
+ENV AAS_AASREGISTRY_HOST="aas-registry" \
     AAS_AASREPOSITORY_HOST="aas-repository" \
     AAS_AASSUBMODELREGISTRY_HOST="submodel-registry" \
     RESOURCE_ID="00000000-0000-0000-0000-000000000000" \

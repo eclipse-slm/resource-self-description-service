@@ -10,8 +10,8 @@
     <properties>
         <revision>0.0.1-SNAPSHOT</revision>
 
-        <java.version>19</java.version>
-        <kotlin.version>1.9.20</kotlin.version>
+        <java.version>21</java.version>
+        <kotlin.version>2.2.20</kotlin.version>
 
         <maven.compiler.source>${java.version}</maven.compiler.source>
         <maven.compiler.target>${java.version}</maven.compiler.target>
@@ -55,9 +55,6 @@
         <!-- IO.Projectreactor.Netty -->
         <reactor-netty-http.version>1.1.22</reactor-netty-http.version>
 
-        <!-- Consul -->
-        <consul-client>1.0.2</consul-client>
-
         <!-- AAS -->
         <aas.aas4j.version>1.0.2</aas.aas4j.version>
         <aas4j.dataformat.aasx.version>1.0.2</aas4j.dataformat.aasx.version>
@@ -96,8 +93,6 @@
         <spring-context.version>6.1.12</spring-context.version>
         <spring-web.version>6.1.12</spring-web.version>
         <spring-webflux.version>6.2.0</spring-webflux.version>
-        <spring-cloud-starter-consul-discovery.version>4.2.0</spring-cloud-starter-consul-discovery.version>
-        <spring-cloud-starter-consul-config.version>4.1.2</spring-cloud-starter-consul-config.version>
 
         <spring-security-core.version>6.3.3</spring-security-core.version>
         <spring-security-oauth2-resource-server.version>6.3.3</spring-security-oauth2-resource-server.version>
@@ -118,14 +113,8 @@
         <docker-java.version>3.2.13</docker-java.version>
         <docker-java.httpclient5.version>3.2.3</docker-java.httpclient5.version>
 
-        <!-- ecwid -->
-        <ecwid.consul.consul-api.version>1.4.5</ecwid.consul.consul-api.version>
-
         <!-- Jayway -->
         <jayway.jsonpath.json-path.version>2.9.0</jayway.jsonpath.json-path.version>
-
-        <!-- Fabos -->
-        <fab-os.consul.consul-client.version>1.0.2</fab-os.consul.consul-client.version>
 
         <!-- Modelmapper -->
         <modelmapper.version>3.0.0</modelmapper.version>
@@ -226,8 +215,6 @@
                 <scope>test</scope>
             </dependency>
 
-
-
             <!-- Keycloak !-->
             <dependency>
                 <groupId>org.keycloak.bom</groupId>
@@ -246,23 +233,6 @@
                 <groupId>io.swagger.core.v3</groupId>
                 <artifactId>swagger-annotations</artifactId>
                 <version>${swagger.version}</version>
-            </dependency>
-
-            <!-- Jackson !-->
-            <dependency>
-                <groupId>com.fasterxml.jackson.core</groupId>
-                <artifactId>jackson-databind</artifactId>
-                <version>${jackson.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.fasterxml.jackson.module</groupId>
-                <artifactId>jackson-module-kotlin</artifactId>
-                <version>${jackson.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.fasterxml.jackson.module</groupId>
-                <artifactId>jackson-module-jakarta-xmlbind-annotations</artifactId>
-                <version>${jackson.version}</version>
             </dependency>
 
             <!-- Testing !-->
@@ -316,6 +286,23 @@
         </dependencies>
     </dependencyManagement>
     <dependencies>
+
+        <!-- Jackson !-->
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <version>${jackson.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.module</groupId>
+            <artifactId>jackson-module-kotlin</artifactId>
+            <version>${jackson.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.module</groupId>
+            <artifactId>jackson-module-jakarta-xmlbind-annotations</artifactId>
+            <version>${jackson.version}</version>
+        </dependency>
 
         <!-- Testing !-->
 

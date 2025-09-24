@@ -26,7 +26,7 @@ If applicable, add screenshots or log output to help explain your problem.
 
 **Environment (please complete the following information):**
 
-- Version of Service Lifecycle Management [e.g. 1.0.0-SNAPSHOT]
+- Version of Self Description Service [e.g. 1.0.0-SNAPSHOT]
 
 **Additional context**
 Add any other context about the problem here.
