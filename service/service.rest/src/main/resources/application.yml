@@ -24,6 +24,8 @@ security:
   enabled: true
   auth-white-list: ""
   origins: "*"
+  certificate: classpath:./certs/resource.crt
+  private-key: classpath:./certs/resource.key
 
 # JWT Configuration
 jwt:
@@ -35,7 +37,7 @@ jwt:
 
 ### Server / API
 server:
-  port: 8081
+  port: 48048
   error:
     include-message: always
   ssl:
@@ -72,8 +74,8 @@ spring:
       pem:
         web-server:
           keystore:
-            certificate:  classpath:./certs/resource.crt
-            privateKey: classpath:./certs/resource.key
+            certificate:  ${security.certificate}
+            privateKey: ${security.private-key}
   security:
     oauth2:
       resourceserver:
