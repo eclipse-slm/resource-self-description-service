@@ -52,12 +52,12 @@ jobs:
 
       - name: Build & Deploy (main, develop, release/*, tags)
         if: github.event_name != 'pull_request' && (github.ref_name == 'develop' || github.ref_name == 'main' || startsWith(github.ref_name, 'release/') || startsWith(github.ref, 'refs/tags/'))
-        run: mvn $MAVEN_PROFILES $MAVEN_CLI_OPTS deploy
+        run: mvn $MAVEN_PROFILES $MAVEN_CLI_OPTS clean deploy
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Build (feature/*, fix/*, pull_request)
         if: github.event_name == 'pull_request' || startsWith(github.ref_name, 'feature/') || startsWith(github.ref_name, 'fix/')
-        run: mvn $MAVEN_PROFILES $MAVEN_CLI_OPTS clean org.jacoco:jacoco-maven-plugin:prepare-agent install -q org.jacoco:jacoco-maven-plugin:report -Pcoverage verify
+        run: mvn $MAVEN_PROFILES $MAVEN_CLI_OPTS clean org.jacoco:jacoco-maven-plugin:prepare-agent install -q org.jacoco:jacoco-maven-plugin:report -Pcoverage clean verify
       - name: Log test output on failure
         if: failure() || cancelled()
         run: find . -type f -path "*test-reports/*-output.txt" -exec tail -n +1 {} +
