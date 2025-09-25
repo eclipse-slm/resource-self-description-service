@@ -1,13 +1,10 @@
 package org.eclipse.slm.selfdescriptionservice.datasources.docker;
 
 import com.github.dockerjava.api.DockerClient;
-import com.github.dockerjava.api.command.InspectVolumeResponse;
-import com.github.dockerjava.api.exception.DockerException;
 import com.github.dockerjava.api.model.*;
 import com.github.dockerjava.core.DefaultDockerClientConfig;
 import com.github.dockerjava.core.DockerClientImpl;
 import com.github.dockerjava.httpclient5.ApacheDockerHttpClient;
-import org.eclipse.digitaltwin.aas4j.v3.model.Identifiable;
 import org.eclipse.digitaltwin.aas4j.v3.model.Submodel;
 import org.eclipse.slm.selfdescriptionservice.datasources.AbstractDatasourceService;
 import org.eclipse.slm.selfdescriptionservice.datasources.aas.SubmodelMetaData;
@@ -17,10 +14,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Component
 @ConditionalOnProperty(name = "datasources.docker.enabled", havingValue = "true", matchIfMissing = false)
