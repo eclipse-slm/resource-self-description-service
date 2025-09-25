@@ -80,7 +80,6 @@
         <apache.commons.commons-lang3.version>3.14.0</apache.commons.commons-lang3.version>
 
         <!-- Github -->
-        <github.docker.java.version>3.6.0</github.docker.java.version>
         <github.dasniko.testcontainers-keycloak.version>2.5.0</github.dasniko.testcontainers-keycloak.version>
         <github.tomakehurst.wiremock.version>2.27.2</github.tomakehurst.wiremock.version>
 
@@ -96,8 +95,7 @@
         <spring-cloud-contract-wiremock.version>4.1.4</spring-cloud-contract-wiremock.version>
 
         <!-- Docker Image -->
-        <docker-java.version>3.2.13</docker-java.version>
-        <docker-java.httpclient5.version>3.2.3</docker-java.httpclient5.version>
+        <docker-java.version>3.6.0</docker-java.version>
 
         <!-- Jayway -->
         <jayway.jsonpath.json-path.version>2.9.0</jayway.jsonpath.json-path.version>

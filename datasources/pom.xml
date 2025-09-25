@@ -126,7 +126,7 @@
         <dependency>
             <groupId>com.github.docker-java</groupId>
             <artifactId>docker-java-transport-httpclient5</artifactId>
-            <version>${docker-java.httpclient5.version}</version>
+            <version>${docker-java.version}</version>
         </dependency>
 
         <!-- Prometheus Client -->
@@ -158,7 +158,7 @@
         <dependency>
             <groupId>com.github.docker-java</groupId>
             <artifactId>docker-java-transport-zerodep</artifactId>
-            <version>${github.docker.java.version}</version>
+            <version>${docker-java.version}</version>
             <scope>test</scope>
         </dependency>
 
