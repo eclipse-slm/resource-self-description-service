@@ -9,12 +9,12 @@ resource:
   aas:
     prefix: "Resource_"
     id: ${resource.aas.prefix}${resource.id}
-  id: "be242aca-193f-4ee2-977a-327798ad9d10"
+  id: "00000000-0000-0000-0000-000000000000"
 
 ### Deployment
 deployment:
-  scheme: "https"
-  hostname: "slm.local"
+  scheme: "http"
+  hostname: "localhost"
   port: ${server.port}
   path: ""
   url: ${deployment.scheme}://${deployment.hostname}:${deployment.port}${deployment.path}
@@ -30,7 +30,7 @@ security:
 # JWT Configuration
 jwt:
   auth:
-    issuer-uri: https://slm.dev-vm.local/auth/realms/fabos
+    issuer-uri: https://localhost/auth/realms/fabos
     converter:
       resource-id: resource_selfdescriptionservices
       principal-attribute: preferred_username
@@ -92,21 +92,15 @@ management:
 ### AAS
 aas:
   aas-registry:
-    scheme: https
-    host: slm.dev-vm.local
-    port: 443
+    scheme: http
+    host: localhost
+    port: 8082
     path: /aas/shell-registry
     url: ${aas.aas-registry.scheme}://${aas.aas-registry.host}:${aas.aas-registry.port}${aas.aas-registry.path}
-  aas-repository:
-    scheme: https
-    host: slm.dev-vm.local
-    port: 443
-    path: /aas/environment
-    url: ${aas.aas-repository.scheme}://${aas.aas-repository.host}:${aas.aas-repository.port}${aas.aas-repository.path}
   submodel-registry:
-    scheme: https
-    host: slm.dev-vm.local
-    port: 443
+    scheme: http
+    host: localhost
+    port: 8083
     path: /aas/submodel-registry
     url: ${aas.submodel-registry.scheme}://${aas.submodel-registry.host}:${aas.submodel-registry.port}${aas.submodel-registry.path}
 
