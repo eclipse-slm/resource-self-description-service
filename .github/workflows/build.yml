@@ -71,6 +71,15 @@ jobs:
           NAME="resource-self-description-service-$VERSION"
           echo "NAME=$NAME" >> $GITHUB_ENV
           cp app/target/*-exec.jar ${{env.NAME}}.jar
+      - name: Move snapshot tag to current commit
+        if: github.event_name != 'pull_request' && (github.ref_name == 'develop' || github.ref_name == 'main' || startsWith(github.ref_name, 'release/') || startsWith(github.ref, 'refs/tags/'))
+        run: |
+          git tag -d ${{env.VERSION}} || true
+          git push origin :refs/tags/${{env.VERSION}} || true
+          git tag ${{env.VERSION}}
+          git push origin ${{env.VERSION}}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Create pre-release
         if: github.event_name != 'pull_request' && (github.ref_name == 'develop' || github.ref_name == 'main' || startsWith(github.ref_name, 'release/') || startsWith(github.ref, 'refs/tags/'))
         uses: softprops/action-gh-release@v2
@@ -79,5 +88,6 @@ jobs:
         with:
           prerelease: true
           name: ${{env.NAME}}
+          tag_name: ${{env.VERSION}}
           files: ${{env.NAME}}.jar
           overwrite_files: true
