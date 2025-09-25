@@ -71,7 +71,7 @@ jobs:
         run: echo "NAME=$(echo resource-self-description-service-${{env.VERSION}})" >> $GITHUB_ENV
       - name: Copy Jar exec
         if: startsWith(github.ref, 'refs/tags/')
-        run: cp service/service.rest/target/*-exec.jar ${{env.NAME}}.jar
+        run: cp app/target/*-exec.jar ${{env.NAME}}.jar
       - name: Release
         if: startsWith(github.ref, 'refs/tags/')
         uses: softprops/action-gh-release@v2
