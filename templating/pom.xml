@@ -8,23 +8,22 @@
     <version>${revision}</version>
     <packaging>jar</packaging>
 
+    <parent>
+        <groupId>org.eclipse.slm.self-description-service</groupId>
+        <artifactId>root</artifactId>
+        <version>${revision}</version>
+    </parent>
 
     <properties>
         <artifact.deployment.skip>true</artifact.deployment.skip>
     </properties>
 
-    <parent>
-        <groupId>org.eclipse.slm</groupId>
-        <artifactId>self_description_service</artifactId>
-        <version>${revision}</version>
-    </parent>
 
     <dependencies>
         <!-- Spring !-->
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-context</artifactId>
-            <version>${spring-context.version}</version>
         </dependency>
 
         <dependency>

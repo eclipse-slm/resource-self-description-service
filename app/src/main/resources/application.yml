@@ -1,0 +1,117 @@
+### Application
+application:
+  name: "^project.artifactId^"
+  version: "^project.version^"
+  timestamp: "^timestamp^"
+
+### Resource
+resource:
+  aas:
+    prefix: "Resource_"
+    id: ${resource.aas.prefix}${resource.id}
+  id: "be242aca-193f-4ee2-977a-327798ad9d10"
+
+### Deployment
+deployment:
+  scheme: "https"
+  hostname: "slm.local"
+  port: ${server.port}
+  path: ""
+  url: ${deployment.scheme}://${deployment.hostname}:${deployment.port}${deployment.path}
+
+### Security
+security:
+  enabled: true
+  auth-white-list: ""
+  origins: "*"
+  certificate: classpath:./certs/resource.crt
+  private-key: classpath:./certs/resource.key
+
+# JWT Configuration
+jwt:
+  auth:
+    issuer-uri: https://slm.dev-vm.local/auth/realms/fabos
+    converter:
+      resource-id: resource_selfdescriptionservices
+      principal-attribute: preferred_username
+
+### Server / API
+server:
+  port: 48048
+  error:
+    include-message: always
+  ssl:
+    enabled: true
+    bundle: "web-server"
+
+### OpenAPI
+open-api:
+  title: Self Description Service
+  description: REST API of Self Description Service
+  version: "^project.version^"
+  contact:
+    name: Fraunhofer IPA
+    url: https://www.ipa.fraunhofer.de
+    email: matthias.schneider@ipa.fraunhofer.de
+
+springdoc:
+  swagger-ui:
+    disable-swagger-default-url: true
+    tags-sorter: alpha
+    operations-sorter: alpha
+    oauth:
+      clientId: ui
+      clientSecret: unused-and-not-required
+
+### Spring
+spring:
+  application:
+    name: selfdescriptionservice
+  main:
+    allow-bean-definition-overriding: true
+  ssl:
+    bundle:
+      pem:
+        web-server:
+          keystore:
+            certificate:  ${security.certificate}
+            privateKey: ${security.private-key}
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: ${jwt.auth.issuer-uri}
+
+### Management
+management:
+  endpoints:
+    web.exposure.include: health,info
+  info:
+    git.enabled: false
+
+### AAS
+aas:
+  aas-registry:
+    scheme: https
+    host: slm.dev-vm.local
+    port: 443
+    path: /aas/shell-registry
+    url: ${aas.aas-registry.scheme}://${aas.aas-registry.host}:${aas.aas-registry.port}${aas.aas-registry.path}
+  aas-repository:
+    scheme: https
+    host: slm.dev-vm.local
+    port: 443
+    path: /aas/environment
+    url: ${aas.aas-repository.scheme}://${aas.aas-repository.host}:${aas.aas-repository.port}${aas.aas-repository.path}
+  submodel-registry:
+    scheme: https
+    host: slm.dev-vm.local
+    port: 443
+    path: /aas/submodel-registry
+    url: ${aas.submodel-registry.scheme}://${aas.submodel-registry.host}:${aas.submodel-registry.port}${aas.submodel-registry.path}
+
+### Data Sources
+datasources:
+  docker:
+    enabled: true
+    docker-host: "tcp://localhost:2375"
