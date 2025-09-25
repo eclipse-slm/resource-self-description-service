@@ -20,6 +20,12 @@ public class DatasourceManager {
 
     public DatasourceManager(List<AbstractDatasourceService> datasourceServices) {
         this.datasourceServices = datasourceServices;
+        for (var datasource : this.datasourceServices) {
+            var metaDataOfSubmodels = datasource.getMetaDataOfSubmodels();
+            for (var submodelMetaData : metaDataOfSubmodels) {
+                this.submodelToDatasourceMap.put(submodelMetaData.getId(), datasource);
+            }
+        }
     }
 
     public List<Datasource> getDatasourceServices() {
