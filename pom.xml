@@ -80,7 +80,7 @@
         <apache.commons.commons-lang3.version>3.14.0</apache.commons.commons-lang3.version>
 
         <!-- Github -->
-        <github.docker.java.version>3.2.13</github.docker.java.version>
+        <github.docker.java.version>3.6.0</github.docker.java.version>
         <github.dasniko.testcontainers-keycloak.version>2.5.0</github.dasniko.testcontainers-keycloak.version>
         <github.tomakehurst.wiremock.version>2.27.2</github.tomakehurst.wiremock.version>
 
