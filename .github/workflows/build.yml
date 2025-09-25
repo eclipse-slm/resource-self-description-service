@@ -50,8 +50,8 @@ jobs:
             }
           ]'
 
-      - name: Build & Deploy (main, develop, release/*)
-        if: github.event_name != 'pull_request' && (github.ref_name == 'develop' || github.ref_name == 'main' || startsWith(github.ref_name, 'release/'))
+      - name: Build & Deploy (main, develop, release/*, tags)
+        if: github.event_name != 'pull_request' && (github.ref_name == 'develop' || github.ref_name == 'main' || startsWith(github.ref_name, 'release/') || startsWith(github.ref, 'refs/tags/'))
         run: mvn $MAVEN_PROFILES $MAVEN_CLI_OPTS deploy
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
