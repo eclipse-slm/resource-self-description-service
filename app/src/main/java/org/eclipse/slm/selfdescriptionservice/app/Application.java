@@ -1,5 +1,6 @@
 package org.eclipse.slm.selfdescriptionservice.app;
 
+import org.eclipse.slm.common.aas.clients.AasRepositoryClientFactory;
 import org.eclipse.slm.common.aas.clients.ConceptDescriptionRepositoryClient;
 import org.eclipse.slm.common.aas.clients.SubmodelRegistryClientFactory;
 import org.eclipse.slm.common.aas.clients.SubmodelRepositoryClientFactory;
@@ -23,6 +24,7 @@ import java.util.concurrent.Executor;
             type = FilterType.ASSIGNABLE_TYPE,
             classes = {
                     ConceptDescriptionRepositoryClient.class,
+                    AasRepositoryClientFactory.class,
                     SubmodelRepositoryClientFactory.class
             }
     )

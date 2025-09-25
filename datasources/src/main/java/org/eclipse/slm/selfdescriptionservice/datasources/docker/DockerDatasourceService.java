@@ -10,6 +10,7 @@ import com.github.dockerjava.httpclient5.ApacheDockerHttpClient;
 import org.eclipse.digitaltwin.aas4j.v3.model.Identifiable;
 import org.eclipse.digitaltwin.aas4j.v3.model.Submodel;
 import org.eclipse.slm.selfdescriptionservice.datasources.AbstractDatasourceService;
+import org.eclipse.slm.selfdescriptionservice.datasources.aas.SubmodelMetaData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -29,15 +30,11 @@ public class DockerDatasourceService extends AbstractDatasourceService {
 
     public static final String DATASOURCE_NAME = "Docker";
 
-    private final DockerSubmodelFactory dockerSubmodelFactory;
-
     private DockerClient dockerClient;
 
     public DockerDatasourceService(@Value("${resource.id}") String resourceId,
-                                   @Value("${datasources.docker.docker-host}") String dockerHost,
-                                   DockerSubmodelFactory dockerSubmodelFactory) {
+                                   @Value("${datasources.docker.docker-host}") String dockerHost) {
         super(resourceId, "Docker");
-        this.dockerSubmodelFactory = dockerSubmodelFactory;
 
         LOG.info("Using DOCKER_HOST '{}'", dockerHost);
         var dockerClientConfig = DefaultDockerClientConfig.createDefaultConfigBuilder()
@@ -47,81 +44,32 @@ public class DockerDatasourceService extends AbstractDatasourceService {
                 .dockerHost(dockerClientConfig.getDockerHost())
                 .sslConfig(dockerClientConfig.getSSLConfig())
                 .build();
-
         this.dockerClient = DockerClientImpl.getInstance(dockerClientConfig, httpClient);
+        try {
+            dockerClient.pingCmd().exec();
+            LOG.info("Connection to Docker Host successful");
+        } catch (Exception e) {
+            throw new IllegalStateException("Connection to Docker Host not possible. Fix configuration or disable data source using application property " +
+                    "'datasources.docker.enabled'. Error was: {}" + e);
+        }
     }
 
     @Override
     public List<Submodel> getSubmodels() {
-        try {
-            return this.getModelsByGenericCode();
-        } catch (Exception e) {
-            LOG.error(e.getMessage());
-            return List.of();
-        }
-    }
-
-    public List<Submodel> getModelsByGenericCode() {
-
-        var dockerSubmodel = new DockerSubmodel(this.resourceId);
-
-        var containers = this.dockerClient.listContainersCmd().exec();
-        LOG.info("Found {} containers", containers.size());
-        dockerSubmodel.addSubmodelEntry("Containers", containers, Container::getId);
-
-        var images = this.dockerClient.listImagesCmd().exec();
-        LOG.info("Found {} images", images.size());
-        dockerSubmodel.addSubmodelEntry("Images", images, Image::getId);
-
-        var networks = this.dockerClient.listNetworksCmd().exec();
-        LOG.info("Found {} networks", networks.size());
-        dockerSubmodel.addSubmodelEntry("Networks", networks, Network::getName);
-
-        var volumes = this.dockerClient.listVolumesCmd().exec().getVolumes();
-        LOG.info("Found {} volumes", volumes.size());
-        dockerSubmodel.addSubmodelEntry("Volumes", volumes, InspectVolumeResponse::getName);
-
-        try {
-            var services = this.dockerClient.listServicesCmd().exec();
-            dockerSubmodel.addSubmodelEntry("Services", services, Service::getId);
-
-            var tasks = this.dockerClient.listTasksCmd().exec();
-            dockerSubmodel.addSubmodelEntry("Tasks", tasks, Task::getName);
-
-            var swarmNodes = this.dockerClient.listSwarmNodesCmd().exec();
-            dockerSubmodel.addSubmodelEntry("Swarm Nodes", swarmNodes, SwarmNode::getId);
-
-            var configs = this.dockerClient.listConfigsCmd().exec();
-            dockerSubmodel.addSubmodelEntry("Configs", configs, Config::getId);
-
-            var secrets = this.dockerClient.listSecretsCmd().exec();
-            dockerSubmodel.addSubmodelEntry("Secrets", secrets, Secret::getId);
-        } catch (DockerException exception) {
-            LOG.info("Docker runs not in Swarm mode ");
-        }
-
+        var dockerSubmodel = new DockerSubmodel(this.resourceId, this.dockerClient);
         return List.of(dockerSubmodel);
     }
 
     @Override
-    public List<String> getSubmodelIds() {
-        try {
-            return this.getModelsByGenericCode().stream().map(Identifiable::getId).collect(Collectors.toList());
-        } catch (Exception e) {
-            LOG.error(e.getMessage());
-            return List.of();
-        }
+    public List<SubmodelMetaData> getMetaDataOfSubmodels() {
+        var dockerSubmodelMetaData = DockerSubmodel.getMetaData(this.resourceId);
+        return List.of(dockerSubmodelMetaData);
     }
 
     @Override
-    public Optional<Submodel> getSubmodelById(String id) throws IOException {
-        var models = this.getModelsByGenericCode();
-        for (Submodel model : models) {
-            if (model.getId().equals(id)) {
-                return Optional.of(model);
-            }
-        }
-        return Optional.empty();
+    public Optional<Submodel> getSubmodelById(String id) {
+        var dockerSubmodel = new DockerSubmodel(this.resourceId, this.dockerClient);
+        return Optional.of(dockerSubmodel);
     }
 
 }

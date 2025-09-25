@@ -1,4 +1,4 @@
-package org.eclipse.slm.selfdescriptionservice.datasources;
+package org.eclipse.slm.selfdescriptionservice.datasources.aas;
 
 import org.eclipse.digitaltwin.aas4j.v3.model.Submodel;
 import org.springframework.beans.factory.annotation.Value;

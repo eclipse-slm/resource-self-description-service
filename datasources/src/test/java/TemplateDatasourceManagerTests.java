@@ -29,17 +29,17 @@ public class TemplateDatasourceManagerTests {
 
     @Test
     public void getSubmodels_Ids_Success() {
-        var submodelIds = datasource.getSubmodelIds();
+        var submodelIds = datasource.getMetaDataOfSubmodels();
         assertThat(submodelIds).isNotNull().isNotEmpty();
     }
 
     @Test
     public void getSubmodel_by_Id_Success() {
-        var submodelIds = datasource.getSubmodelIds();
-        assertThat(submodelIds).isNotNull().isNotEmpty();
+        var submodelsMetaData = datasource.getMetaDataOfSubmodels();
+        assertThat(submodelsMetaData).isNotNull().isNotEmpty();
 
-        var id = submodelIds.get(0);
-        var submodel = datasource.getSubmodelById(id);
+        var submodelMetaData = submodelsMetaData.get(0);
+        var submodel = datasource.getSubmodelById(submodelMetaData.getId());
         assertThat(submodel).isNotNull().isPresent();
 
     }

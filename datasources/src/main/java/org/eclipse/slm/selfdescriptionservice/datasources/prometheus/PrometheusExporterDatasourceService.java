@@ -2,6 +2,7 @@ package org.eclipse.slm.selfdescriptionservice.datasources.prometheus;
 
 import org.eclipse.digitaltwin.aas4j.v3.model.Submodel;
 import org.eclipse.slm.selfdescriptionservice.datasources.AbstractDatasourceService;
+import org.eclipse.slm.selfdescriptionservice.datasources.aas.SubmodelMetaData;
 import org.springframework.beans.factory.annotation.Value;
 
 import java.io.IOException;
@@ -22,7 +23,7 @@ public class PrometheusExporterDatasourceService extends AbstractDatasourceServi
     }
 
     @Override
-    public List<String> getSubmodelIds() {
+    public List<SubmodelMetaData> getMetaDataOfSubmodels() {
         return List.of();
     }
 

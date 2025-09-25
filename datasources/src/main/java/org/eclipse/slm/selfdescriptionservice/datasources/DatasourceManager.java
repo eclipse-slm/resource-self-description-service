@@ -2,6 +2,7 @@ package org.eclipse.slm.selfdescriptionservice.datasources;
 
 import org.eclipse.digitaltwin.aas4j.v3.model.Submodel;
 import org.eclipse.digitaltwin.basyx.core.exceptions.ElementDoesNotExistException;
+import org.eclipse.slm.selfdescriptionservice.datasources.aas.SubmodelMetaData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -19,13 +20,6 @@ public class DatasourceManager {
 
     public DatasourceManager(List<AbstractDatasourceService> datasourceServices) {
         this.datasourceServices = datasourceServices;
-
-        for (var datasource : this.datasourceServices) {
-            var modelIds = datasource.getSubmodelIds();
-            for (String id : modelIds) {
-                this.submodelToDatasourceMap.put(id, datasource);
-            }
-        }
     }
 
     public List<Datasource> getDatasourceServices() {
@@ -54,8 +48,14 @@ public class DatasourceManager {
     }
 
 
-    public Set<String> getSubmodelIds() {
-        return this.submodelToDatasourceMap.keySet();
+    public List<SubmodelMetaData> getMetaDataOfSubmodels() {
+        var allMetaDataOfSubmodel = new ArrayList<SubmodelMetaData>();
+        for (var datasource : this.datasourceServices) {
+            var metaDataOfSubmodels = datasource.getMetaDataOfSubmodels();
+            allMetaDataOfSubmodel.addAll(metaDataOfSubmodels);
+        }
+
+        return allMetaDataOfSubmodel;
     }
 
     public Optional<Submodel> getSubmodelById(String submodelId) {

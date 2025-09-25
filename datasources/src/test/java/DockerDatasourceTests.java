@@ -1,7 +1,6 @@
 import org.eclipse.digitaltwin.aas4j.v3.model.impl.DefaultSubmodelElementList;
 import org.eclipse.slm.selfdescriptionservice.datasources.docker.DockerDatasourceService;
 import org.eclipse.slm.selfdescriptionservice.datasources.docker.DockerSubmodel;
-import org.eclipse.slm.selfdescriptionservice.datasources.docker.DockerSubmodelFactory;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Disabled;
@@ -13,7 +12,6 @@ import org.testcontainers.containers.wait.strategy.Wait;
 import org.testcontainers.utility.DockerImageName;
 
 import java.util.Optional;
-import java.util.UUID;
 import java.util.function.Consumer;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -24,13 +22,11 @@ public class DockerDatasourceTests {
     private static final Logger LOG = LoggerFactory.getLogger(DockerDatasourceTests.class);
 
     private final DockerDatasourceService dockerDatasourceServiceDatasource =
-            new DockerDatasourceService("docker", "tcp://localhost:2375",
-                    new DockerSubmodelFactory(UUID.randomUUID().toString()));
+            new DockerDatasourceService("docker", "tcp://localhost:2375");
 
 
     public DockerDatasourceTests() {
     }
-
 
     public static GenericContainer<?> nginx;
 

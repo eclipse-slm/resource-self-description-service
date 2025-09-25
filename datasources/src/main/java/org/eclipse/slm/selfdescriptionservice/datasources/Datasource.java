@@ -1,6 +1,7 @@
 package org.eclipse.slm.selfdescriptionservice.datasources;
 
 import org.eclipse.digitaltwin.aas4j.v3.model.Submodel;
+import org.eclipse.slm.selfdescriptionservice.datasources.aas.SubmodelMetaData;
 
 import java.io.IOException;
 import java.util.List;
@@ -10,7 +11,7 @@ public interface Datasource {
 
     List<Submodel> getSubmodels();
 
-    List<String> getSubmodelIds();
+    List<SubmodelMetaData> getMetaDataOfSubmodels();
 
     Optional<Submodel> getSubmodelById(String id) throws IOException;
 

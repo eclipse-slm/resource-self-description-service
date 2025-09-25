@@ -1,16 +1,26 @@
 package org.eclipse.slm.selfdescriptionservice.datasources.docker;
 
-import com.github.dockerjava.api.model.DockerObject;
+import com.github.dockerjava.api.DockerClient;
+import com.github.dockerjava.api.command.InspectVolumeResponse;
+import com.github.dockerjava.api.exception.DockerException;
+import com.github.dockerjava.api.model.*;
 import org.apache.poi.hpsf.Decimal;
 import org.eclipse.digitaltwin.aas4j.v3.model.*;
 import org.eclipse.digitaltwin.aas4j.v3.model.impl.*;
+import org.eclipse.slm.selfdescriptionservice.datasources.aas.SubmodelMetaData;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.time.Duration;
 import java.util.*;
 import java.util.function.Function;
 
 public class DockerSubmodel extends DefaultSubmodel {
+
+    private final static Logger LOG = LoggerFactory.getLogger(DockerSubmodel.class);
+
     public static final String ID_SHORT = "DockerInfo";
     public static final String SEMANTIC_ID_VALUE = "http://eclipse.dev/slm/aas/sm/DockerInfo";
     public static final Reference SEMANTIC_ID = new DefaultReference.Builder()
@@ -24,14 +34,62 @@ public class DockerSubmodel extends DefaultSubmodel {
     private final SimpleDateFormat dateTimeFormat = new SimpleDateFormat("MM/dd/yyyy KK:mm:ss a");
     private final SimpleDateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy");
 
-
-    public DockerSubmodel(String resourceId) {
+    public DockerSubmodel(String resourceId, DockerClient dockerClient) {
         super();
-        this.id = ID_SHORT + "-" + resourceId;
+        this.id = DockerSubmodel.getId(resourceId);
         this.idShort = ID_SHORT;
         setSemanticId(SEMANTIC_ID);
+
+        var containers = dockerClient.listContainersCmd().exec();
+        LOG.info("Found {} containers", containers.size());
+        this.addSubmodelEntry("Containers", containers, Container::getId);
+
+        var images = dockerClient.listImagesCmd().exec();
+        LOG.info("Found {} images", images.size());
+        this.addSubmodelEntry("Images", images, Image::getId);
+
+        var networks = dockerClient.listNetworksCmd().exec();
+        LOG.info("Found {} networks", networks.size());
+        this.addSubmodelEntry("Networks", networks, Network::getName);
+
+        var volumes = dockerClient.listVolumesCmd().exec().getVolumes();
+        LOG.info("Found {} volumes", volumes.size());
+        this.addSubmodelEntry("Volumes", volumes, InspectVolumeResponse::getName);
+
+        try {
+            var services = dockerClient.listServicesCmd().exec();
+            this.addSubmodelEntry("Services", services, Service::getId);
+
+            var tasks = dockerClient.listTasksCmd().exec();
+            this.addSubmodelEntry("Tasks", tasks, Task::getName);
+
+            var swarmNodes = dockerClient.listSwarmNodesCmd().exec();
+            this.addSubmodelEntry("Swarm Nodes", swarmNodes, SwarmNode::getId);
+
+            var configs = dockerClient.listConfigsCmd().exec();
+            this.addSubmodelEntry("Configs", configs, Config::getId);
+
+            var secrets = dockerClient.listSecretsCmd().exec();
+            this.addSubmodelEntry("Secrets", secrets, Secret::getId);
+        } catch (DockerException exception) {
+            LOG.info("Docker runs not in Swarm mode ");
+        }
     }
 
+    private static String getId(String resourceId) {
+        return ID_SHORT + "-" + resourceId;
+    }
+
+    public static SubmodelMetaData getMetaData(String resourceId) {
+        return new SubmodelMetaData(
+                DockerSubmodel.getId(resourceId),
+                DockerSubmodel.ID_SHORT,
+                DockerSubmodel.SEMANTIC_ID);
+    }
+
+    public SubmodelMetaData getMetaData() {
+        return new SubmodelMetaData(this.id, this.idShort, DockerSubmodel.SEMANTIC_ID);
+    }
 
     public Optional<?> getContainers() {
         return getElementCollection("Containers");

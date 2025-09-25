@@ -5,6 +5,7 @@ import org.eclipse.digitaltwin.aas4j.v3.dataformat.aasx.AASXDeserializer;
 import org.eclipse.digitaltwin.aas4j.v3.dataformat.core.DeserializationException;
 import org.eclipse.digitaltwin.aas4j.v3.model.*;
 import org.eclipse.slm.selfdescriptionservice.datasources.AbstractDatasourceService;
+import org.eclipse.slm.selfdescriptionservice.datasources.aas.SubmodelMetaData;
 import org.eclipse.slm.selfdescriptionservice.templating.TemplateRenderer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,8 +29,8 @@ public class TemplateDatasourceService extends AbstractDatasourceService impleme
 
     private final static String ID_PREFIX = "Template";
 
-    private ITemplateManager templateManager;
-    private TemplateRenderer renderer;
+    private final ITemplateManager templateManager;
+    private final TemplateRenderer renderer;
 
     private final HashMap<String, String> idToFileMap = new HashMap<>();
 
@@ -40,12 +41,11 @@ public class TemplateDatasourceService extends AbstractDatasourceService impleme
     }
 
     @Override
-    public void afterPropertiesSet() throws Exception {
+    public void afterPropertiesSet() {
         try{
             var templates = this.templateManager.getTemplates();
             for (Resource template : templates) {
-                AASXDeserializer aasxDeserializer = null;
-                aasxDeserializer = new AASXDeserializer(template.getInputStream());
+                var aasxDeserializer = new AASXDeserializer(template.getInputStream());
                 var environment = aasxDeserializer.read();
 
                 for (Submodel submodel : environment.getSubmodels()) {
@@ -90,8 +90,8 @@ public class TemplateDatasourceService extends AbstractDatasourceService impleme
     }
 
     @Override
-    public List<String> getSubmodelIds() {
-        ArrayList<String> submodelIDs = new ArrayList<>();
+    public List<SubmodelMetaData> getMetaDataOfSubmodels() {
+        var metaDataOfSubmodels = new ArrayList<SubmodelMetaData>();
 
         Resource[] templates;
         AASXDeserializer aasxDeserializer;
@@ -102,12 +102,18 @@ public class TemplateDatasourceService extends AbstractDatasourceService impleme
                 aasxDeserializer = new AASXDeserializer(template.getInputStream());
                 var environment = aasxDeserializer.read();
 
-                for (Submodel submodel : environment.getSubmodels()) {
-                    var id = createSubmodelId(submodel.getIdShort());
-                    submodelIDs.add(id);
+                for (var submodel : environment.getSubmodels()) {
+                    var submodelId = createSubmodelId(submodel.getIdShort());
+                    var submodelMetaData = new SubmodelMetaData(
+                            submodelId,
+                            submodel.getIdShort(),
+                            submodel.getSemanticId()
+                    );
 
-                    if (!idToFileMap.containsKey(id)) {
-                        idToFileMap.put(id, template.getFilename());
+                    metaDataOfSubmodels.add(submodelMetaData);
+
+                    if (!idToFileMap.containsKey(submodelMetaData.getId())) {
+                        idToFileMap.put(submodelMetaData.getId(), template.getFilename());
                     }
                 }
             }
@@ -115,7 +121,7 @@ public class TemplateDatasourceService extends AbstractDatasourceService impleme
             LOG.error("Failed to get model ids with error message: {}", e.getMessage());
         }
 
-        return submodelIDs;
+        return metaDataOfSubmodels;
     }
 
     @Override
@@ -169,19 +175,25 @@ public class TemplateDatasourceService extends AbstractDatasourceService impleme
 
     private void renderSubmodelElement(SubmodelElement element) {
         if (element != null) {
-            if (element instanceof Property property) {
-                var value = property.getValue();
-                if (value != null) {
-                    var renderedValue = this.renderer.render(value);
-                    property.setValue(renderedValue);
+            switch (element) {
+                case Property property -> {
+                    var value = property.getValue();
+                    if (value != null) {
+                        var renderedValue = this.renderer.render(value);
+                        property.setValue(renderedValue);
+                    }
                 }
-            } else if (element instanceof SubmodelElementList submodelElementList) {
-                for (SubmodelElement child : submodelElementList.getValue()) {
-                    renderSubmodelElement(child);
+                case SubmodelElementList submodelElementList -> {
+                    for (SubmodelElement child : submodelElementList.getValue()) {
+                        renderSubmodelElement(child);
+                    }
                 }
-            } else if (element instanceof SubmodelElementCollection submodelElementCollection) {
-                for (SubmodelElement child : submodelElementCollection.getValue()) {
-                    renderSubmodelElement(child);
+                case SubmodelElementCollection submodelElementCollection -> {
+                    for (SubmodelElement child : submodelElementCollection.getValue()) {
+                        renderSubmodelElement(child);
+                    }
+                }
+                default -> {
                 }
             }
         }

@@ -29,12 +29,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 @RestController
-public class SubmodelRepositoryController implements SubmodelRepositoryHTTPApi {
+public class SubmodelRepositoryApiController implements SubmodelRepositoryHTTPApi {
 
 
     private final SubmodelRepository repository;
 
-    public SubmodelRepositoryController(SubmodelRepository repository) {
+    public SubmodelRepositoryApiController(SubmodelRepository repository) {
         this.repository = repository;
     }
 
