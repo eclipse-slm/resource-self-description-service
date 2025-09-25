@@ -70,7 +70,7 @@ jobs:
           echo "VERSION=$VERSION" >> $GITHUB_ENV
           NAME="resource-self-description-service-$VERSION"
           echo "NAME=$NAME" >> $GITHUB_ENV
-          cp app/target/*-exec.jar ${{env.NAME}}.jar
+          cp app/target/*-exec.jar $NAME.jar
       - name: Move snapshot tag to current commit
         if: github.event_name != 'pull_request' && (github.ref_name == 'develop' || github.ref_name == 'main' || startsWith(github.ref_name, 'release/') || startsWith(github.ref, 'refs/tags/'))
         run: |
@@ -89,5 +89,6 @@ jobs:
           prerelease: true
           name: ${{env.NAME}}
           tag_name: ${{env.VERSION}}
+          body: "Snapshot pre-release of version ${{env.VERSION}}"
           files: ${{env.NAME}}.jar
           overwrite_files: true
