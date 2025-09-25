@@ -1,4 +1,4 @@
-name: Build Core
+name: Build
 
 on:
   push:
@@ -8,22 +8,23 @@ on:
       - release/*
       - feature/*
       - fix/*
+    tags:
+      - "*"
   pull_request:
     branches:
       - main
       - develop
 
+permissions:
+  contents: write
+  packages: write
+
 jobs:
   build:
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      packages: write
     env:
       MAVEN_CLI_OPTS: "-T 8 -s ci/ci_maven_settings.xml --batch-mode --errors --fail-at-end --show-version --no-transfer-progress -DinstallAtEnd=true -DdeployAtEnd=true"
       MAVEN_PROFILES: ""
-      COVERALLS_TOKEN: ${{ secrets.COVERALLS_TOKEN }}
-
     steps:
       - uses: actions/checkout@v4
       - name: Set up JDK 21
@@ -49,21 +50,34 @@ jobs:
             }
           ]'
 
-      - name: Build with Maven and push Docker Images
+      - name: Build & Deploy (main, develop, release/*)
         if: github.event_name != 'pull_request' && (github.ref_name == 'develop' || github.ref_name == 'main' || startsWith(github.ref_name, 'release/'))
         run: mvn $MAVEN_PROFILES $MAVEN_CLI_OPTS deploy
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - name: Build with Maven
+      - name: Build (feature/*, fix/*, pull_request)
         if: github.event_name == 'pull_request' || startsWith(github.ref_name, 'feature/') || startsWith(github.ref_name, 'fix/')
         run: mvn $MAVEN_PROFILES $MAVEN_CLI_OPTS clean org.jacoco:jacoco-maven-plugin:prepare-agent install -q org.jacoco:jacoco-maven-plugin:report -Pcoverage verify
-      - name: Build Coveralls Report
-        if: ${{ env.COVERALLS_TOKEN != '' && (github.event_name == 'pull_request' || startsWith(github.ref_name, 'feature/') || startsWith(github.ref_name, 'fix/')) }}
-        run: mvn jacoco:report coveralls:report  -DrepoToken=$COVERALLS_TOKEN
-        env:
-          GITHUB_TOKEN: ${{ github.token }}
-          COVERALLS_TOKEN: ${{ secrets.COVERALLS_TOKEN }}
-
       - name: Log test output on failure
         if: failure() || cancelled()
         run: find . -type f -path "*test-reports/*-output.txt" -exec tail -n +1 {} +
+
+      # Steps for release (only for tags)
+      - name: Get Version
+        if: startsWith(github.ref, 'refs/tags/')
+        run: echo "VERSION=$(echo $(mvn help:evaluate -Dexpression=project.version -q -DforceStdout))" >> $GITHUB_ENV
+      - name: Set Name
+        if: startsWith(github.ref, 'refs/tags/')
+        run: echo "NAME=$(echo resource-self-description-service-${{env.VERSION}})" >> $GITHUB_ENV
+      - name: Copy Jar exec
+        if: startsWith(github.ref, 'refs/tags/')
+        run: cp service/service.rest/target/*-exec.jar ${{env.NAME}}.jar
+      - name: Release
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: softprops/action-gh-release@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          prerelease: true
+          name: ${{env.NAME}}
+          files: ${{env.NAME}}.jar
