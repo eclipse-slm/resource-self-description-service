@@ -1,7 +1,6 @@
 package org.eclipse.slm.selfdescriptionservice.datasources.template.methods;
 
 import freemarker.template.TemplateMethodModelEx;
-import freemarker.template.TemplateModelException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import java.util.List;
@@ -14,7 +13,7 @@ public abstract class AbstractSafeTemplateMethodModelEx implements TemplateMetho
     private final static Logger LOG = LoggerFactory.getLogger(AbstractSafeTemplateMethodModelEx.class);
 
     @Override
-    public Object exec(List arguments) throws TemplateModelException {
+    public Object exec(List arguments) {
         try {
             return safeExec(arguments);
         } catch (Exception e) {

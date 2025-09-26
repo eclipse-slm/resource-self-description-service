@@ -95,14 +95,9 @@
         </dependency>
 
         <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-databind</artifactId>
-            <version>${jackson.version}</version>
-        </dependency>
-        <dependency>
             <groupId>org.eclipse.digitaltwin.aas4j</groupId>
             <artifactId>aas4j-dataformat-aasx</artifactId>
-            <version>${aas4j.dataformat.aasx.version}</version>
+            <version>${aas.aas4j.version}</version>
         </dependency>
 
         <dependency>
@@ -115,12 +110,6 @@
             <groupId>org.apache.httpcomponents.client5</groupId>
             <artifactId>httpclient5</artifactId>
             <version>${apache.httpcomponents.client5.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>com.github.docker-java</groupId>
-            <artifactId>docker-java-transport-httpclient5</artifactId>
-            <version>${docker-java.version}</version>
         </dependency>
 
         <!-- Prometheus Client -->
@@ -190,9 +179,5 @@
             <version>${spring-cloud-contract-wiremock.version}</version>
             <scope>test</scope>
         </dependency>
-
-
     </dependencies>
-
-
 </project>

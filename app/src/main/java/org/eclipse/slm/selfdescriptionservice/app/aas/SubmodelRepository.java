@@ -54,6 +54,11 @@ public class SubmodelRepository implements org.eclipse.digitaltwin.basyx.submode
     }
 
     @Override
+    public CursorResult<List<Submodel>> getAllSubmodels(String semanticId, PaginationInfo pInfo) {
+        return null;
+    }
+
+    @Override
     public Submodel getSubmodel(String submodelId) throws ElementDoesNotExistException {
         var modelIdEncoded = Base64UrlEncodedIdentifier.fromEncodedValue(submodelId);
         var datasource = this.datasourceManager.getDatasourceForSubmodelId(modelIdEncoded.getIdentifier());
@@ -140,6 +145,11 @@ public class SubmodelRepository implements org.eclipse.digitaltwin.basyx.submode
     }
 
     @Override
+    public String getName() {
+        return org.eclipse.digitaltwin.basyx.submodelrepository.SubmodelRepository.super.getName();
+    }
+
+    @Override
     public OperationVariable[] invokeOperation(String submodelId, String idShortPath, OperationVariable[] input) throws ElementDoesNotExistException {
         return new OperationVariable[0];
     }
@@ -160,7 +170,7 @@ public class SubmodelRepository implements org.eclipse.digitaltwin.basyx.submode
     }
 
     @Override
-    public void setFileValue(String submodelId, String idShortPath, String fileName, InputStream inputStream) throws ElementDoesNotExistException, ElementNotAFileException {
+    public void setFileValue(String submodelId, String idShortPath, String fileName, String contentType, InputStream inputStream) throws ElementDoesNotExistException, ElementNotAFileException {
 
     }
 

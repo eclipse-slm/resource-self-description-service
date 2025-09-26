@@ -95,13 +95,6 @@
             </exclusions>
         </dependency>
 
-        <!-- BaSyx !-->
-        <dependency>
-            <groupId>org.eclipse.basyx</groupId>
-            <artifactId>basyx.sdk</artifactId>
-            <version>${basyx.sdk.version}</version>
-        </dependency>
-
         <dependency>
             <groupId>org.eclipse.digitaltwin.basyx</groupId>
             <artifactId>basyx.submodelrepository-core</artifactId>
@@ -177,12 +170,10 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-resources-plugin</artifactId>
-                <version>3.1.0</version>
             </plugin>
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
-                <version>${spring.boot.version}</version>
             </plugin>
             <!-- Compilation !-->
             <plugin>
@@ -205,7 +196,6 @@
             <plugin>
                 <artifactId>jib-maven-plugin</artifactId>
                 <groupId>com.google.cloud.tools</groupId>
-                <version>${jib-maven-plugin.version}</version>
             </plugin>
         </plugins>
     </build>
