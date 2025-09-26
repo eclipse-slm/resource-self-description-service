@@ -23,7 +23,8 @@ public class DataSourceValueScalarModel implements TemplateScalarModel {
         try {
             return String.valueOf(value.getValue());
         } catch (Exception e) {
-            LOG.error("Error rendering DataSourceValue '{}': {}", value.getKey(), e.getMessage(), e);
+            LOG.error("Error rendering DataSourceValue '{}': {}", value.getKey(), e.getMessage());
+            LOG.debug("Stacktrace:", e);
             return "Error during template rendering, see service log for error details";
         }
     }
