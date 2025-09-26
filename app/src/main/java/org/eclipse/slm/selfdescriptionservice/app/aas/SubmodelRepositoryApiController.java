@@ -1,5 +1,7 @@
 package org.eclipse.slm.selfdescriptionservice.app.aas;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import org.eclipse.digitaltwin.aas4j.v3.model.OperationRequest;
@@ -28,19 +30,16 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.ArrayList;
 import java.util.List;
 
-@RestController
+@RestController()
+@Tag(name = "Submodel Repository API")
 public class SubmodelRepositoryApiController implements SubmodelRepositoryHTTPApi {
-
 
     private final SubmodelRepository repository;
 
     public SubmodelRepositoryApiController(SubmodelRepository repository) {
         this.repository = repository;
     }
-
-
-
-
+    
     @Override
     public ResponseEntity<PagedResult> getAllSubmodels(@Base64UrlEncodedIdentifierSize(min = 1, max = 3072) @Valid Base64UrlEncodedIdentifier semanticId, @Valid String idShort, @Min(1L) @Valid Integer limit, @Valid Base64UrlEncodedCursor cursor, @Valid String level, @Valid String extent) {
         if (limit == null) {
@@ -150,16 +149,19 @@ public class SubmodelRepositoryApiController implements SubmodelRepositoryHTTPAp
         throw new MethodNotImplementedException();
     }
 
+    @Operation(tags = {"Submodel Repository API"})
     @Override
     public ResponseEntity<Resource> getFileByPath(Base64UrlEncodedIdentifier submodelIdentifier, String idShortPath) {
         return null;
     }
 
+    @Operation(tags = {"Submodel Repository API"})
     @Override
     public ResponseEntity<Void> putFileByPath(Base64UrlEncodedIdentifier submodelIdentifier, String idShortPath, String fileName, @Valid MultipartFile file) {
         throw new MethodNotImplementedException();
     }
 
+    @Operation(tags = {"Submodel Repository API"})
     @Override
     public ResponseEntity<Void> deleteFileByPath(Base64UrlEncodedIdentifier submodelIdentifier, String idShortPath) {
         throw new MethodNotImplementedException();
