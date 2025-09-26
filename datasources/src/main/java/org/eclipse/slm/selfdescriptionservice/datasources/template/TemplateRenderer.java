@@ -6,6 +6,7 @@ import freemarker.template.TemplateException;
 import freemarker.template.TemplateExceptionHandler;
 import org.eclipse.slm.selfdescriptionservice.datasources.template.datasourcevalues.DataSourceValueRegistry;
 import org.eclipse.slm.selfdescriptionservice.datasources.template.datasourcevalues.DataSourceValueScalarModel;
+import org.eclipse.slm.selfdescriptionservice.datasources.template.methods.CommandValueMethod;
 import org.eclipse.slm.selfdescriptionservice.datasources.template.methods.JsonFileValueMethod;
 import org.eclipse.slm.selfdescriptionservice.datasources.template.methods.YamlFileValueMethod;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -71,6 +72,7 @@ public class TemplateRenderer {
             combinedRenderContext.putAll(dataSourceValueContext);
             combinedRenderContext.put("JsonFileValue", new JsonFileValueMethod());
             combinedRenderContext.put("YamlFileValue", new YamlFileValueMethod());
+            combinedRenderContext.put("ShellCommand", new CommandValueMethod());
             var template = new Template("", new StringReader(templateContent), cfg);
 
             StringWriter writer = new StringWriter();
