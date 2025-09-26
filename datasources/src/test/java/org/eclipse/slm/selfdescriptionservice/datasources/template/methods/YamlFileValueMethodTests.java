@@ -26,4 +26,21 @@ public class YamlFileValueMethodTests {
         assertThat(result).isEqualTo(assertValue);
     }
 
+    @Test
+    public void ReadArrayValueFromSimpleFile_Successful() throws TemplateModelException, URISyntaxException {
+
+        var yamlFileValueMethod = new YamlFileValueMethod();
+
+        var xpath = "$.book[?(@.title=='Beginning JSON')].price";
+        var filePath = PathHelper.getPathForFile(this, "json/simple_file.json");
+
+        var result = yamlFileValueMethod.exec(List.of(xpath, filePath));
+
+
+        var assertValue = 49.99;
+
+        assertThat(result).isEqualTo(assertValue);
+    }
+
+
 }

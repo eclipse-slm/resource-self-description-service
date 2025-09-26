@@ -27,4 +27,20 @@ public class JsonFileValueMethodTests {
         assertThat(result).isEqualTo(assertValue);
     }
 
+    @Test
+    public void ReadArrayValueFromSimpleFile_Successful() throws TemplateModelException, URISyntaxException {
+
+        var jsonFileValueMethod = new JsonFileValueMethod();
+
+        var xpath = "$.book[?(@.title=='Beginning JSON')].price";
+        var filePath = PathHelper.getPathForFile(this, "json/simple_file.json");
+
+        var result = jsonFileValueMethod.exec(List.of(xpath, filePath));
+
+
+        var assertValue = 49.99;
+
+        assertThat(result).isEqualTo(assertValue);
+    }
+
 }

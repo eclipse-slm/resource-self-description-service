@@ -21,20 +21,21 @@ public class YamlFileValueMethod extends AbstractSafeTemplateMethodModelEx {
 
         var path = list.get(1).toString();
 
-        File initialFile = new File(path);
-        try {
-            InputStream targetFile = new FileInputStream(initialFile);
-            var yamlMapper = new ObjectMapper(new YAMLFactory());
-            var jsonNode = yamlMapper.readTree(targetFile);
-            var jsonMapper = new ObjectMapper();
-            var jsonString = jsonMapper.writeValueAsString(jsonNode);
-            var json = JsonPath.parse(jsonString);
-
-            var valuePath = list.get(0).toString();
-            return json.read(valuePath);
-
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+        InputStream targetFile = getClass().getClassLoader().getResourceAsStream(path);
+        if (targetFile == null) {
+            try {
+                targetFile = new FileInputStream(path);
+            } catch (IOException e) {
+                throw new RuntimeException("Resource or file not found: " + path, e);
+            }
         }
+        var yamlMapper = new ObjectMapper(new YAMLFactory());
+        var jsonNode = yamlMapper.readTree(targetFile);
+        var jsonMapper = new ObjectMapper();
+        var jsonString = jsonMapper.writeValueAsString(jsonNode);
+        var json = JsonPath.parse(jsonString);
+
+        var valuePath = list.get(0).toString();
+        return JsonPathReader.readSingleValueFromPath(json, valuePath);
     }
 }
