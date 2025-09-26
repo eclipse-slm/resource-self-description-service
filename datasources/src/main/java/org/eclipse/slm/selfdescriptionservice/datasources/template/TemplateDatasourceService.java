@@ -28,8 +28,6 @@ public class TemplateDatasourceService extends AbstractDatasourceService impleme
 
     public static final String DATASOURCE_NAME = "Template";
 
-    private final static String ID_PREFIX = "Template";
-
     private final ITemplateManager templateManager;
     private final TemplateRenderer renderer;
 
@@ -43,7 +41,7 @@ public class TemplateDatasourceService extends AbstractDatasourceService impleme
      * @param dataSourceValueRegistry The registry for DataSourceValues
      */
     public TemplateDatasourceService(ITemplateManager templateManager, TemplateRenderer renderer, @Value("${resource.id}") String resourceId, DataSourceValueRegistry dataSourceValueRegistry) {
-        super(resourceId, ID_PREFIX, dataSourceValueRegistry);
+        super(resourceId, TemplateDatasourceService.DATASOURCE_NAME, dataSourceValueRegistry);
         this.renderer = renderer;
         this.templateManager = templateManager;
     }

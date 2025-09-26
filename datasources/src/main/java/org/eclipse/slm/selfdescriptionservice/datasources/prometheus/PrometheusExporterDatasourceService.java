@@ -29,7 +29,7 @@ public class PrometheusExporterDatasourceService extends AbstractDatasourceServi
     public PrometheusExporterDatasourceService(
             @Value("${resource.id}") String resourceId,
             DataSourceValueRegistry dataSourceValueRegistry) {
-        super(resourceId, "Prometheus", dataSourceValueRegistry);
+        super(resourceId, PrometheusExporterDatasourceService.DATASOURCE_NAME, dataSourceValueRegistry);
     }
 
 

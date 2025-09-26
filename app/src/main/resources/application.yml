@@ -109,3 +109,5 @@ datasources:
   docker:
     enabled: true
     docker-host: "tcp://localhost:2375"
+  system:
+    enabled: true

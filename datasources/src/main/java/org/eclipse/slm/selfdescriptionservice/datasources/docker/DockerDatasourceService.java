@@ -30,7 +30,7 @@ public class DockerDatasourceService extends AbstractDatasourceService {
     public DockerDatasourceService(@Value("${resource.id}") String resourceId,
                                    DataSourceValueRegistry dataSourceValueRegistry,
                                    @Value("${datasources.docker.docker-host}") String dockerHost) {
-        super(resourceId, "Docker", dataSourceValueRegistry);
+        super(resourceId, DockerDatasourceService.DATASOURCE_NAME, dataSourceValueRegistry);
 
         LOG.info("Using DOCKER_HOST '{}'", dockerHost);
         var dockerClientConfig = DefaultDockerClientConfig.createDefaultConfigBuilder()
