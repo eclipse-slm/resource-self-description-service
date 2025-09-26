@@ -21,13 +21,13 @@ import java.util.Optional;
 import java.util.regex.Pattern;
 
 
-public class CommandValueMethod implements TemplateMethodModelEx {
+public class CommandValueMethod extends AbstractSafeTemplateMethodModelEx {
 
     private final List<String> outputTypes = List.of("json", "xml", "regex");
 
     @Override
-    public Object exec(List list) throws TemplateModelException {
-        var commandConfigs = getCommandConfigs(list);
+    protected Object safeExec(List arguments) throws Exception {
+        var commandConfigs = getCommandConfigs(arguments);
 
         try {
             Object commandResult = executeCommand(commandConfigs);
@@ -42,7 +42,6 @@ public class CommandValueMethod implements TemplateMethodModelEx {
         } catch (IOException | ParserConfigurationException | SAXException | XPathExpressionException e) {
             return "";
         }
-
     }
 
     private static Object parseCommandResult(String outputType, String outputCommand, String commandResult) throws ParserConfigurationException, SAXException, IOException, XPathExpressionException {
