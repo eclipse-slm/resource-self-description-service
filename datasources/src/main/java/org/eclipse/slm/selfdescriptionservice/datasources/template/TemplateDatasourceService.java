@@ -5,8 +5,9 @@ import org.eclipse.digitaltwin.aas4j.v3.dataformat.aasx.AASXDeserializer;
 import org.eclipse.digitaltwin.aas4j.v3.dataformat.core.DeserializationException;
 import org.eclipse.digitaltwin.aas4j.v3.model.*;
 import org.eclipse.slm.selfdescriptionservice.datasources.AbstractDatasourceService;
+import org.eclipse.slm.selfdescriptionservice.datasources.DataSourceValueRegistry;
 import org.eclipse.slm.selfdescriptionservice.datasources.aas.SubmodelMetaData;
-import org.eclipse.slm.selfdescriptionservice.templating.TemplateRenderer;
+import org.eclipse.slm.selfdescriptionservice.datasources.docker.DataSourceValue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -34,8 +35,15 @@ public class TemplateDatasourceService extends AbstractDatasourceService impleme
 
     private final HashMap<String, String> idToFileMap = new HashMap<>();
 
-    public TemplateDatasourceService(ITemplateManager templateManager, TemplateRenderer renderer, @Value("${resource.id}") String resourceId) {
-        super(resourceId, ID_PREFIX);
+    /**
+     * Constructor for TemplateDatasourceService.
+     * @param templateManager The template manager
+     * @param renderer The template renderer
+     * @param resourceId The resource ID
+     * @param dataSourceValueRegistry The registry for DataSourceValues
+     */
+    public TemplateDatasourceService(ITemplateManager templateManager, TemplateRenderer renderer, @Value("${resource.id}") String resourceId, DataSourceValueRegistry dataSourceValueRegistry) {
+        super(resourceId, ID_PREFIX, dataSourceValueRegistry);
         this.renderer = renderer;
         this.templateManager = templateManager;
     }
@@ -87,82 +95,6 @@ public class TemplateDatasourceService extends AbstractDatasourceService impleme
         }
 
         return submodels;
-    }
-
-    @Override
-    public List<SubmodelMetaData> getMetaDataOfSubmodels() {
-        var metaDataOfSubmodels = new ArrayList<SubmodelMetaData>();
-
-        Resource[] templates;
-        AASXDeserializer aasxDeserializer;
-        try {
-            templates = this.templateManager.getTemplates();
-            for (Resource template : templates) {
-
-                aasxDeserializer = new AASXDeserializer(template.getInputStream());
-                var environment = aasxDeserializer.read();
-
-                for (var submodel : environment.getSubmodels()) {
-                    var submodelId = createSubmodelId(submodel.getIdShort());
-                    var submodelMetaData = new SubmodelMetaData(
-                            submodelId,
-                            submodel.getIdShort(),
-                            submodel.getSemanticId()
-                    );
-
-                    metaDataOfSubmodels.add(submodelMetaData);
-
-                    if (!idToFileMap.containsKey(submodelMetaData.getId())) {
-                        idToFileMap.put(submodelMetaData.getId(), template.getFilename());
-                    }
-                }
-            }
-        } catch (IOException | InvalidFormatException | DeserializationException e) {
-            LOG.error("Failed to get model ids with error message: {}", e.getMessage());
-        }
-
-        return metaDataOfSubmodels;
-    }
-
-    @Override
-    public Optional<Submodel> getSubmodelById(String id) {
-        try {
-            Optional<Submodel> optionalSubmodel;
-            if (!this.idToFileMap.containsKey(id)) {
-                optionalSubmodel = searchModelInTemplates(id);
-
-            } else {
-                var resource = this.templateManager.getTemplate(this.idToFileMap.get(id));
-
-                if (resource.isEmpty()) {
-                    return Optional.empty();
-                }
-
-                var aasxDeserializer = new AASXDeserializer(resource.get().getInputStream());
-                var aasx = aasxDeserializer.read();
-
-                optionalSubmodel = aasx.getSubmodels().stream().filter(model -> {
-                    var submodelId = createSubmodelId(model.getIdShort());
-                    return submodelId.equals(id);
-                }).findFirst();
-            }
-
-
-            if (optionalSubmodel.isPresent()) {
-
-                var submodel = optionalSubmodel.get();
-                submodel.setId(createSubmodelId(submodel.getIdShort()));
-                renderSubmodel(submodel);
-                submodel.setKind(ModellingKind.INSTANCE);
-                return Optional.of(submodel);
-            }
-
-            return optionalSubmodel;
-
-        } catch (InvalidFormatException | DeserializationException | IOException e) {
-            LOG.error("Failed to get model by id with error message: {}", e.getMessage());
-            return Optional.empty();
-        }
     }
 
     private void renderSubmodel(Submodel submodel) {
@@ -224,5 +156,85 @@ public class TemplateDatasourceService extends AbstractDatasourceService impleme
         return Optional.empty();
     }
 
+    //region AbstractDatasourceService
+    @Override
+    public List<SubmodelMetaData> getMetaDataOfSubmodels() {
+        var metaDataOfSubmodels = new ArrayList<SubmodelMetaData>();
 
+        Resource[] templates;
+        AASXDeserializer aasxDeserializer;
+        try {
+            templates = this.templateManager.getTemplates();
+            for (Resource template : templates) {
+
+                aasxDeserializer = new AASXDeserializer(template.getInputStream());
+                var environment = aasxDeserializer.read();
+
+                for (var submodel : environment.getSubmodels()) {
+                    var submodelId = createSubmodelId(submodel.getIdShort());
+                    var submodelMetaData = new SubmodelMetaData(
+                            submodelId,
+                            submodel.getIdShort(),
+                            submodel.getSemanticId()
+                    );
+
+                    metaDataOfSubmodels.add(submodelMetaData);
+
+                    if (!idToFileMap.containsKey(submodelMetaData.getId())) {
+                        idToFileMap.put(submodelMetaData.getId(), template.getFilename());
+                    }
+                }
+            }
+        } catch (IOException | InvalidFormatException | DeserializationException e) {
+            LOG.error("Failed to get model ids with error message: {}", e.getMessage());
+        }
+
+        return metaDataOfSubmodels;
+    }
+
+    @Override
+    public Optional<Submodel> getSubmodelById(String id) {
+        try {
+            Optional<Submodel> optionalSubmodel;
+            if (!this.idToFileMap.containsKey(id)) {
+                optionalSubmodel = searchModelInTemplates(id);
+
+            } else {
+                var resource = this.templateManager.getTemplate(this.idToFileMap.get(id));
+
+                if (resource.isEmpty()) {
+                    return Optional.empty();
+                }
+
+                var aasxDeserializer = new AASXDeserializer(resource.get().getInputStream());
+                var aasx = aasxDeserializer.read();
+
+                optionalSubmodel = aasx.getSubmodels().stream().filter(model -> {
+                    var submodelId = createSubmodelId(model.getIdShort());
+                    return submodelId.equals(id);
+                }).findFirst();
+            }
+
+            if (optionalSubmodel.isPresent()) {
+
+                var submodel = optionalSubmodel.get();
+                submodel.setId(createSubmodelId(submodel.getIdShort()));
+                renderSubmodel(submodel);
+                submodel.setKind(ModellingKind.INSTANCE);
+                return Optional.of(submodel);
+            }
+
+            return optionalSubmodel;
+
+        } catch (InvalidFormatException | DeserializationException | IOException e) {
+            LOG.error("Failed to get model by id with error message: {}", e.getMessage());
+            return Optional.empty();
+        }
+    }
+
+    @Override
+    protected List<? extends DataSourceValue<?>> getDataSourceValues() {
+        return List.of();
+    }
+    //endregion AbstractDatasourceService
 }

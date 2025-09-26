@@ -1,12 +1,12 @@
 package org.eclipse.slm.selfdescriptionservice.datasources.docker;
 
 import com.github.dockerjava.api.DockerClient;
-import com.github.dockerjava.api.model.*;
 import com.github.dockerjava.core.DefaultDockerClientConfig;
 import com.github.dockerjava.core.DockerClientImpl;
 import com.github.dockerjava.httpclient5.ApacheDockerHttpClient;
 import org.eclipse.digitaltwin.aas4j.v3.model.Submodel;
 import org.eclipse.slm.selfdescriptionservice.datasources.AbstractDatasourceService;
+import org.eclipse.slm.selfdescriptionservice.datasources.DataSourceValueRegistry;
 import org.eclipse.slm.selfdescriptionservice.datasources.aas.SubmodelMetaData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,8 +28,9 @@ public class DockerDatasourceService extends AbstractDatasourceService {
     private DockerClient dockerClient;
 
     public DockerDatasourceService(@Value("${resource.id}") String resourceId,
+                                   DataSourceValueRegistry dataSourceValueRegistry,
                                    @Value("${datasources.docker.docker-host}") String dockerHost) {
-        super(resourceId, "Docker");
+        super(resourceId, "Docker", dataSourceValueRegistry);
 
         LOG.info("Using DOCKER_HOST '{}'", dockerHost);
         var dockerClientConfig = DefaultDockerClientConfig.createDefaultConfigBuilder()
@@ -49,6 +50,20 @@ public class DockerDatasourceService extends AbstractDatasourceService {
         }
     }
 
+    /**
+     * Returns the immutable list of supported DataSourceValues for this Docker datasource.
+     */
+    @Override
+    protected List<DataSourceValue<?>> getDataSourceValues() {
+        return List.of(
+            new DataSourceValue<>("docker.version", () -> {
+                var version = dockerClient.versionCmd().exec();
+                return version.getVersion();
+            })
+        );
+    }
+
+    //region AbstractDatasourceService
     @Override
     public List<Submodel> getSubmodels() {
         var dockerSubmodel = new DockerSubmodel(this.resourceId, this.dockerClient);
@@ -66,5 +81,5 @@ public class DockerDatasourceService extends AbstractDatasourceService {
         var dockerSubmodel = new DockerSubmodel(this.resourceId, this.dockerClient);
         return Optional.of(dockerSubmodel);
     }
-
+    //endregion AbstractDatasourceService
 }

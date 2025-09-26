@@ -1,11 +1,13 @@
-package org.eclipse.slm.selfdescriptionservice.templating;
+package org.eclipse.slm.selfdescriptionservice.datasources.template;
 
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
 import freemarker.template.TemplateExceptionHandler;
+import org.eclipse.slm.selfdescriptionservice.datasources.DataSourceValueRegistry;
 import org.eclipse.slm.selfdescriptionservice.templating.method.JsonFileValueMethod;
 import org.eclipse.slm.selfdescriptionservice.templating.method.YamlFileValueMethod;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
@@ -18,18 +20,17 @@ import java.util.TimeZone;
 @Component
 public class TemplateRenderer {
 
-
     private final Configuration cfg;
     private final Map<String, Object> globalRenderContext = new HashMap<>();
 
+    /**
+     * Precomputed context with all DataSourceValues grouped by prefix (e.g. docker.version -> docker.version and docker.version).
+     */
+    private final Map<String, Object> dataSourceValueContext;
 
-    public TemplateRenderer() {
-        /* ------------------------------------------------------------------------ */
-        /* You should do this ONLY ONCE in the whole application life-cycle:        */
-
-        /* Create and adjust the configuration singleton */
+    @Autowired
+    public TemplateRenderer(DataSourceValueRegistry dataSourceValueRegistry) {
         cfg = new Configuration(Configuration.VERSION_2_3_0);
-        // Recommended settings for new projects:
         cfg.setDefaultEncoding("UTF-8");
         cfg.setTemplateExceptionHandler(TemplateExceptionHandler.RETHROW_HANDLER);
         cfg.setLogTemplateExceptions(false);
@@ -37,8 +38,25 @@ public class TemplateRenderer {
         cfg.setFallbackOnNullLoopVariable(false);
         cfg.setSQLDateAndTimeTimeZone(TimeZone.getDefault());
 
-        /* ------------------------------------------------------------------------ */
-        /* You usually do these for MULTIPLE TIMES in the application life-cycle:   */
+        var dataSourceValuesContext = new HashMap<String, Object>();
+        // Add all registered DataSourceValues as TemplateScalarModel
+        for (var entry : dataSourceValueRegistry.getAll().entrySet()) {
+            dataSourceValuesContext.put(entry.getKey(), new DataSourceValueScalarModel(entry.getValue()));
+        }
+        // Generic grouping: Add all DataSourceValues with prefix (e.g. docker.version) as sub-maps
+        Map<String, Map<String, Object>> groupedMaps = new HashMap<>();
+        for (var entry : dataSourceValueRegistry.getAll().entrySet()) {
+            String key = entry.getKey();
+            int dotIdx = key.indexOf('.');
+            if (dotIdx > 0 && dotIdx < key.length() - 1) {
+                String prefix = key.substring(0, dotIdx);
+                String suffix = key.substring(dotIdx + 1);
+                groupedMaps.computeIfAbsent(prefix, k -> new HashMap<>())
+                    .put(suffix, new DataSourceValueScalarModel(entry.getValue()));
+            }
+        }
+        dataSourceValuesContext.putAll(groupedMaps);
+        this.dataSourceValueContext = Map.copyOf(dataSourceValuesContext);
     }
 
     public String render(String template) {
@@ -49,10 +67,9 @@ public class TemplateRenderer {
         try {
             var combinedRenderContext = new HashMap<>(globalRenderContext);
             combinedRenderContext.putAll(renderContext);
-
+            combinedRenderContext.putAll(dataSourceValueContext);
             combinedRenderContext.put("JsonFileValue", new JsonFileValueMethod());
             combinedRenderContext.put("YamlFileValue", new YamlFileValueMethod());
-
             var template = new Template("", new StringReader(templateContent), cfg);
 
             StringWriter writer = new StringWriter();
@@ -63,13 +80,8 @@ public class TemplateRenderer {
         }
     }
 
-    public <T extends Map<String, Object>> T render(T map) {
-        return this.render(map, this.globalRenderContext);
-    }
-
     public <T extends Map<String, Object>> T render(T map, Map<String, Object> renderContext) {
         map.replaceAll((k, v) -> this.render(v.toString(), renderContext));
-
         return map;
     }
 }

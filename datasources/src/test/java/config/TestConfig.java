@@ -1,8 +1,9 @@
 package config;
 
 import mock.TestTemplateManager;
+import org.eclipse.slm.selfdescriptionservice.datasources.DataSourceValueRegistry;
 import org.eclipse.slm.selfdescriptionservice.datasources.template.ITemplateManager;
-import org.eclipse.slm.selfdescriptionservice.templating.TemplateRenderer;
+import org.eclipse.slm.selfdescriptionservice.datasources.template.TemplateRenderer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
@@ -18,7 +19,7 @@ public class TestConfig {
 
     @Bean
     public TemplateRenderer templateRenderer() {
-        return new TemplateRenderer();
+        return new TemplateRenderer(new DataSourceValueRegistry());
     }
 
 

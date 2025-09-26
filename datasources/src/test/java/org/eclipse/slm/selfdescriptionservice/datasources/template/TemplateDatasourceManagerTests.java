@@ -1,5 +1,6 @@
+package org.eclipse.slm.selfdescriptionservice.datasources.template;
+
 import config.TestConfig;
-import org.eclipse.slm.selfdescriptionservice.datasources.template.TemplateDatasourceService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;

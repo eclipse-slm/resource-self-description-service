@@ -1,4 +1,5 @@
-import org.eclipse.slm.selfdescriptionservice.datasources.template.TemplateManager;
+package org.eclipse.slm.selfdescriptionservice.datasources.template;
+
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;

@@ -1,7 +1,7 @@
-package org.eclipse.slm.selfdescriptionservice.templating.method;
+package org.eclipse.slm.selfdescriptionservice.datasources.template;
 
-import org.eclipse.slm.selfdescriptionservice.templating.TemplateRenderer;
-import org.eclipse.slm.selfdescriptionservice.templating.method.utils.PathHelper;
+import org.eclipse.slm.selfdescriptionservice.datasources.DataSourceValueRegistry;
+import org.eclipse.slm.selfdescriptionservice.datasources.template.testutils.PathHelper;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
@@ -12,13 +12,10 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.TimeZone;
 
-
 import static org.assertj.core.api.Assertions.assertThat;
-
-
-
 
 interface GetResult{
     String getExpectedResult();
@@ -55,7 +52,8 @@ public class TemplateRendererTests {
 
     @Test
     public void RenderTest() throws URISyntaxException {
-        var templateRenderer = new TemplateRenderer();
+        Locale.setDefault(Locale.US); // Ensure decimal separator is '.'
+        var templateRenderer = new TemplateRenderer(new DataSourceValueRegistry());
 
         var osIsWindows = System.getProperty("os.name").toLowerCase().contains("windows");
 

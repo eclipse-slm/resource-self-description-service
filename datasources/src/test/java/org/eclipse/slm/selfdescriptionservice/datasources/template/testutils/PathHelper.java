@@ -1,4 +1,4 @@
-package org.eclipse.slm.selfdescriptionservice.templating.method.utils;
+package org.eclipse.slm.selfdescriptionservice.datasources.template.testutils;
 
 import java.io.File;
 import java.net.URISyntaxException;
