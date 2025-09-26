@@ -17,7 +17,6 @@ public class TemplateManager implements ITemplateManager {
 
         var resources = resolver.getResources("classpath:templates/**");
 
-
         return Arrays.stream(resources)
                 .filter(resource -> Objects.requireNonNull(resource.getFilename()).endsWith(".aasx"))
                 .toArray(Resource[]::new);

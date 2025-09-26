@@ -4,6 +4,7 @@ import freemarker.template.Configuration;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
 import freemarker.template.TemplateExceptionHandler;
+import org.eclipse.slm.selfdescriptionservice.datasources.systeminfo.SystemInfoMethod;
 import org.eclipse.slm.selfdescriptionservice.datasources.template.datasourcevalues.DataSourceValueRegistry;
 import org.eclipse.slm.selfdescriptionservice.datasources.template.datasourcevalues.DataSourceValueScalarModel;
 import org.eclipse.slm.selfdescriptionservice.datasources.template.methods.CommandValueMethod;
@@ -25,13 +26,16 @@ public class TemplateRenderer {
     private final Configuration cfg;
     private final Map<String, Object> globalRenderContext = new HashMap<>();
 
+    private final SystemInfoMethod systemInfoMethod;
+
     /**
      * Precomputed context with all DataSourceValues grouped by prefix (e.g. docker.version -> docker.version and docker.version).
      */
     private final Map<String, Object> dataSourceValueContext;
 
     @Autowired
-    public TemplateRenderer(DataSourceValueRegistry dataSourceValueRegistry) {
+    public TemplateRenderer(DataSourceValueRegistry dataSourceValueRegistry, SystemInfoMethod systemInfoMethod) {
+        this.systemInfoMethod = systemInfoMethod;
         cfg = new Configuration(Configuration.VERSION_2_3_0);
         cfg.setDefaultEncoding("UTF-8");
         cfg.setTemplateExceptionHandler(TemplateExceptionHandler.RETHROW_HANDLER);
@@ -73,6 +77,7 @@ public class TemplateRenderer {
             combinedRenderContext.put("JsonFileValue", new JsonFileValueMethod());
             combinedRenderContext.put("YamlFileValue", new YamlFileValueMethod());
             combinedRenderContext.put("ShellCommand", new CommandValueMethod());
+            combinedRenderContext.put("SystemInfo", this.systemInfoMethod);
             var template = new Template("", new StringReader(templateContent), cfg);
 
             StringWriter writer = new StringWriter();

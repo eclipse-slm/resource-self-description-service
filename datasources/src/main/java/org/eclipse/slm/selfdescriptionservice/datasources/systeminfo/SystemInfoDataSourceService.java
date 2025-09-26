@@ -50,6 +50,7 @@ public class SystemInfoDataSourceService extends AbstractDatasourceService {
         this.osInfoProvider = new OshiOsInfoProvider();
     }
 
+    //region AbstractDatasourceService
     @Override
     protected List<? extends DataSourceValue<?>> getDataSourceValues() {
         return List.of(
@@ -86,4 +87,5 @@ public class SystemInfoDataSourceService extends AbstractDatasourceService {
     public Optional<Submodel> getSubmodelById(String id) throws IOException {
         return Optional.empty();
     }
+    //endregion AbstractDatasourceService
 }

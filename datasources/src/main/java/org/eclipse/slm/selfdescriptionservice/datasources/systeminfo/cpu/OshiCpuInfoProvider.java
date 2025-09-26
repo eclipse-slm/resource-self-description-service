@@ -1,5 +1,7 @@
 package org.eclipse.slm.selfdescriptionservice.datasources.systeminfo.cpu;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.eclipse.slm.selfdescriptionservice.datasources.systeminfo.CpuInfo;
 
 import oshi.SystemInfo;
@@ -13,6 +15,14 @@ public class OshiCpuInfoProvider implements CpuInfoProvider {
         SystemInfo si = new SystemInfo();
         HardwareAbstractionLayer hal = si.getHardware();
         CentralProcessor cpu = hal.getProcessor();
+
+        var objectMapper = new ObjectMapper();
+        try {
+            var halString = objectMapper.writeValueAsString(hal);
+            int i = 0;
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
 
         CpuInfo info = new CpuInfo();
         info.setArchitecture(System.getProperty("os.arch"));
