@@ -1,4 +1,4 @@
-package org.eclipse.slm.selfdescriptionservice.datasources;
+package org.eclipse.slm.selfdescriptionservice.datasources.template.datasourcevalues;
 
 import org.eclipse.slm.selfdescriptionservice.datasources.docker.DataSourceValue;
 import org.springframework.stereotype.Component;

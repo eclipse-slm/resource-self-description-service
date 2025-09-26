@@ -1,4 +1,4 @@
-package org.eclipse.slm.selfdescriptionservice.datasources.template;
+package org.eclipse.slm.selfdescriptionservice.datasources.template.datasourcevalues;
 
 import freemarker.template.TemplateScalarModel;
 import org.eclipse.slm.selfdescriptionservice.datasources.docker.DataSourceValue;

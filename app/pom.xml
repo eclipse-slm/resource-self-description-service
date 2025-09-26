@@ -62,12 +62,6 @@
         </dependency>
 
         <dependency>
-            <groupId>org.eclipse.slm.self-description-service</groupId>
-            <artifactId>templating</artifactId>
-            <version>${revision}</version>
-        </dependency>
-
-        <dependency>
             <groupId>org.eclipse.digitaltwin.aas4j</groupId>
             <artifactId>aas4j-dataformat-json</artifactId>
             <version>${aas.aas4j.version}</version>

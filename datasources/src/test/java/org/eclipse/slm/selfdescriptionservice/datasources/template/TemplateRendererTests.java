@@ -1,6 +1,6 @@
 package org.eclipse.slm.selfdescriptionservice.datasources.template;
 
-import org.eclipse.slm.selfdescriptionservice.datasources.DataSourceValueRegistry;
+import org.eclipse.slm.selfdescriptionservice.datasources.template.datasourcevalues.DataSourceValueRegistry;
 import org.eclipse.slm.selfdescriptionservice.datasources.template.testutils.PathHelper;
 import org.junit.jupiter.api.Test;
 

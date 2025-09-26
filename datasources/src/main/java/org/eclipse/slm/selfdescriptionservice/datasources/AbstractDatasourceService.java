@@ -1,6 +1,8 @@
 package org.eclipse.slm.selfdescriptionservice.datasources;
 
 import org.eclipse.slm.selfdescriptionservice.datasources.docker.DataSourceValue;
+import org.eclipse.slm.selfdescriptionservice.datasources.template.datasourcevalues.DataSourceValueNotFoundException;
+import org.eclipse.slm.selfdescriptionservice.datasources.template.datasourcevalues.DataSourceValueRegistry;
 import org.springframework.beans.factory.annotation.Value;
 import java.util.List;
 

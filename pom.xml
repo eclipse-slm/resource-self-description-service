@@ -12,7 +12,6 @@
     <modules>
         <module>app</module>
         <module>datasources</module>
-        <module>templating</module>
     </modules>
 
     <properties>

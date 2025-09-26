@@ -1,7 +1,7 @@
 package org.eclipse.slm.selfdescriptionservice.datasources.docker;
 
 import org.eclipse.digitaltwin.aas4j.v3.model.impl.DefaultSubmodelElementList;
-import org.eclipse.slm.selfdescriptionservice.datasources.DataSourceValueRegistry;
+import org.eclipse.slm.selfdescriptionservice.datasources.template.datasourcevalues.DataSourceValueRegistry;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Disabled;

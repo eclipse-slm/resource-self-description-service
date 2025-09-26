@@ -1,7 +1,7 @@
 package config;
 
 import mock.TestTemplateManager;
-import org.eclipse.slm.selfdescriptionservice.datasources.DataSourceValueRegistry;
+import org.eclipse.slm.selfdescriptionservice.datasources.template.datasourcevalues.DataSourceValueRegistry;
 import org.eclipse.slm.selfdescriptionservice.datasources.template.ITemplateManager;
 import org.eclipse.slm.selfdescriptionservice.datasources.template.TemplateRenderer;
 import org.springframework.context.annotation.Bean;

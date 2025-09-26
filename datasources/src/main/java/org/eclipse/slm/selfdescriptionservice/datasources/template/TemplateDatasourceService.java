@@ -5,7 +5,7 @@ import org.eclipse.digitaltwin.aas4j.v3.dataformat.aasx.AASXDeserializer;
 import org.eclipse.digitaltwin.aas4j.v3.dataformat.core.DeserializationException;
 import org.eclipse.digitaltwin.aas4j.v3.model.*;
 import org.eclipse.slm.selfdescriptionservice.datasources.AbstractDatasourceService;
-import org.eclipse.slm.selfdescriptionservice.datasources.DataSourceValueRegistry;
+import org.eclipse.slm.selfdescriptionservice.datasources.template.datasourcevalues.DataSourceValueRegistry;
 import org.eclipse.slm.selfdescriptionservice.datasources.aas.SubmodelMetaData;
 import org.eclipse.slm.selfdescriptionservice.datasources.docker.DataSourceValue;
 import org.slf4j.Logger;

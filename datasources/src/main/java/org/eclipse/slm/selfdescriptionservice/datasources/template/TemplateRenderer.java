@@ -4,9 +4,10 @@ import freemarker.template.Configuration;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
 import freemarker.template.TemplateExceptionHandler;
-import org.eclipse.slm.selfdescriptionservice.datasources.DataSourceValueRegistry;
-import org.eclipse.slm.selfdescriptionservice.templating.method.JsonFileValueMethod;
-import org.eclipse.slm.selfdescriptionservice.templating.method.YamlFileValueMethod;
+import org.eclipse.slm.selfdescriptionservice.datasources.template.datasourcevalues.DataSourceValueRegistry;
+import org.eclipse.slm.selfdescriptionservice.datasources.template.datasourcevalues.DataSourceValueScalarModel;
+import org.eclipse.slm.selfdescriptionservice.datasources.template.methods.JsonFileValueMethod;
+import org.eclipse.slm.selfdescriptionservice.datasources.template.methods.YamlFileValueMethod;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 

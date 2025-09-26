@@ -1,7 +1,6 @@
-package org.eclipse.slm.selfdescriptionservice.templating.method;
+package org.eclipse.slm.selfdescriptionservice.datasources.template.methods;
 
 import com.jayway.jsonpath.JsonPath;
-import freemarker.template.TemplateMethodModelEx;
 import freemarker.template.TemplateModelException;
 
 import java.io.File;
@@ -13,9 +12,9 @@ import java.util.List;
 /**
  *
  */
-public class JsonFileValueMethod implements TemplateMethodModelEx {
+public class JsonFileValueMethod extends AbstractSafeTemplateMethodModelEx {
     @Override
-    public Object exec(List list) throws TemplateModelException {
+    public Object safeExec(List list) throws Exception{
         if (list.size() != 2) {
             throw new TemplateModelException("Wrong number of arguments");
         }
