@@ -18,6 +18,7 @@ import java.io.StringReader;
 import java.io.StringWriter;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.TimeZone;
 
 @Component
@@ -26,7 +27,7 @@ public class TemplateRenderer {
     private final Configuration cfg;
     private final Map<String, Object> globalRenderContext = new HashMap<>();
 
-    private final SystemInfoMethod systemInfoMethod;
+    private final Optional<SystemInfoMethod> systemInfoMethodOptional;
 
     /**
      * Precomputed context with all DataSourceValues grouped by prefix (e.g. docker.version -> docker.version and docker.version).
@@ -34,8 +35,8 @@ public class TemplateRenderer {
     private final Map<String, Object> dataSourceValueContext;
 
     @Autowired
-    public TemplateRenderer(DataSourceValueRegistry dataSourceValueRegistry, SystemInfoMethod systemInfoMethod) {
-        this.systemInfoMethod = systemInfoMethod;
+    public TemplateRenderer(DataSourceValueRegistry dataSourceValueRegistry, Optional<SystemInfoMethod> systemInfoMethodOptional) {
+        this.systemInfoMethodOptional = systemInfoMethodOptional;
         cfg = new Configuration(Configuration.VERSION_2_3_0);
         cfg.setDefaultEncoding("UTF-8");
         cfg.setTemplateExceptionHandler(TemplateExceptionHandler.RETHROW_HANDLER);
@@ -77,7 +78,9 @@ public class TemplateRenderer {
             combinedRenderContext.put("JsonFileValue", new JsonFileValueMethod());
             combinedRenderContext.put("YamlFileValue", new YamlFileValueMethod());
             combinedRenderContext.put("ShellCommand", new CommandValueMethod());
-            combinedRenderContext.put("SystemInfo", this.systemInfoMethod);
+            if (systemInfoMethodOptional.isPresent()) {
+                combinedRenderContext.put("SystemInfo", this.systemInfoMethodOptional.get());
+            }
             var template = new Template("", new StringReader(templateContent), cfg);
 
             StringWriter writer = new StringWriter();

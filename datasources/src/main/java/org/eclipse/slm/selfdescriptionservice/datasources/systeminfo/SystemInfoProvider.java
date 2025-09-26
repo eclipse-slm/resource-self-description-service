@@ -17,7 +17,7 @@ public class SystemInfoProvider {
     private volatile boolean isUpdating = false;
     private final long refreshIntervalSeconds;
 
-    public SystemInfoProvider(@Value("${datasources.system.refresh-interval-s}") long refreshIntervalSeconds) {
+    public SystemInfoProvider(@Value("${datasources.system.refresh-interval-s:300}") long refreshIntervalSeconds) {
         this.refreshIntervalSeconds = refreshIntervalSeconds;
         // Start thread to update cache periodically
         Thread cacheUpdaterThread = new Thread(() -> {

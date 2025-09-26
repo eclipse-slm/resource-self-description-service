@@ -112,4 +112,3 @@ datasources:
   system:
     enabled: true
     refresh-interval-s: 300
-
