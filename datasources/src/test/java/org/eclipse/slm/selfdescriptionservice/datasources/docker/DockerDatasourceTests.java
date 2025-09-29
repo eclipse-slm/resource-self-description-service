@@ -1,7 +1,6 @@
 package org.eclipse.slm.selfdescriptionservice.datasources.docker;
 
 import org.eclipse.digitaltwin.aas4j.v3.model.impl.DefaultSubmodelElementList;
-import org.eclipse.slm.selfdescriptionservice.datasources.template.datasourcevalues.DataSourceValueRegistry;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Disabled;
@@ -22,8 +21,8 @@ public class DockerDatasourceTests {
 
     private static final Logger LOG = LoggerFactory.getLogger(DockerDatasourceTests.class);
 
-    private final DockerDatasourceService dockerDatasourceServiceDatasource =
-            new DockerDatasourceService("docker", new DataSourceValueRegistry(), "tcp://localhost:2375");
+    private final DockerDatasource dockerDatasourceServiceDatasource =
+            new DockerDatasource("docker", true, "tcp://localhost:2375");
 
 
     public DockerDatasourceTests() {

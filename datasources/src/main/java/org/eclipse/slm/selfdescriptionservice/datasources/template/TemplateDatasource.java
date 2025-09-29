@@ -4,14 +4,15 @@ import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.eclipse.digitaltwin.aas4j.v3.dataformat.aasx.AASXDeserializer;
 import org.eclipse.digitaltwin.aas4j.v3.dataformat.core.DeserializationException;
 import org.eclipse.digitaltwin.aas4j.v3.model.*;
-import org.eclipse.slm.selfdescriptionservice.datasources.AbstractDatasourceService;
-import org.eclipse.slm.selfdescriptionservice.datasources.template.datasourcevalues.DataSourceValueRegistry;
-import org.eclipse.slm.selfdescriptionservice.datasources.aas.SubmodelMetaData;
-import org.eclipse.slm.selfdescriptionservice.datasources.docker.DataSourceValue;
+import org.eclipse.slm.selfdescriptionservice.datasources.base.AbstractDatasource;
+import org.eclipse.slm.selfdescriptionservice.datasources.base.SubmodelMetaData;
+import org.eclipse.slm.selfdescriptionservice.datasources.base.DataSourceValueDefinition;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Component;
 
@@ -22,27 +23,31 @@ import java.util.List;
 import java.util.Optional;
 
 @Component
-public class TemplateDatasourceService extends AbstractDatasourceService implements InitializingBean {
+@ConditionalOnProperty(name = "datasources.templates.enabled", havingValue = "true", matchIfMissing = false)
+public class TemplateDatasource extends AbstractDatasource implements InitializingBean {
 
-    private final static Logger LOG = LoggerFactory.getLogger(TemplateDatasourceService.class);
+    private final static Logger LOG = LoggerFactory.getLogger(TemplateDatasource.class);
 
     public static final String DATASOURCE_NAME = "Template";
 
     private final ITemplateManager templateManager;
-    private final TemplateRenderer renderer;
+    private final TemplateRenderer templateRenderer;
 
     private final HashMap<String, String> idToFileMap = new HashMap<>();
 
     /**
      * Constructor for TemplateDatasourceService.
      * @param templateManager The template manager
-     * @param renderer The template renderer
+     * @param templateRenderer The template renderer
      * @param resourceId The resource ID
-     * @param dataSourceValueRegistry The registry for DataSourceValues
      */
-    public TemplateDatasourceService(ITemplateManager templateManager, TemplateRenderer renderer, @Value("${resource.id}") String resourceId, DataSourceValueRegistry dataSourceValueRegistry) {
-        super(resourceId, TemplateDatasourceService.DATASOURCE_NAME, dataSourceValueRegistry);
-        this.renderer = renderer;
+    public TemplateDatasource(@Value("${resource.id}") String resourceId,
+                              @Value("${datasources.templates.provide-submodels}") boolean provideSubmodels,
+                              ITemplateManager templateManager,
+                              @Lazy TemplateRenderer templateRenderer
+    ) {
+        super(resourceId, TemplateDatasource.DATASOURCE_NAME, provideSubmodels);
+        this.templateRenderer = templateRenderer;
         this.templateManager = templateManager;
     }
 
@@ -67,6 +72,9 @@ public class TemplateDatasourceService extends AbstractDatasourceService impleme
 
 
     public List<Submodel> getSubmodels() {
+        if (!provideSubmodels) {
+            return List.of();
+        }
 
         ArrayList<Submodel> submodels = new ArrayList<>();
 
@@ -109,7 +117,7 @@ public class TemplateDatasourceService extends AbstractDatasourceService impleme
                 case Property property -> {
                     var value = property.getValue();
                     if (value != null) {
-                        var renderedValue = this.renderer.render(value);
+                        var renderedValue = this.templateRenderer.render(value);
                         property.setValue(renderedValue);
                     }
                 }
@@ -157,6 +165,10 @@ public class TemplateDatasourceService extends AbstractDatasourceService impleme
     //region AbstractDatasourceService
     @Override
     public List<SubmodelMetaData> getMetaDataOfSubmodels() {
+        if (!provideSubmodels) {
+            return List.of();
+        }
+
         var metaDataOfSubmodels = new ArrayList<SubmodelMetaData>();
 
         Resource[] templates;
@@ -192,6 +204,10 @@ public class TemplateDatasourceService extends AbstractDatasourceService impleme
 
     @Override
     public Optional<Submodel> getSubmodelById(String id) {
+        if (!provideSubmodels) {
+            return Optional.empty();
+        }
+
         try {
             Optional<Submodel> optionalSubmodel;
             if (!this.idToFileMap.containsKey(id)) {
@@ -231,7 +247,7 @@ public class TemplateDatasourceService extends AbstractDatasourceService impleme
     }
 
     @Override
-    protected List<? extends DataSourceValue<?>> getDataSourceValues() {
+    public List<? extends DataSourceValueDefinition<?>> getValueDefinitions() {
         return List.of();
     }
     //endregion AbstractDatasourceService

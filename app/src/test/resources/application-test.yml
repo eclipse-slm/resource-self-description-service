@@ -117,9 +117,14 @@ aas:
 
 ### Datasources
 datasources:
+  templates:
+    enabled: true
+    provide-submodels: true
   docker:
     enabled: true
+    provide-submodels: true
     docker-host: "tcp://localhost:2375"
   system:
     enabled: true
+    provide-submodels: true
     refresh-interval-s: 300

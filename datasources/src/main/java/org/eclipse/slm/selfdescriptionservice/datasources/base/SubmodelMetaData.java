@@ -1,4 +1,4 @@
-package org.eclipse.slm.selfdescriptionservice.datasources.aas;
+package org.eclipse.slm.selfdescriptionservice.datasources.base;
 
 import org.eclipse.digitaltwin.aas4j.v3.model.Reference;
 

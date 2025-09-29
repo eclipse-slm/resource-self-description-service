@@ -5,7 +5,7 @@ import org.eclipse.digitaltwin.aas4j.v3.model.Key;
 import org.eclipse.digitaltwin.aas4j.v3.model.Reference;
 import org.eclipse.digitaltwin.basyx.http.Base64UrlEncodedIdentifier;
 import org.eclipse.slm.common.aas.clients.*;
-import org.eclipse.slm.selfdescriptionservice.datasources.DatasourceManager;
+import org.eclipse.slm.selfdescriptionservice.datasources.DatasourceService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -19,7 +19,7 @@ public class AasService {
 
     private static final Logger LOG = LoggerFactory.getLogger(AasService.class);
 
-    private final DatasourceManager datasourceManager;
+    private final DatasourceService datasourceService;
     private final String aasId;
     private final String deploymentUrl;
 
@@ -28,10 +28,10 @@ public class AasService {
 
     public AasService(@Value("${resource.aas.id}") String aasId,
                       @Value("${deployment.url}") String deploymentUrl,
-                      DatasourceManager datasourceManager,
+                      DatasourceService datasourceService,
                       AasRegistryClientFactory aasRegistryClientFactory,
                       SubmodelRegistryClientFactory submodelRegistryClientFactory) {
-        this.datasourceManager = datasourceManager;
+        this.datasourceService = datasourceService;
         this.aasId = aasId;
         this.deploymentUrl = deploymentUrl;
         this.aasRegistryClientFactory = aasRegistryClientFactory;
@@ -53,7 +53,7 @@ public class AasService {
 
     private void registerSubmodels()
             throws org.eclipse.digitaltwin.basyx.submodelregistry.client.ApiException {
-        var metaDataOfSubmodels = new HashSet<>(this.datasourceManager.getMetaDataOfSubmodels());
+        var metaDataOfSubmodels = new HashSet<>(this.datasourceService.getMetaDataOfSubmodels());
         for (var submodelMetaData : metaDataOfSubmodels) {
                 var submodelIdEncoded = new Base64UrlEncodedIdentifier(submodelMetaData.getId());
                 var url = this.deploymentUrl + "/submodels/" + submodelIdEncoded.getEncodedIdentifier();
@@ -71,7 +71,7 @@ public class AasService {
                 .get()
                 .getSubmodels().stream().map(Reference::getKeys).flatMap(Collection::stream)
                 .map(Key::getValue).collect(Collectors.toSet());
-        var metaDataOfSubmodels = new HashSet<>(this.datasourceManager.getMetaDataOfSubmodels());
+        var metaDataOfSubmodels = new HashSet<>(this.datasourceService.getMetaDataOfSubmodels());
         for (var submodelMetaData : metaDataOfSubmodels) {
             if (!aasSubmodelIds.contains(submodelMetaData)) {
                 aasRepositoryClient.addSubmodelReferenceToAas(this.aasId, submodelMetaData.getId());

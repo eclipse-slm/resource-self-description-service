@@ -14,7 +14,7 @@ import org.eclipse.digitaltwin.basyx.submodelservice.pathparsing.HierarchicalSub
 import org.eclipse.digitaltwin.basyx.submodelservice.value.PropertyValue;
 import org.eclipse.digitaltwin.basyx.submodelservice.value.SubmodelElementValue;
 import org.eclipse.digitaltwin.basyx.submodelservice.value.SubmodelValueOnly;
-import org.eclipse.slm.selfdescriptionservice.datasources.DatasourceManager;
+import org.eclipse.slm.selfdescriptionservice.datasources.DatasourceService;
 import org.eclipse.slm.selfdescriptionservice.app.aas.exceptions.SubmodelNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,20 +32,15 @@ import java.util.stream.Collectors;
 public class SubmodelRepository implements org.eclipse.digitaltwin.basyx.submodelrepository.SubmodelRepository {
     private final static Logger LOG = LoggerFactory.getLogger(SubmodelRepository.class);
 
+    final DatasourceService datasourceService;
 
-    final DatasourceManager datasourceManager;
-
-
-    public SubmodelRepository(DatasourceManager datasourceManager) {
-        this.datasourceManager = datasourceManager;
+    public SubmodelRepository(DatasourceService datasourceService) {
+        this.datasourceService = datasourceService;
     }
 
     @Override
     public CursorResult<List<Submodel>> getAllSubmodels(PaginationInfo pInfo) {
-        var submodels = new ArrayList<Submodel>();
-        for (var submodelFactory : datasourceManager.getDatasourceServices()) {
-            submodels.addAll(submodelFactory.getSubmodels());
-        }
+        var submodels = this.datasourceService.getSubmodels();
 
         TreeMap<String, Submodel> submodelMap = submodels.stream().collect(Collectors.toMap(Submodel::getId, submodel -> submodel, (a, b) -> a, TreeMap::new));
         PaginationSupport<Submodel> paginationSupport = new PaginationSupport<>(submodelMap, Submodel::getId);
@@ -61,7 +56,7 @@ public class SubmodelRepository implements org.eclipse.digitaltwin.basyx.submode
     @Override
     public Submodel getSubmodel(String submodelId) throws ElementDoesNotExistException {
         var modelIdEncoded = Base64UrlEncodedIdentifier.fromEncodedValue(submodelId);
-        var datasource = this.datasourceManager.getDatasourceForSubmodelId(modelIdEncoded.getIdentifier());
+        var datasource = this.datasourceService.getDatasourceForSubmodelId(modelIdEncoded.getIdentifier());
         if (datasource.isEmpty()) {
             throw new SubmodelNotFoundException(submodelId);
         }

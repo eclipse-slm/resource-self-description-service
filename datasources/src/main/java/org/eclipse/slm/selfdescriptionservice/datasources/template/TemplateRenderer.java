@@ -4,9 +4,10 @@ import freemarker.template.Configuration;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
 import freemarker.template.TemplateExceptionHandler;
+import org.eclipse.slm.selfdescriptionservice.datasources.DatasourceService;
+import org.eclipse.slm.selfdescriptionservice.datasources.base.DataSourceValueDefinition;
 import org.eclipse.slm.selfdescriptionservice.datasources.systeminfo.SystemInfoMethod;
-import org.eclipse.slm.selfdescriptionservice.datasources.template.datasourcevalues.DataSourceValueRegistry;
-import org.eclipse.slm.selfdescriptionservice.datasources.template.datasourcevalues.DataSourceValueScalarModel;
+import org.eclipse.slm.selfdescriptionservice.datasources.template.scalar.DataSourceValueScalarModel;
 import org.eclipse.slm.selfdescriptionservice.datasources.template.methods.CommandValueMethod;
 import org.eclipse.slm.selfdescriptionservice.datasources.template.methods.JsonFileValueMethod;
 import org.eclipse.slm.selfdescriptionservice.datasources.template.methods.YamlFileValueMethod;
@@ -16,16 +17,15 @@ import org.springframework.stereotype.Component;
 import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
-import java.util.TimeZone;
+import java.util.*;
 
 @Component
 public class TemplateRenderer {
 
     private final Configuration cfg;
     private final Map<String, Object> globalRenderContext = new HashMap<>();
+
+    private final DatasourceService datasourceService;
 
     private final Optional<SystemInfoMethod> systemInfoMethodOptional;
 
@@ -35,7 +35,8 @@ public class TemplateRenderer {
     private final Map<String, Object> dataSourceValueContext;
 
     @Autowired
-    public TemplateRenderer(DataSourceValueRegistry dataSourceValueRegistry, Optional<SystemInfoMethod> systemInfoMethodOptional) {
+    public TemplateRenderer(DatasourceService datasourceService, Optional<SystemInfoMethod> systemInfoMethodOptional) {
+        this.datasourceService = datasourceService;
         this.systemInfoMethodOptional = systemInfoMethodOptional;
         cfg = new Configuration(Configuration.VERSION_2_3_0);
         cfg.setDefaultEncoding("UTF-8");
@@ -45,14 +46,22 @@ public class TemplateRenderer {
         cfg.setFallbackOnNullLoopVariable(false);
         cfg.setSQLDateAndTimeTimeZone(TimeZone.getDefault());
 
+        Map<String, DataSourceValueDefinition<?>> datasourceValueKeyToDefinition = new HashMap<>();
+        for (var datasource : this.datasourceService.getDatasources()) {
+            // Get all supported data source values
+            for (DataSourceValueDefinition<?> valueDefinition : datasource.getValueDefinitions()) {
+                datasourceValueKeyToDefinition.put(valueDefinition.getKey(), valueDefinition);
+            }
+        }
+
         var dataSourceValuesContext = new HashMap<String, Object>();
         // Add all registered DataSourceValues as TemplateScalarModel
-        for (var entry : dataSourceValueRegistry.getAll().entrySet()) {
+        for (var entry : datasourceValueKeyToDefinition.entrySet()) {
             dataSourceValuesContext.put(entry.getKey(), new DataSourceValueScalarModel(entry.getValue()));
         }
         // Generic grouping: Add all DataSourceValues with prefix (e.g. docker.version) as sub-maps
         Map<String, Map<String, Object>> groupedMaps = new HashMap<>();
-        for (var entry : dataSourceValueRegistry.getAll().entrySet()) {
+        for (var entry : datasourceValueKeyToDefinition.entrySet()) {
             String key = entry.getKey();
             int dotIdx = key.indexOf('.');
             if (dotIdx > 0 && dotIdx < key.length() - 1) {

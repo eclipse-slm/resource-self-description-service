@@ -1,7 +1,7 @@
-package org.eclipse.slm.selfdescriptionservice.datasources.template.datasourcevalues;
+package org.eclipse.slm.selfdescriptionservice.datasources.template.scalar;
 
 import freemarker.template.TemplateScalarModel;
-import org.eclipse.slm.selfdescriptionservice.datasources.docker.DataSourceValue;
+import org.eclipse.slm.selfdescriptionservice.datasources.base.DataSourceValueDefinition;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -12,9 +12,9 @@ import org.slf4j.LoggerFactory;
 public class DataSourceValueScalarModel implements TemplateScalarModel {
     private final static Logger LOG = LoggerFactory.getLogger(DataSourceValueScalarModel.class);
 
-    private final DataSourceValue<?> value;
+    private final DataSourceValueDefinition<?> value;
 
-    public DataSourceValueScalarModel(DataSourceValue<?> value) {
+    public DataSourceValueScalarModel(DataSourceValueDefinition<?> value) {
         this.value = value;
     }
 

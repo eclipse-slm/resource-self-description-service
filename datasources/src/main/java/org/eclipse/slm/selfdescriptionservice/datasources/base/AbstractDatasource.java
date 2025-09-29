@@ -1,8 +1,5 @@
-package org.eclipse.slm.selfdescriptionservice.datasources;
+package org.eclipse.slm.selfdescriptionservice.datasources.base;
 
-import org.eclipse.slm.selfdescriptionservice.datasources.docker.DataSourceValue;
-import org.eclipse.slm.selfdescriptionservice.datasources.template.datasourcevalues.DataSourceValueNotFoundException;
-import org.eclipse.slm.selfdescriptionservice.datasources.template.datasourcevalues.DataSourceValueRegistry;
 import org.springframework.beans.factory.annotation.Value;
 import java.util.List;
 
@@ -11,7 +8,7 @@ import java.util.List;
  * Provides common logic for value lookup and submodel ID creation.
  * Derived classes must provide their own immutable list of supported DataSourceValues.
  */
-public abstract class AbstractDatasourceService implements Datasource {
+public abstract class AbstractDatasource implements Datasource {
 
     /** The resource ID associated with this datasource. */
     protected String resourceId = "";
@@ -19,23 +16,19 @@ public abstract class AbstractDatasourceService implements Datasource {
     /** The name of the datasource (used for identification and submodel IDs) */
     protected String datasourceName = "";
 
-    private final DataSourceValueRegistry dataSourceValueRegistry;
+    protected final boolean provideSubmodels;
 
     /**
      * Constructor for AbstractDatasourceService.
      * Registers all supported DataSourceValues in the DataSourceValueRegistry on startup.
      * @param resourceId The resource ID to associate with this datasource
      * @param datasourceName The name of the datasource
-     * @param dataSourceValueRegistry The registry for DataSourceValues
+     * @param provideSubmodels Whether this datasource provides submodels or not
      */
-    protected AbstractDatasourceService(@Value("resource.id") String resourceId, String datasourceName, DataSourceValueRegistry dataSourceValueRegistry) {
+    protected AbstractDatasource(@Value("resource.id") String resourceId, String datasourceName, boolean provideSubmodels) {
         this.resourceId = resourceId;
         this.datasourceName = datasourceName;
-        this.dataSourceValueRegistry = dataSourceValueRegistry;
-        // Register all supported DataSourceValues at startup
-        for (DataSourceValue<?> value : getDataSourceValues()) {
-            dataSourceValueRegistry.register(value);
-        }
+        this.provideSubmodels = provideSubmodels;
     }
 
     /**
@@ -54,7 +47,7 @@ public abstract class AbstractDatasourceService implements Datasource {
      * @throws DataSourceValueNotFoundException if the key is not found
      */
     public String getValue(String valueKey) {
-        return getDataSourceValues().stream()
+        return getValueDefinitions().stream()
                 .filter(v -> v.getKey().equals(valueKey))
                 .findFirst()
                 .map(v -> String.valueOf(v.getValue()))
@@ -66,7 +59,7 @@ public abstract class AbstractDatasourceService implements Datasource {
      * Must be overridden by derived classes.
      * @return Immutable list of DataSourceValues
      */
-    protected abstract List<? extends DataSourceValue<?>> getDataSourceValues();
+    public abstract List<? extends DataSourceValueDefinition<?>> getValueDefinitions();
 
     /**
      * Creates a unique submodel ID based on datasource name, given ID, and resource ID.

@@ -7,11 +7,10 @@ import com.github.dockerjava.api.model.*;
 import org.apache.poi.hpsf.Decimal;
 import org.eclipse.digitaltwin.aas4j.v3.model.*;
 import org.eclipse.digitaltwin.aas4j.v3.model.impl.*;
-import org.eclipse.slm.selfdescriptionservice.datasources.aas.SubmodelMetaData;
+import org.eclipse.slm.selfdescriptionservice.datasources.base.SubmodelMetaData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.time.Duration;
 import java.util.*;

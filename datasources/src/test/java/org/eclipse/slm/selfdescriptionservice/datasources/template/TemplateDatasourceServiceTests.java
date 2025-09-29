@@ -10,14 +10,14 @@ import org.springframework.test.context.TestPropertySource;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@SpringBootTest(classes = {TemplateDatasourceService.class, TestConfig.class})
+@SpringBootTest(classes = {TemplateDatasource.class, TestConfig.class})
 @ComponentScan(basePackages = {"org.eclipse.slm.selfdescriptionservice"})
 @TestPropertySource(locations = "classpath:test.yml")
 @Import(TestConfig.class)
-public class TemplateDatasourceManagerTests {
+public class TemplateDatasourceServiceTests {
 
     @Autowired
-    private TemplateDatasourceService datasource;
+    private TemplateDatasource datasource;
 
 
     @Test

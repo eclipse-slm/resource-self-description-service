@@ -1,4 +1,4 @@
-package org.eclipse.slm.selfdescriptionservice.datasources.template.datasourcevalues;
+package org.eclipse.slm.selfdescriptionservice.datasources.base;
 
 public class DataSourceValueNotFoundException extends RuntimeException {
 

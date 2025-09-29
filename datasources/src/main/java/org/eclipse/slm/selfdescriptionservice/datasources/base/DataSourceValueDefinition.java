@@ -1,12 +1,12 @@
-package org.eclipse.slm.selfdescriptionservice.datasources.docker;
+package org.eclipse.slm.selfdescriptionservice.datasources.base;
 
 import java.util.function.Supplier;
 
-public class DataSourceValue<T> {
+public class DataSourceValueDefinition<T> {
     private final String key;
     private final Supplier<T> valueSupplierMethod;
 
-    public DataSourceValue(String key, Supplier<T> valueSupplierMethod) {
+    public DataSourceValueDefinition(String key, Supplier<T> valueSupplierMethod) {
         this.key = key;
         this.valueSupplierMethod = valueSupplierMethod;
     }

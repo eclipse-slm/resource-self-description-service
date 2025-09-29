@@ -1,8 +1,6 @@
 package org.eclipse.slm.selfdescriptionservice.datasources.template;
 
-import org.eclipse.slm.selfdescriptionservice.datasources.systeminfo.SystemInfoMethod;
-import org.eclipse.slm.selfdescriptionservice.datasources.systeminfo.SystemInfoProvider;
-import org.eclipse.slm.selfdescriptionservice.datasources.template.datasourcevalues.DataSourceValueRegistry;
+import org.eclipse.slm.selfdescriptionservice.datasources.DatasourceService;
 import org.eclipse.slm.selfdescriptionservice.datasources.template.testutils.PathHelper;
 import org.junit.jupiter.api.Test;
 
@@ -37,7 +35,7 @@ public class TemplateRendererTests {
     public void RenderTest() throws URISyntaxException {
         Locale.setDefault(Locale.US);
 
-        var templateRenderer = new TemplateRenderer(new DataSourceValueRegistry(), Optional.empty());
+        var templateRenderer = new TemplateRenderer(new DatasourceService(List.of()), Optional.empty());
 
         var osIsWindows = System.getProperty("os.name").toLowerCase().contains("windows");
 
