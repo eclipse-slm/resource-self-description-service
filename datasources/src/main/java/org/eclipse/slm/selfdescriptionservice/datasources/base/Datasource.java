@@ -8,6 +8,8 @@ import java.util.Optional;
 
 public interface Datasource {
 
+    String getDatasourceName();
+
     List<Submodel> getSubmodels();
 
     List<SubmodelMetaData> getMetaDataOfSubmodels();
@@ -16,6 +18,10 @@ public interface Datasource {
 
     List<? extends DataSourceValueDefinition<?>> getValueDefinitions();
 
-    String getValue(String valueKey);
+    String getValueByKey(String valueKey);
+    
+    String getValueBySemanticId(String semanticId);
+
+    boolean isValueBySemanticIdEnabled();
 
 }

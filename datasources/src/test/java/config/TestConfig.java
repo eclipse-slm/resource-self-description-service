@@ -1,8 +1,7 @@
 package config;
 
 import mock.TestTemplateManager;
-import org.eclipse.slm.selfdescriptionservice.datasources.DatasourceService;
-import org.eclipse.slm.selfdescriptionservice.datasources.base.Datasource;
+import org.eclipse.slm.selfdescriptionservice.datasources.DatasourceRegistry;
 import org.eclipse.slm.selfdescriptionservice.datasources.template.ITemplateManager;
 import org.eclipse.slm.selfdescriptionservice.datasources.template.TemplateDatasource;
 import org.eclipse.slm.selfdescriptionservice.datasources.template.TemplateRenderer;
@@ -24,16 +23,18 @@ public class TestConfig {
 
     @Bean
     public TemplateRenderer templateRenderer() {
-        return new TemplateRenderer(new DatasourceService(List.of()), Optional.empty());
+        return new TemplateRenderer(new DatasourceRegistry(), Optional.empty());
     }
 
     @Bean
     public TemplateDatasource templateDatasource(ITemplateManager templateManager, TemplateRenderer templateRenderer) {
         return new TemplateDatasource(
+                new DatasourceRegistry(),
                 "test-resource-id",
                 true,
+                true,
                 templateManager,
-                templateRenderer, 
+                templateRenderer,
                 List.of()
         );
     }

@@ -1,6 +1,7 @@
 package org.eclipse.slm.selfdescriptionservice.datasources.systeminfo;
 
 import org.eclipse.digitaltwin.aas4j.v3.model.Submodel;
+import org.eclipse.slm.selfdescriptionservice.datasources.DatasourceRegistry;
 import org.eclipse.slm.selfdescriptionservice.datasources.base.AbstractDatasource;
 import org.eclipse.slm.selfdescriptionservice.datasources.base.SubmodelMetaData;
 import org.eclipse.slm.selfdescriptionservice.datasources.base.DataSourceValueDefinition;
@@ -39,10 +40,12 @@ public class SystemInfoDataSource extends AbstractDatasource {
      *
      * @param resourceId              The resource ID to associate with this datasource
      */
-    protected SystemInfoDataSource(@Value("${resource.id}") String resourceId,
-                                   @Value("${datasources.systeminfo.provide-submodels}") boolean provideSubmodels
+    protected SystemInfoDataSource(DatasourceRegistry datasourceRegistry,
+                                   @Value("${resource.id}") String resourceId,
+                                   @Value("${datasources.systeminfo.provide-submodels:false}") boolean provideSubmodels,
+                                   @Value("${datasources.systeminfo.value-by-semantic-id:false}") boolean valueBySemanticId
     ) {
-        super(resourceId, SystemInfoDataSource.DATASOURCE_NAME, provideSubmodels);
+        super(datasourceRegistry, resourceId, SystemInfoDataSource.DATASOURCE_NAME, provideSubmodels, valueBySemanticId);
 
         this.cpuInfoProvider = new OshiCpuInfoProvider();
         this.memoryInfoProvider = new OshiMemoryInfoProvider();
@@ -53,7 +56,8 @@ public class SystemInfoDataSource extends AbstractDatasource {
     @Override
     public List<? extends DataSourceValueDefinition<?>> getValueDefinitions() {
         return List.of(
-                new DataSourceValueDefinition<>("cpu.architecture", () -> cpuInfoProvider.getCpuInfo().getArchitecture()),
+                new DataSourceValueDefinition<>("cpu.architecture", () -> cpuInfoProvider.getCpuInfo().getArchitecture(),
+                        "http://eclipse.dev/slm/aas/sme/SysteInfo/CPU/Arch"),
                 new DataSourceValueDefinition<>("cpu.name", () -> cpuInfoProvider.getCpuInfo().getName()),
                 new DataSourceValueDefinition<>("cpu.vendor", () -> cpuInfoProvider.getCpuInfo().getVendor()),
                 new DataSourceValueDefinition<>("cpu.logical_cores", () -> cpuInfoProvider.getCpuInfo().getLogicalCores()),
@@ -62,7 +66,8 @@ public class SystemInfoDataSource extends AbstractDatasource {
                 new DataSourceValueDefinition<>("mem.free_memory", () -> memoryInfoProvider.getMemoryInfo().getFreeMemory()),
                 new DataSourceValueDefinition<>("mem.used_memory", () -> memoryInfoProvider.getMemoryInfo().getUsedMemory()),
                 new DataSourceValueDefinition<>("mem.total_memory", () -> memoryInfoProvider.getMemoryInfo().getTotalMemory()),
-                new DataSourceValueDefinition<>("os.version", () -> osInfoProvider.getOsInfo().getVersion()),
+                new DataSourceValueDefinition<>("os.version", () -> osInfoProvider.getOsInfo().getVersion(),
+                        "http://eclipse.dev/slm/aas/sme/SysteInfo/OS/Version"),
                 new DataSourceValueDefinition<>("os.build_number", () -> osInfoProvider.getOsInfo().getBuildNumber()),
                 new DataSourceValueDefinition<>("os.bitness", () -> osInfoProvider.getOsInfo().getBitness()),
                 new DataSourceValueDefinition<>("os.boottime", () -> osInfoProvider.getOsInfo().getBootTime()),

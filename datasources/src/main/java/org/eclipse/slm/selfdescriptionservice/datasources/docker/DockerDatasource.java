@@ -5,6 +5,7 @@ import com.github.dockerjava.core.DefaultDockerClientConfig;
 import com.github.dockerjava.core.DockerClientImpl;
 import com.github.dockerjava.httpclient5.ApacheDockerHttpClient;
 import org.eclipse.digitaltwin.aas4j.v3.model.Submodel;
+import org.eclipse.slm.selfdescriptionservice.datasources.DatasourceRegistry;
 import org.eclipse.slm.selfdescriptionservice.datasources.base.AbstractDatasource;
 import org.eclipse.slm.selfdescriptionservice.datasources.base.DataSourceValueDefinition;
 import org.eclipse.slm.selfdescriptionservice.datasources.base.SubmodelMetaData;
@@ -28,10 +29,12 @@ public class DockerDatasource extends AbstractDatasource {
 
     private DockerClient dockerClient;
 
-    public DockerDatasource(@Value("${resource.id}") String resourceId,
-                            @Value("${datasources.docker.provide-submodels}") boolean provideSubmodels,
+    public DockerDatasource(DatasourceRegistry datasourceRegistry,
+                            @Value("${resource.id}") String resourceId,
+                            @Value("${datasources.docker.provide-submodels:false}") boolean provideSubmodels,
+                            @Value("${datasources.docker.value-by-semantic-id:false}") boolean valueBySemanticId,
                             @Value("${datasources.docker.docker-host}") String dockerHost) {
-        super(resourceId, DockerDatasource.DATASOURCE_NAME, provideSubmodels);
+        super(datasourceRegistry, resourceId, DockerDatasource.DATASOURCE_NAME, provideSubmodels, valueBySemanticId);
 
         LOG.info("Using DOCKER_HOST '{}'", dockerHost);
         var dockerClientConfig = DefaultDockerClientConfig.createDefaultConfigBuilder()

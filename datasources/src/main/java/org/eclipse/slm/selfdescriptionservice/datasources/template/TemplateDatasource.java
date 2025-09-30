@@ -1,10 +1,13 @@
 package org.eclipse.slm.selfdescriptionservice.datasources.template;
 
+import jakarta.annotation.PostConstruct;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.eclipse.digitaltwin.aas4j.v3.dataformat.aasx.AASXDeserializer;
 import org.eclipse.digitaltwin.aas4j.v3.dataformat.core.DeserializationException;
 import org.eclipse.digitaltwin.aas4j.v3.model.*;
+import org.eclipse.slm.selfdescriptionservice.datasources.DatasourceRegistry;
 import org.eclipse.slm.selfdescriptionservice.datasources.base.AbstractDatasource;
+import org.eclipse.slm.selfdescriptionservice.datasources.base.Datasource;
 import org.eclipse.slm.selfdescriptionservice.datasources.base.SubmodelMetaData;
 import org.eclipse.slm.selfdescriptionservice.datasources.base.DataSourceValueDefinition;
 import org.slf4j.Logger;
@@ -12,15 +15,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Component
 @ConditionalOnProperty(name = "datasources.templates.enabled", havingValue = "true", matchIfMissing = false)
@@ -37,22 +36,42 @@ public class TemplateDatasource extends AbstractDatasource implements Initializi
 
     private final List<String> confidentialSemanticIds;
 
+    private final Map<String, Datasource> semanticIdsToDatasource = new HashMap<>();
+
     /**
      * Constructor for TemplateDatasourceService.
      * @param templateManager The template manager
      * @param templateRenderer The template renderer
      * @param resourceId The resource ID
      */
-    public TemplateDatasource(@Value("${resource.id}") String resourceId,
-                              @Value("${datasources.templates.provide-submodels}") boolean provideSubmodels,
+    public TemplateDatasource(DatasourceRegistry datasourceRegistry,
+                              @Value("${resource.id}") String resourceId,
+                              @Value("${datasources.templates.provide-submodels:false}") boolean provideSubmodels,
+                              @Value("${datasources.templates.value-by-semantic-id:false}") boolean valueBySemanticId,
                               ITemplateManager templateManager,
-                              @Lazy TemplateRenderer templateRenderer,
+                              TemplateRenderer templateRenderer,
                               @Value("${datasources.templates.confidential-semantic-ids:}") List<String> confidentialSemanticIds
     ) {
-        super(resourceId, TemplateDatasource.DATASOURCE_NAME, provideSubmodels);
+        super(datasourceRegistry, resourceId, TemplateDatasource.DATASOURCE_NAME, provideSubmodels, valueBySemanticId);
         this.templateRenderer = templateRenderer;
         this.templateManager = templateManager;
         this.confidentialSemanticIds = confidentialSemanticIds;
+    }
+
+    @PostConstruct
+    public void init() {
+        for (var datasource : datasourceRegistry.getDatasources()) {
+            if (!datasource.isValueBySemanticIdEnabled()) {
+                continue;
+            }
+
+            // Get all supported data source values
+            for (DataSourceValueDefinition<?> valueDefinition : datasource.getValueDefinitions()) {
+                if (valueDefinition.getSemanticId().isPresent()) {
+                    semanticIdsToDatasource.put(valueDefinition.getSemanticId().get(), datasource);
+                }
+            }
+        }
     }
 
     @Override
@@ -124,6 +143,19 @@ public class TemplateDatasource extends AbstractDatasource implements Initializi
                             if (this.confidentialSemanticIds.contains(semanticIdKey.getValue())) {
                                 property.setValue("******");
                                 return;
+                            }
+
+                            if (this.semanticIdsToDatasource.containsKey(semanticIdKey.getValue())) {
+                                var datasource = this.semanticIdsToDatasource.get(semanticIdKey.getValue());
+                                try {
+                                    var value = datasource.getValueBySemanticId(semanticIdKey.getValue());
+                                    property.setValue(value);
+                                    return;
+                                } catch (Exception e) {
+                                    LOG.error("Failed to get value for semantic id {} from datasource {} with error: {}",
+                                            semanticIdKey.getValue(), datasource.getDatasourceName(), e.getMessage());
+                                    LOG.debug("Stacktrace: ", e);
+                                }
                             }
                         }
                     }

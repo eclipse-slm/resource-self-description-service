@@ -109,12 +109,15 @@ datasources:
   templates:
     enabled: true
     provide-submodels: true
+    value-by-semantic-id: true
     confidential-semantic-ids: http://eclipse.dev/slm/aas/sme/ConfidentialProperty1,http://eclipse.dev/slm/aas/sme/ConfidentialProperty2
   docker:
     enabled: true
     provide-submodels: true
+    value-by-semantic-id: true
     docker-host: "tcp://localhost:2375"
   systeminfo:
     enabled: true
     provide-submodels: true
+    value-by-semantic-id: false
     refresh-interval-s: 300

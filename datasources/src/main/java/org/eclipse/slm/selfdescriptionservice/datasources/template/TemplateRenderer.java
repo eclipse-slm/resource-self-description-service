@@ -4,6 +4,8 @@ import freemarker.template.Configuration;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
 import freemarker.template.TemplateExceptionHandler;
+import jakarta.annotation.PostConstruct;
+import org.eclipse.slm.selfdescriptionservice.datasources.DatasourceRegistry;
 import org.eclipse.slm.selfdescriptionservice.datasources.DatasourceService;
 import org.eclipse.slm.selfdescriptionservice.datasources.base.DataSourceValueDefinition;
 import org.eclipse.slm.selfdescriptionservice.datasources.systeminfo.SystemInfoMethod;
@@ -25,18 +27,18 @@ public class TemplateRenderer {
     private final Configuration cfg;
     private final Map<String, Object> globalRenderContext = new HashMap<>();
 
-    private final DatasourceService datasourceService;
+    private final DatasourceRegistry datasourceRegistry;
 
     private final Optional<SystemInfoMethod> systemInfoMethodOptional;
 
     /**
      * Precomputed context with all DataSourceValues grouped by prefix (e.g. docker.version -> docker.version and docker.version).
      */
-    private final Map<String, Object> dataSourceValueContext;
+    private Map<String, Object> dataSourceValueContext = new HashMap<>();
 
     @Autowired
-    public TemplateRenderer(DatasourceService datasourceService, Optional<SystemInfoMethod> systemInfoMethodOptional) {
-        this.datasourceService = datasourceService;
+    public TemplateRenderer(DatasourceRegistry datasourceRegistry, Optional<SystemInfoMethod> systemInfoMethodOptional) {
+        this.datasourceRegistry = datasourceRegistry;
         this.systemInfoMethodOptional = systemInfoMethodOptional;
         cfg = new Configuration(Configuration.VERSION_2_3_0);
         cfg.setDefaultEncoding("UTF-8");
@@ -45,9 +47,12 @@ public class TemplateRenderer {
         cfg.setWrapUncheckedExceptions(true);
         cfg.setFallbackOnNullLoopVariable(false);
         cfg.setSQLDateAndTimeTimeZone(TimeZone.getDefault());
+    }
 
+    @PostConstruct
+    public void init() {
         Map<String, DataSourceValueDefinition<?>> datasourceValueKeyToDefinition = new HashMap<>();
-        for (var datasource : this.datasourceService.getDatasources()) {
+        for (var datasource : this.datasourceRegistry.getDatasources()) {
             // Get all supported data source values
             for (DataSourceValueDefinition<?> valueDefinition : datasource.getValueDefinitions()) {
                 datasourceValueKeyToDefinition.put(valueDefinition.getKey(), valueDefinition);
@@ -68,7 +73,7 @@ public class TemplateRenderer {
                 String prefix = key.substring(0, dotIdx);
                 String suffix = key.substring(dotIdx + 1);
                 groupedMaps.computeIfAbsent(prefix, k -> new HashMap<>())
-                    .put(suffix, new DataSourceValueScalarModel(entry.getValue()));
+                        .put(suffix, new DataSourceValueScalarModel(entry.getValue()));
             }
         }
         dataSourceValuesContext.putAll(groupedMaps);

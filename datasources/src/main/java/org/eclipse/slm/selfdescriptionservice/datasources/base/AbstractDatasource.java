@@ -1,5 +1,6 @@
 package org.eclipse.slm.selfdescriptionservice.datasources.base;
 
+import org.eclipse.slm.selfdescriptionservice.datasources.DatasourceRegistry;
 import org.springframework.beans.factory.annotation.Value;
 import java.util.List;
 
@@ -10,6 +11,8 @@ import java.util.List;
  */
 public abstract class AbstractDatasource implements Datasource {
 
+    protected final DatasourceRegistry datasourceRegistry;
+
     /** The resource ID associated with this datasource. */
     protected String resourceId = "";
 
@@ -18,6 +21,8 @@ public abstract class AbstractDatasource implements Datasource {
 
     protected final boolean provideSubmodels;
 
+    protected final boolean valueBySemanticId;
+
     /**
      * Constructor for AbstractDatasourceService.
      * Registers all supported DataSourceValues in the DataSourceValueRegistry on startup.
@@ -25,10 +30,15 @@ public abstract class AbstractDatasource implements Datasource {
      * @param datasourceName The name of the datasource
      * @param provideSubmodels Whether this datasource provides submodels or not
      */
-    protected AbstractDatasource(@Value("resource.id") String resourceId, String datasourceName, boolean provideSubmodels) {
+    protected AbstractDatasource(DatasourceRegistry datasourceRegistry, @Value("resource.id") String resourceId, String datasourceName,
+                                 boolean provideSubmodels, boolean valueBySemanticId) {
+        this.datasourceRegistry = datasourceRegistry;
         this.resourceId = resourceId;
         this.datasourceName = datasourceName;
         this.provideSubmodels = provideSubmodels;
+        this.valueBySemanticId = valueBySemanticId;
+
+        this.datasourceRegistry.registerDatasource(this);
     }
 
     /**
@@ -46,12 +56,35 @@ public abstract class AbstractDatasource implements Datasource {
      * @return Value as String
      * @throws DataSourceValueNotFoundException if the key is not found
      */
-    public String getValue(String valueKey) {
+    public String getValueByKey(String valueKey) {
         return getValueDefinitions().stream()
                 .filter(v -> v.getKey().equals(valueKey))
                 .findFirst()
                 .map(v -> String.valueOf(v.getValue()))
                 .orElseThrow(() -> new DataSourceValueNotFoundException(this.datasourceName, valueKey));
+    }
+
+    /**
+     * Returns the value for the given semantic ID from the immutable list provided by the derived class.
+     * Searches the list of supported DataSourceValues for a matching semantic ID and returns its value.
+     * @param semanticId Semantic ID of the requested value
+     * @return Value as String
+     * @throws DataSourceValueNotFoundException if the semantic ID is not found
+     */
+    public String getValueBySemanticId(String semanticId) {
+        return getValueDefinitions().stream()
+                .filter(v -> v.getSemanticId().isPresent() && v.getSemanticId().get().equals(semanticId))
+                .findFirst()
+                .map(v -> String.valueOf(v.getValue()))
+                .orElseThrow(() -> new DataSourceValueNotFoundException(this.datasourceName, semanticId));
+    }
+
+    /**
+     * Indicates whether value lookup by semantic ID is enabled for this datasource.
+     * @return true if value lookup by semantic ID is enabled, false otherwise
+     */
+    public boolean isValueBySemanticIdEnabled() {
+        return this.valueBySemanticId;
     }
 
     /**

@@ -40,19 +40,19 @@ public class DockerSubmodel extends DefaultSubmodel {
         setSemanticId(SEMANTIC_ID);
 
         var containers = dockerClient.listContainersCmd().exec();
-        LOG.info("Found {} containers", containers.size());
+        LOG.debug("Found {} containers", containers.size());
         this.addSubmodelEntry("Containers", containers, Container::getId);
 
         var images = dockerClient.listImagesCmd().exec();
-        LOG.info("Found {} images", images.size());
+        LOG.debug("Found {} images", images.size());
         this.addSubmodelEntry("Images", images, Image::getId);
 
         var networks = dockerClient.listNetworksCmd().exec();
-        LOG.info("Found {} networks", networks.size());
+        LOG.debug("Found {} networks", networks.size());
         this.addSubmodelEntry("Networks", networks, Network::getName);
 
         var volumes = dockerClient.listVolumesCmd().exec().getVolumes();
-        LOG.info("Found {} volumes", volumes.size());
+        LOG.debug("Found {} volumes", volumes.size());
         this.addSubmodelEntry("Volumes", volumes, InspectVolumeResponse::getName);
 
         try {
@@ -71,7 +71,7 @@ public class DockerSubmodel extends DefaultSubmodel {
             var secrets = dockerClient.listSecretsCmd().exec();
             this.addSubmodelEntry("Secrets", secrets, Secret::getId);
         } catch (DockerException exception) {
-            LOG.info("Docker runs not in Swarm mode ");
+            LOG.debug("Docker runs not in Swarm mode ");
         }
     }
 
