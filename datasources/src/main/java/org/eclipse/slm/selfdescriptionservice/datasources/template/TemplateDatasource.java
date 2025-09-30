@@ -35,6 +35,8 @@ public class TemplateDatasource extends AbstractDatasource implements Initializi
 
     private final HashMap<String, String> idToFileMap = new HashMap<>();
 
+    private final List<String> confidentialSemanticIds;
+
     /**
      * Constructor for TemplateDatasourceService.
      * @param templateManager The template manager
@@ -44,11 +46,13 @@ public class TemplateDatasource extends AbstractDatasource implements Initializi
     public TemplateDatasource(@Value("${resource.id}") String resourceId,
                               @Value("${datasources.templates.provide-submodels}") boolean provideSubmodels,
                               ITemplateManager templateManager,
-                              @Lazy TemplateRenderer templateRenderer
+                              @Lazy TemplateRenderer templateRenderer,
+                              @Value("${datasources.templates.confidential-semantic-ids:}") List<String> confidentialSemanticIds
     ) {
         super(resourceId, TemplateDatasource.DATASOURCE_NAME, provideSubmodels);
         this.templateRenderer = templateRenderer;
         this.templateManager = templateManager;
+        this.confidentialSemanticIds = confidentialSemanticIds;
     }
 
     @Override
@@ -115,6 +119,15 @@ public class TemplateDatasource extends AbstractDatasource implements Initializi
         if (element != null) {
             switch (element) {
                 case Property property -> {
+                    if (property.getSemanticId() != null) {
+                        for (var semanticIdKey : property.getSemanticId().getKeys()) {
+                            if (this.confidentialSemanticIds.contains(semanticIdKey.getValue())) {
+                                property.setValue("******");
+                                return;
+                            }
+                        }
+                    }
+
                     var value = property.getValue();
                     if (value != null) {
                         var renderedValue = this.templateRenderer.render(value);

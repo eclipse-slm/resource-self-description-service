@@ -30,10 +30,11 @@ public class TestConfig {
     @Bean
     public TemplateDatasource templateDatasource(ITemplateManager templateManager, TemplateRenderer templateRenderer) {
         return new TemplateDatasource(
-            "test-resource-id",
-            true,
-            templateManager,
-            templateRenderer
+                "test-resource-id",
+                true,
+                templateManager,
+                templateRenderer, 
+                List.of()
         );
     }
 

@@ -120,6 +120,7 @@ datasources:
   templates:
     enabled: true
     provide-submodels: true
+    confidential-semantic-ids:
   docker:
     enabled: true
     provide-submodels: true
