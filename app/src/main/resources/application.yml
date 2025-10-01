@@ -41,7 +41,7 @@ server:
   error:
     include-message: always
   ssl:
-    enabled: true
+    enabled: ${security.enabled}
     bundle: "web-server"
 
 ### OpenAPI
@@ -119,5 +119,5 @@ datasources:
   systeminfo:
     enabled: true
     provide-submodels: true
-    value-by-semantic-id: false
+    value-by-semantic-id: true
     refresh-interval-s: 300

@@ -1,0 +1,99 @@
+services:
+  aas-env:
+    image: eclipsebasyx/aas-environment:${BASYX_VERSION}
+    restart: unless-stopped
+    environment:
+      BASYX_BACKEND: InMemory
+      BASYX_ENVIRONMENT: "file:aas"
+      BASYX_AASREPOSITORY_FEATURE_MQTT_ENABLED: "false"
+      BASYX_SUBMODELREPOSITORY_FEATURE_MQTT_ENABLED: "false"
+      BASYX_CORS_ALLOWEDORIGINS: "*"
+      BASYX_CORS_ALLOWEDMETHODS: GET,POST,PATCH,DELETE,PUT,OPTIONS,HEAD
+      BASYX_AASREPOSITORY_FEATURE_REGISTRYINTEGRATION: "http://aas-registry:8080"
+      BASYX_SUBMODELREPOSITORY_FEATURE_REGISTRYINTEGRATION: "http://submode-registry:8080"
+      BASYX_EXTERNALURL: "http://${DEPLOYMENT_HOSTNAME}:38081"
+      MANAGEMENT_ENDPOINTS_WEB_EXPOSURE_INCLUDE: "health,info"
+      MANAGEMENT_INFO_GIT_ENABLED: "false"
+    volumes:
+      - ./aasx:/application/aas
+    ports:
+      - 38081:8081
+    networks:
+      default:
+        aliases:
+          - aas-environment
+    depends_on:
+      aas-registry:
+        condition: service_healthy
+      sm-registry:
+        condition: service_healthy
+    healthcheck:
+      test: "curl --fail http://localhost:8081/actuator/health || exit 1"
+      interval: 30s
+      timeout: 3s
+      retries: 3
+      start_period: 10s
+    extra_hosts:
+      - "${DEPLOYMENT_HOSTNAME}:host-gateway"
+
+  aas-registry:
+    image: eclipsebasyx/aas-registry-log-mem:${BASYX_VERSION}
+    restart: unless-stopped
+    environment:
+      BASYX_CORS_ALLOWEDORIGINS: "*"
+      BASYX_CORS_ALLOWEDMETHODS: GET,POST,PATCH,DELETE,PUT,OPTIONS,HEAD
+      MANAGEMENT_ENDPOINTS_WEB_EXPOSURE_INCLUDE: "health,info"
+      MANAGEMENT_INFO_GIT_ENABLED: "false"
+    ports:
+      - 38082:8080
+    networks:
+      default:
+        aliases:
+          - aas-registry
+
+  sm-registry:
+    image: eclipsebasyx/submodel-registry-log-mem:${BASYX_VERSION}
+    restart: unless-stopped
+    environment:
+      BASYX_CORS_ALLOWEDORIGINS: "*"
+      BASYX_CORS_ALLOWEDMETHODS: GET,POST,PATCH,DELETE,PUT,OPTIONS,HEAD
+      MANAGEMENT_ENDPOINTS_WEB_EXPOSURE_INCLUDE: "health,info"
+      MANAGEMENT_INFO_GIT_ENABLED: "false"
+    ports:
+      - 38083:8080
+    networks:
+      default:
+        aliases:
+          - submodel-registry
+
+  aas-discovery:
+    image: eclipsebasyx/aas-discovery:${BASYX_VERSION}
+    restart: unless-stopped
+    environment:
+      BASYX_BACKEND: InMemory
+      BASYX_CORS_ALLOWEDORIGINS: "*"
+      BASYX_CORS_ALLOWEDMETHODS: GET,POST,PATCH,DELETE,PUT,OPTIONS,HEAD
+      MANAGEMENT_ENDPOINTS_WEB_EXPOSURE_INCLUDE: "health,info"
+      MANAGEMENT_INFO_GIT_ENABLED: "false"
+    ports:
+      - 38084:8081
+    networks:
+      default:
+        aliases:
+          - aas-discovery
+
+  aas-web-ui_v2:
+    image: eclipsebasyx/aas-gui:${BASYX_AAS_UI_VERSION}
+    restart: unless-stopped
+    ports:
+      - "33000:3000"
+    environment:
+      AAS_REGISTRY_PATH: "http://localhost:38082/shell-descriptors"
+      SUBMODEL_REGISTRY_PATH: "http://localhost:38083/submodel-descriptors"
+      AAS_DISCOVERY_PATH: "http://localhost:38084/lookup/shells"
+      AAS_REPO_PATH: "http://localhost:38081/shells"
+      SUBMODEL_REPO_PATH: "http://localhost:38081/submodels"
+      CD_REPO_PATH: "http://localhost:38081/concept-descriptions"
+    depends_on:
+      aas-env:
+        condition: service_healthy

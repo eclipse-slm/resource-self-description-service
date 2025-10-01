@@ -1,0 +1,33 @@
+include:
+  - aas.yml
+
+services:
+  self-description-service:
+    image: "ghcr.io/eclipse-slm/resource-self-description-service:${SELF_DESCRIPTION_SERVICE_VERSION}"
+    restart: unless-stopped
+    environment:
+      RESOURCE_ID: 2e711dec-5539-43c5-a9c0-272f788072d7
+      SERVER_PORT: 48048
+      DEPLOYMENT_URL: http://${DEPLOYMENT_HOSTNAME}:48048
+      AAS_AASREGISTRY_URL: http://aas-registry:8080
+      AAS_SUBMODELREGISTRY_URL: http://submodel-registry:8080
+      SECURITY_ENABLED: false
+      DATASOURCES_DOCKER_DOCKERHOST: unix:///var/run/docker.sock
+    ports:
+        - "48048:48048"
+    volumes:
+        - "/var/run/docker.sock:/var/run/docker.sock:ro"
+    depends_on:
+      aas-registry:
+        condition: service_healthy
+      sm-registry:
+        condition: service_healthy
+      aas-env:
+        condition: service_healthy
+    extra_hosts:
+        - "${DEPLOYMENT_HOSTNAME}:host-gateway"
+
+
+
+
+

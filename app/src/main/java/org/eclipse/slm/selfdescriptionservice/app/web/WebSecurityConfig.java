@@ -2,8 +2,10 @@ package org.eclipse.slm.selfdescriptionservice.app.web;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -51,6 +53,7 @@ public class WebSecurityConfig {
             @Value("${security.origins:[]}") String[] origins,
             @Value("${security.auth-white-list:[]}") String[] configuredAuthWhiteList)
             throws Exception {
+
         if (securityEnabled) {
             // Configure authorization
             var authWhiteList = (String[]) ArrayUtils.addAll(configuredAuthWhiteList, STATIC_AUTH_WHITELIST);
@@ -93,6 +96,7 @@ public class WebSecurityConfig {
     }
 
     @Bean
+    @ConditionalOnProperty(name = "security.enabled", havingValue = "true")
     public JwtDecoder jwtDecoder(@Value("${jwt.auth.issuer-uri}") String jwtIssuerUri) {
         return JwtDecoders.fromIssuerLocation(jwtIssuerUri);
     }
