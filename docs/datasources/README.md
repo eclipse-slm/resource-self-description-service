@@ -3,7 +3,7 @@
 The service supports different data sources to access the device data. Currently, the following data sources are available (docs of datasource can be found
 by clicking on the name of the data source):
 
-- **[Template](Datasource_Docker.md)**: AASX submodel templates with parameters that are resolved using template variables or values from other data sources.
+- **[Template](Datasource_Templates.md)**: AASX submodel templates with parameters that are resolved using template variables or values from other data sources.
 - **[SystemInfo](Datasource_SystemInfo.md)**: Provides system and hardware information (e.g., CPU, memory, disk, network, operating system, ...) using the [OSHI](https://github.com/oshi/oshi) library.
 - **[Docker](Datasource_Docker.md)**: Provides information about the Docker environment (e.g., Docker version, containers, images, volumes, networks, ...) using the Docker host.
 
