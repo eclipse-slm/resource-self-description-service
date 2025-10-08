@@ -1,7 +1,7 @@
 # Resource Self-Description Service
 
 [![Build Status](https://github.com/eclipse-slm/resource-self-description-service/actions/workflows/build.yml/badge.svg)](https://github.com/eclipse-slm/resource-self-description-service/actions)
-[![License: EPL-2.0](https://img.shields.io/badge/License-EPL%202.0-red.svg)](https://img.shields.io/badge/License-Apache_2.0-blue.svg)
+[![License: Apache 2.0](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://img.shields.io/badge/License-Apache_2.0-blue.svg)
 
 The **Resource Self-Description Service** provides standardized, machine-readable descriptions of devices using the **Asset Administration Shell (AAS)**. It 
 enables devices in manufacturing environments to expose self-descriptions of static and dynamic information, supporting interoperability, integration, and 
