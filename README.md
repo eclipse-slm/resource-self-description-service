@@ -9,7 +9,7 @@ lifecycle management of heterogeneous system landscapes within manufacturing env
 A data source can provide default submodels, or the data variables of a data source can be used in parametrized submodel templates defined in AASX format.
 These parameters inside the submodel template are resolved with the current value from the data source when the submodel gets queried.
 
-![Concept](docs/images/concept.png)
+<img src="docs/images/concept.png" alt="Concept" width="70%"/>
 
 ## Motivation
 Today's manufacturing environments are characterized by a growing number of devices, ranging from traditional industrial controllers to modern edge devices and 
