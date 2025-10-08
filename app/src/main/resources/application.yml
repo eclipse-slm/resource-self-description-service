@@ -95,13 +95,13 @@ aas:
     scheme: http
     host: localhost
     port: 8082
-    path: /aas/shell-registry
+    path:
     url: ${aas.aas-registry.scheme}://${aas.aas-registry.host}:${aas.aas-registry.port}${aas.aas-registry.path}
   submodel-registry:
     scheme: http
     host: localhost
     port: 8083
-    path: /aas/submodel-registry
+    path:
     url: ${aas.submodel-registry.scheme}://${aas.submodel-registry.host}:${aas.submodel-registry.port}${aas.submodel-registry.path}
 
 ### Data Sources
@@ -121,3 +121,16 @@ datasources:
     provide-submodels: true
     value-by-semantic-id: true
     refresh-interval-s: 300
+    caching:
+      overall:
+        enabled: true
+        refresh-interval-s: 300
+      cpu:
+        enabled: true
+        refresh-interval-s: 60
+      memory:
+        enabled: true
+        refresh-interval-s: 60
+      os:
+        enabled: true
+        refresh-interval-s: 300

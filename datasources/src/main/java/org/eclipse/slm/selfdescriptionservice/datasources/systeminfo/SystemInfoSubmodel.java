@@ -1,15 +1,11 @@
 package org.eclipse.slm.selfdescriptionservice.datasources.systeminfo;
 
-import com.github.dockerjava.api.model.*;
 import org.eclipse.digitaltwin.aas4j.v3.model.*;
 import org.eclipse.digitaltwin.aas4j.v3.model.impl.*;
 import org.eclipse.slm.selfdescriptionservice.datasources.base.SubmodelMetaData;
 import org.eclipse.slm.selfdescriptionservice.datasources.systeminfo.cpu.CpuInfoProvider;
-import org.eclipse.slm.selfdescriptionservice.datasources.systeminfo.cpu.OshiCpuInfoProvider;
 import org.eclipse.slm.selfdescriptionservice.datasources.systeminfo.memory.MemoryInfoProvider;
-import org.eclipse.slm.selfdescriptionservice.datasources.systeminfo.memory.OshiMemoryInfoProvider;
 import org.eclipse.slm.selfdescriptionservice.datasources.systeminfo.os.OsInfoProvider;
-import org.eclipse.slm.selfdescriptionservice.datasources.systeminfo.os.OshiOsInfoProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,15 +31,15 @@ public class SystemInfoSubmodel extends DefaultSubmodel {
 
     private final OsInfoProvider osInfoProvider;
 
-    public SystemInfoSubmodel(String resourceId) {
+    public SystemInfoSubmodel(String resourceId, CpuInfoProvider cpuInfoProvider, MemoryInfoProvider memoryInfoProvider, OsInfoProvider osInfoProvider) {
         super();
         this.id = SystemInfoSubmodel.getId(resourceId);
         this.idShort = ID_SHORT;
         setSemanticId(SEMANTIC_ID);
 
-        this.cpuInfoProvider = new OshiCpuInfoProvider();
-        this.memoryInfoProvider = new OshiMemoryInfoProvider();
-        this.osInfoProvider = new OshiOsInfoProvider();
+        this.cpuInfoProvider = cpuInfoProvider;
+        this.memoryInfoProvider = memoryInfoProvider;
+        this.osInfoProvider = osInfoProvider;
 
         this.addCpuProperties();
         this.addMemoryPorperties();

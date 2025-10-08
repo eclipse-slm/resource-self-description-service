@@ -19,7 +19,6 @@ public class TemplateDatasourceServiceTests {
     @Autowired
     private TemplateDatasource datasource;
 
-
     @Test
     public void getSubmodels_Success() {
 

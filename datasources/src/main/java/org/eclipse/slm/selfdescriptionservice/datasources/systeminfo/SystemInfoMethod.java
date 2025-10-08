@@ -13,10 +13,10 @@ import java.util.List;
 public class SystemInfoMethod extends AbstractSafeTemplateMethodModelEx {
     private final static Logger LOG = LoggerFactory.getLogger(SystemInfoMethod.class);
 
-    private final SystemInfoProvider systemInfoProvider;
+    private final OshiSystemInfoProvider oshiSystemInfoProvider;
 
-    public SystemInfoMethod(SystemInfoProvider systemInfoProvider) {
-        this.systemInfoProvider = systemInfoProvider;
+    public SystemInfoMethod(OshiSystemInfoProvider oshiSystemInfoProvider) {
+        this.oshiSystemInfoProvider = oshiSystemInfoProvider;
     }
 
     @Override
@@ -25,10 +25,10 @@ public class SystemInfoMethod extends AbstractSafeTemplateMethodModelEx {
             throw new TemplateModelException("Wrong number of arguments");
         }
         var jsonPath = list.get(0).toString();
-        if (this.systemInfoProvider.getCachedSystemInfoJson() == null) {
+        if (this.oshiSystemInfoProvider.getSystemInfoJson() == null) {
             return "SystemInfo datasource still initializing, please try again later";
         }
-        var value = JsonPathReader.readSingleValueFromPath(this.systemInfoProvider.getCachedSystemInfoJson(), jsonPath);
+        var value = JsonPathReader.readSingleValueFromPath(this.oshiSystemInfoProvider.getSystemInfoJson(), jsonPath);
         return value;
     }
 }
