@@ -120,7 +120,6 @@ datasources:
     enabled: true
     provide-submodels: true
     value-by-semantic-id: true
-    refresh-interval-s: 300
     caching:
       overall:
         enabled: true
