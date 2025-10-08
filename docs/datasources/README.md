@@ -9,9 +9,9 @@ by clicking on the name of the data source):
 
 All data sources have the following common configuration options:
 
-| Environment Variable          | Description                                                                                         | Required | Default Value  |
-|-------------------------------|-----------------------------------------------------------------------------------------------------|----------|----------------|
-| `DATASOURCES_<NAME>_ENABLED`  | Whether the data source is enabled or not.                                                          | No       | true           |
-| `DATASOURCES_<NAME>_PROVIDEDSUBMODELS` | Whether the data source provides its default submodel or not.                              | No       | true           |
-| `DATASOURCES_<NAME>_VALUEBYSEMANTICID` | Whether the data source provides values for specific ids or not. | No                      | -        | true           |
+| Environment Variable                   | Description                                                      | Required | Default Value |
+|----------------------------------------|------------------------------------------------------------------|----------|---------------|
+| `DATASOURCES_<NAME>_ENABLED`           | Whether the data source is enabled or not.                       | No       | true          |
+| `DATASOURCES_<NAME>_PROVIDESUBMODELS`  | Whether the data source provides its default submodel or not.    | No       | true          |
+| `DATASOURCES_<NAME>_VALUEBYSEMANTICID` | Whether the data source provides values for specific ids or not. | No       | true          |
 
