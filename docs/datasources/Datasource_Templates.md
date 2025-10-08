@@ -6,7 +6,7 @@ is recommended. The AASX files must be placed in the `templates/` directory next
 The [examples](examples) directory contains examples for the various deployment options. The parameters must be directly defined as value of a property in the
 submodel template. The image below shows an example of a submodel displayed in the Eclipse AASX Package Explorer.
 
-![AASX Package Explorer with sample submodel model containing parameters](docs/images/aasx-package-explorer_submodel-templating-sample.png)
+![AASX Package Explorer with sample submodel model containing parameters](../images/aasx-package-explorer_submodel-templating-sample.png)
 
 As template engine [Apache FreeMarker](https://freemarker.apache.org/index.html) is used. The following methods and variables can be used to parameterize the
 submodel templates:
@@ -55,7 +55,7 @@ submodel templates:
   the Apache FreeMarker syntax (e.g, `${cpu.arch}` or `${os.version}`) to resolve the parameter with the current value from the data source. The image below
   shows how it is used, using the SystemInfo data source as an example.
 
-  ![AASX Package Explorer with sample submodel model containing data source value definitions](docs/images/aasx-package-explorer_datasource-value-definitions.png)
+  ![AASX Package Explorer with sample submodel model containing data source value definitions](../images/aasx-package-explorer_datasource-value-definitions.png)
 
 In addition to the methods and variables described above, data sources define semantic IDs for which they can provide values. If a semantic ID is defined for
 property for which an activated data source can provide a value, the property value is automatically retrieved from the data source and inserted if the
