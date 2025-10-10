@@ -27,7 +27,7 @@
         <!-- Maven Plugins !-->
         <maven.plugin.surefire.version>3.5.0</maven.plugin.surefire.version>
         <maven.plugin.failsafe.version>3.5.0</maven.plugin.failsafe.version>
-        <maven.plugin.apache.compiler.version>3.13.0</maven.plugin.apache.compiler.version>
+        <maven.plugin.apache.compiler.version>3.14.1</maven.plugin.apache.compiler.version>
         <maven.plugin.jacoco.version>0.9.1</maven.plugin.jacoco.version>
         <maven.plugin.dockerfile.version> 1.4.10</maven.plugin.dockerfile.version>
         <maven.plugin.codehaus.exec.version>3.5.1</maven.plugin.codehaus.exec.version>
