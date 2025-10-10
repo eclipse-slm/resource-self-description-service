@@ -57,7 +57,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Build (feature/*, fix/*, pull_request)
         if: github.event_name == 'pull_request' || startsWith(github.ref_name, 'feature/') || startsWith(github.ref_name, 'fix/')
-        run: mvn $MAVEN_PROFILES $MAVEN_CLI_OPTS clean org.jacoco:jacoco-maven-plugin:prepare-agent install -q org.jacoco:jacoco-maven-plugin:report -Pcoverage clean verify
+        run: mvn $MAVEN_PROFILES $MAVEN_CLI_OPTS clean verify
       - name: Log test output on failure
         if: failure() || cancelled()
         run: find . -type f -path "*test-reports/*-output.txt" -exec tail -n +1 {} +
