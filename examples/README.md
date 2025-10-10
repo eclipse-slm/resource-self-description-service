@@ -4,3 +4,7 @@ This directory contains example  demonstrating how to use self-description-servi
 
 ## Docker
 See the [Docker example](./docker) for an example how to deploy the self-description-service using Docker.
+
+### JAR
+
+See the [JAR example](./jar) for an example how to deploy the self-description-service using a JAR file.
