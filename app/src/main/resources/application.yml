@@ -111,6 +111,7 @@ datasources:
     provide-submodels: true
     value-by-semantic-id: true
     confidential-semantic-ids: http://eclipse.dev/slm/aas/sme/ConfidentialProperty1,http://eclipse.dev/slm/aas/sme/ConfidentialProperty2
+    templates-path: classpath:templates/**
   docker:
     enabled: true
     provide-submodels: true

@@ -10,8 +10,6 @@ resource:
     prefix: "Resource_"
     id: ${resource.aas.prefix}${resource.id}
   id: "dad1c0a5-b248-47a1-9aa8-a1e0e5b8c6dd"
-  template:
-    src: "classpath:templates/**"
 
 ### Deployment
 deployment:
@@ -98,14 +96,18 @@ datasources:
   templates:
     enabled: true
     provide-submodels: true
+    value-by-semantic-id: true
     confidential-semantic-ids:
+    templates-path: classpath:templates/**
   docker:
     enabled: true
     provide-submodels: true
+    value-by-semantic-id: true
     docker-host: "tcp://localhost:2375"
   system:
     enabled: true
     provide-submodels: true
+    value-by-semantic-id: true
     caching:
       overall:
         enabled: true

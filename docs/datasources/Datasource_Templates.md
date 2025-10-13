@@ -66,6 +66,7 @@ The datasource provides the following additional configuration options:
 
 | Environment Variable                            | Description                                                                                                                                          | Required | Default Value |
 |-------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------|----------|---------------|
+| `DATASOURCES_TEMPLATES_TEMPLATESPATH`           | Path to the directory containing the AASX template files.                                                                                            | No       | `templates/`  |
 | `DATASOURCES_TEMPLATES_CONFIDENTIALSEMANTICIDS` | Comma-separated list of semantic ids for which the values are considered confidential and are therefore not rendered when the submodel gets queried. | No       |               |
 
 

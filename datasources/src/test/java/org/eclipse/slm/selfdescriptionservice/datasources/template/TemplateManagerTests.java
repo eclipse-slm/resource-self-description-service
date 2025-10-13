@@ -8,7 +8,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class TemplateManagerTests {
 
-    private TemplateManager templateManager = new TemplateManager();
+    private TemplateManager templateManager = new TemplateManager("classpath:templates/**");
 
     @Test
     public void Get_Templates_Successfully() throws IOException {
