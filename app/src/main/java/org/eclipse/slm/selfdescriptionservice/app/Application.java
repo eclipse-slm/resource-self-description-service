@@ -1,9 +1,8 @@
 package org.eclipse.slm.selfdescriptionservice.app;
 
-import org.eclipse.slm.common.aas.clients.AasRepositoryClientFactory;
-import org.eclipse.slm.common.aas.clients.ConceptDescriptionRepositoryClient;
-import org.eclipse.slm.common.aas.clients.SubmodelRegistryClientFactory;
-import org.eclipse.slm.common.aas.clients.SubmodelRepositoryClientFactory;
+import org.eclipse.slm.common.aas.clients.conceptdescriptionrepository.ConceptDescriptionRepositoryClient;
+import org.eclipse.slm.common.aas.clients.shellrepository.AasRepositoryClientFactory;
+import org.eclipse.slm.common.aas.clients.submodelrepository.SubmodelRepositoryClientFactory;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;

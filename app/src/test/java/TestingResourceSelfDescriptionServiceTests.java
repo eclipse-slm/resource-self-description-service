@@ -1,5 +1,5 @@
 import org.eclipse.digitaltwin.aas4j.v3.model.impl.DefaultAssetAdministrationShell;
-import org.eclipse.slm.common.aas.clients.AasRepositoryClient;
+import org.eclipse.slm.common.aas.clients.shellrepository.AasRepositoryClient;
 import org.eclipse.slm.selfdescriptionservice.app.Application;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
