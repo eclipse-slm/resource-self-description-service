@@ -71,7 +71,7 @@
         <github.dasniko.testcontainers-keycloak.version>3.8.0</github.dasniko.testcontainers-keycloak.version>
         <github.tomakehurst.wiremock.version>2.27.2</github.tomakehurst.wiremock.version>
         <restdocs-api-spec-restassured.version>0.16.2</restdocs-api-spec-restassured.version>
-        <junit-jupiter.version>5.12.2</junit-jupiter.version>
+        <junit-jupiter.version>6.0.0</junit-jupiter.version>
         <junit-platform.version>1.12.2</junit-platform.version>
     </properties>
 
